@@ -1,0 +1,20 @@
+# Build
+bin/
+obj/
+
+# User-specific
+*.user
+*.suo
+
+# VS
+.vs/
+
+# Secrets
+secrets.json
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

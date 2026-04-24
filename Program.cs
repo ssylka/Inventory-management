@@ -30,7 +30,9 @@ namespace Inventory_Managment
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
+            
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+            app.Urls.Add($"http://*:{port}");
             app.Run();
         }
     }

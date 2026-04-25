@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Inventory_Managment.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Services
 {
     public class AppDbContext : DbContext
     {
+        public DbSet<Inventory> Inventories { get; set; }
+        public DbSet<InventoryField> InventoryFields { get; set; }
+        public DbSet<Item> Items { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
     }

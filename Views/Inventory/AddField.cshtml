@@ -1,0 +1,25 @@
+﻿@model InventoryField
+
+<h2>Add Field</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="InventoryId" value="@ViewBag.InventoryId" />
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input class="form-control" asp-for="Name" />
+		<span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Type</label>
+        <select class="form-control" asp-for="Type">
+            <option value="String">String</option>
+            <option value="Text">Text</option>
+            <option value="Number">Number</option>
+            <option value="Bool">Bool</option>
+        </select>
+    </div>
+
+    <button class="btn btn-success">Save</button>
+</form>

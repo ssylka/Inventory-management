@@ -1,0 +1,25 @@
+﻿@model Inventory
+
+<h2>Fields for @Model.Title</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var field in Model.Fields)
+        {
+            <tr>
+                <td>@field.Name</td>
+                <td>@field.Type</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/Inventory/AddField/@Model.Id" class="btn btn-primary">
+    Add Field
+</a>

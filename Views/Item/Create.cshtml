@@ -1,0 +1,9 @@
+﻿@model Item
+
+<h2>Create Item</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="InventoryId" value="@ViewBag.InventoryId" />
+
+    <button class="btn btn-success">Save</button>
+</form>

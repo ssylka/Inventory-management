@@ -1,0 +1,19 @@
+﻿@model Inventory
+
+<h2>Create Inventory</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label>Title</label>
+        <input class="form-control" asp-for="Title"/>
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea class="form-control" asp-for="Description"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+</form>

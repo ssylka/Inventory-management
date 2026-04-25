@@ -1,0 +1,29 @@
+﻿@model List<Item>
+
+@{
+    var inventory = ViewBag.Inventory as Inventory;
+}
+
+<h2>Items for @inventory.Title</h2>
+
+<a href="/Item/Create?inventoryId=@inventory.Id" class="btn btn-primary mb-3">
+    Add Item
+</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>CustomId</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CustomId</td>
+                <td>@item.CreatedAt</td>
+            </tr>
+        }
+    </tbody>
+</table>

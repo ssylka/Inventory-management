@@ -3,6 +3,7 @@ using System;
 using Inventory_Managment.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory_Managment.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260425112703_CreateInventoryField")]
+    partial class CreateInventoryField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,67 +84,6 @@ namespace Inventory_Managment.Migrations
                     b.ToTable("InventoryFields");
                 });
 
-            modelBuilder.Entity("Inventory_Managment.Models.Item", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("Bool1")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("Bool2")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("Bool3")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CustomId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("InventoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Number1")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Number2")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Number3")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("String1")
-                        .HasColumnType("text");
-
-                    b.Property<string>("String2")
-                        .HasColumnType("text");
-
-                    b.Property<string>("String3")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Text1")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Text2")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Text3")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventoryId");
-
-                    b.ToTable("Items");
-                });
-
             modelBuilder.Entity("Inventory_Managment.Models.InventoryField", b =>
                 {
                     b.HasOne("Inventory_Managment.Models.Inventory", "Inventory")
@@ -153,22 +95,9 @@ namespace Inventory_Managment.Migrations
                     b.Navigation("Inventory");
                 });
 
-            modelBuilder.Entity("Inventory_Managment.Models.Item", b =>
-                {
-                    b.HasOne("Inventory_Managment.Models.Inventory", "Inventory")
-                        .WithMany("Items")
-                        .HasForeignKey("InventoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Inventory");
-                });
-
             modelBuilder.Entity("Inventory_Managment.Models.Inventory", b =>
                 {
                     b.Navigation("Fields");
-
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,28 +2,63 @@
 
 @{
     var inventory = ViewBag.Inventory as Inventory;
+    var fields = inventory.Fields
+        .Where(f => f.ShowInTable)
+        .OrderBy(f => f.Order)
+        .ToList();
 }
+<div class="d-flex align-items-center mb-3">
+    <button type="button" class="btn btn-light me-3">
+        <a asp-controller="Inventory" asp-action="Index" style="text-decoration: none; color: black">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace" viewBox="0 0 16 16">
+                <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z" />
+                <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" />
+            </svg>
+        </a>
+    </button>
 
-<h2>Items for @inventory.Title</h2>
+    <h2>Items for @inventory.Title</h2>
+</div> 
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            @foreach (var field in fields)
+            {
+                <th>@field.Name</th>
+            }
+            <th>Created</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="@(fields.Count + 1)" class="text-center">
+                    No items yet
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <tr onclick="window.location='/Item/Edit/@item.Id'" style="cursor:pointer;">
+                    @foreach (var field in fields)
+                    {
+                        var prop = item.GetType().GetProperty(field.Slot);
+                        var value = prop?.GetValue(item);
+
+                        <td>@(value ?? "-")</td>
+                    }
+                    <td>@item.CreatedAt</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
 
 <a href="/Item/Create?inventoryId=@inventory.Id" class="btn btn-primary mb-3">
     Add Item
 </a>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>CustomId</th>
-            <th>Created</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.CustomId</td>
-                <td>@item.CreatedAt</td>
-            </tr>
-        }
-    </tbody>
-</table>

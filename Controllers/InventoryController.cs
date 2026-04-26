@@ -68,8 +68,22 @@ namespace Inventory_Managment.Controllers
         [HttpPost]
         public async Task<IActionResult> AddField(InventoryField field)
         {
-            field.Id = 0; // Ensure EF Core treats this as a new entity
-            field.Slot = GetNextSlot(field.Type, field.InventoryId);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.InventoryId = field.InventoryId;
+                return View(field);
+            }
+            try
+            {
+                field.Id = 0; // Ensure EF Core treats this as a new entity
+                field.Slot = GetNextSlot(field.Type, field.InventoryId);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.InventoryId = field.InventoryId;
+                TempData["Error"] = ex.Message;
+                return View(field);
+            }
 
             _context.InventoryFields.Add(field);
             await _context.SaveChangesAsync();
@@ -92,7 +106,7 @@ namespace Inventory_Managment.Controllers
                     return slot;
             }
 
-            throw new Exception("Max fields reached");
+            throw new Exception("You cannot add more than 3 fields of this type.");
         }
     }
 }

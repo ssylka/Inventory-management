@@ -1,4 +1,5 @@
 ﻿@model Item
+
 <div class="d-flex align-items-center mb-3">
     <button type="button" class="btn btn-light me-5">
         <a asp-controller="Item" asp-action="Index" asp-route-inventoryId="@Model.InventoryId" style="text-decoration: none; color: black">
@@ -9,11 +10,20 @@
         </a>
     </button>
 
-    <h2>Create Item</h2>
+    <h2>Edit Item</h2>
 </div>
 
 <form method="post">
-    <input type="hidden" asp-for="InventoryId" value="@ViewBag.InventoryId" />
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="InventoryId" />
+    <input type="hidden" asp-for="xmin" />
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
 
     @{
         var inventory = ViewBag.Inventory as Inventory;
@@ -21,20 +31,31 @@
 
     @foreach (var field in inventory.Fields.OrderBy(f => f.Order))
     {
+        var prop = Model.GetType().GetProperty(field.Slot);
+        var value = prop?.GetValue(Model);
+
         <div class="mb-3">
             <label>@field.Name</label>
 
             @if (field.Type == FieldType.String || field.Type == FieldType.Text)
             {
-                <input class="form-control" name="@field.Slot" />
+                <input class="form-control"
+                       name="@field.Slot"
+                       value="@value" />
             }
             else if (field.Type == FieldType.Number)
             {
-                <input type="number" class="form-control" name="@field.Slot" />
+                <input type="number"
+                       class="form-control"
+                       name="@field.Slot"
+                       value="@value" />
             }
             else if (field.Type == FieldType.Bool)
             {
-                <input type="checkbox" name="@field.Slot" value="true" />
+                <input type="checkbox"
+                       name="@field.Slot"
+                       value="true"
+                       @(value?.ToString() == "True" ? "checked" : "") />
             }
         </div>
     }

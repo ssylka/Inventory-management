@@ -1,9 +1,4 @@
-﻿
-function updateButtons() {
-    const hasSelected = getSelectedUserIds().length > 0;
-    document.getElementById("btnDelete").disabled = !hasSelected;
-}
-document.getElementById('btn-check-outlined').addEventListener('change', function () {
+﻿document.getElementById('btn-check-outlined').addEventListener('change', function () {
     var checkboxes = document.querySelectorAll('.form-check-input');
     for (var checkbox of checkboxes) {
         checkbox.checked = this.checked;
@@ -35,7 +30,6 @@ document.getElementById("btnDelete").addEventListener("click", async () => {
 document.querySelectorAll(".inventory-row").forEach(row => {
     row.addEventListener("click", function () {
         const id = this.dataset.id;
-        //window.location.href = `/Item?inventoryId=${id}`;
         window.location.href = `/Inventory/Fields/${id}`;
     });
 });

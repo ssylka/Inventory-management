@@ -2,9 +2,6 @@
 
 <h2>Inventories</h2>
 
-<a href="/Inventory/Create" class="btn btn-primary">Create</a>
-<a class="btn btn-danger" id="btnDelete">Delete</a>
-
 <table class="table table-striped-columns table-hover align-middle">
     <thead>
         <tr>
@@ -20,15 +17,18 @@
     <tbody>
         @foreach (var inv in Model)
         {
-            <tr class="inventory-row" style="cursor:pointer;" data-id="@inv.Id">
+            <tr>
                 <td><input class="form-check-input" type="checkbox" value="@inv.Id"/></td>
-                <td>@inv.Title</td>
-                <td>@inv.Description</td>
-                <td>@inv.CreatedAt</td>
+                <td class="inventory-row" style="cursor:pointer;" data-id="@inv.Id">@inv.Title</td>
+                <td class="inventory-row" style="cursor:pointer;" data-id="@inv.Id">@inv.Description</td>
+                <td class="inventory-row" style="cursor:pointer;" data-id="@inv.Id">@inv.CreatedAt</td>
             </tr>
         }
     </tbody>
 </table>
+
+<a href="/Inventory/Create" class="btn btn-primary">Create</a>
+<a class="btn btn-danger" id="btnDelete">Delete</a>
 
 <script src="~/js/index_inventory.js"></script>
 

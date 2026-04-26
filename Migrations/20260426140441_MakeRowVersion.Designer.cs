@@ -3,6 +3,7 @@ using System;
 using Inventory_Managment.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory_Managment.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260426140441_MakeRowVersion")]
+    partial class MakeRowVersion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,6 +118,12 @@ namespace Inventory_Managment.Migrations
                     b.Property<int?>("Number3")
                         .HasColumnType("integer");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
                     b.Property<string>("String1")
                         .HasColumnType("text");
 
@@ -132,9 +141,6 @@ namespace Inventory_Managment.Migrations
 
                     b.Property<string>("Text3")
                         .HasColumnType("text");
-
-                    b.Property<long>("xmin")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

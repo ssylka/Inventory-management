@@ -7,7 +7,7 @@ namespace Inventory_Managment.Models
     {
         public int Id { get; set; }
         public int InventoryId { get; set; }
-        public Inventory Inventory { get; set; }
+        public Inventory? Inventory { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; }
@@ -15,11 +15,11 @@ namespace Inventory_Managment.Models
         [Required(ErrorMessage = "Type is required.")]
         public FieldType Type { get; set; }
 
-        public string Slot { get; set; }
+        public string? Slot { get; set; }
 
         public int Order { get; set; }
 
-        public bool ShowInTable { get; set; }
+        public bool ShowInTable { get; set; } = true;
 
     }
     

@@ -6,7 +6,7 @@
         .Where(f => f.ShowInTable)
         .OrderBy(f => f.Order)
         .ToList();
-}
+}   
 <div class="d-flex align-items-center mb-3">
     <button type="button" class="btn btn-light me-3">
         <a asp-controller="Inventory" asp-action="Index" style="text-decoration: none; color: black">
@@ -23,10 +23,15 @@
 <table class="table table-bordered">
     <thead>
         <tr>
+            <th>
+                <input type="checkbox" class="btn-check" id="btn-check-outlined">
+                <label class="btn btn-outline-secondary" for="btn-check-outlined">Select all</label>
+            </th>
             @foreach (var field in fields)
             {
                 <th>@field.Name</th>
             }
+            <th>Custom ID</th>
             <th>Created</th>
         </tr>
     </thead>
@@ -45,13 +50,18 @@
             @foreach (var item in Model)
             {
                 <tr onclick="window.location='/Item/Edit/@item.Id'" style="cursor:pointer;">
+                    <td class="row-checkbox">
+                        <input class="form-check-input" type="checkbox" value="@item.Id" />
+                    </td>
                     @foreach (var field in fields)
-                    {
-                        var prop = item.GetType().GetProperty(field.Slot);
-                        var value = prop?.GetValue(item);
-
+                    {                        
+                        var property = item.GetType().GetProperty(field.Slot);
+						var value = property?.GetValue(item); 
+                        // because item."Name" doesn't work
+                        
                         <td>@(value ?? "-")</td>
                     }
+                    <td>@item.CustomId</td>
                     <td>@item.CreatedAt</td>
                 </tr>
             }
@@ -62,3 +72,44 @@
 <a href="/Item/Create?inventoryId=@inventory.Id" class="btn btn-primary mb-3">
     Add Item
 </a>
+<a class="btn btn-danger mb-3" id="btnDelete">
+    Delete Item
+</a>
+<script>
+    // Select/Deselect all checkboxes
+    document.getElementById('btn-check-outlined').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.form-check-input');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+
+    function getSelectedUserIds() {
+        return Array.from(document.querySelectorAll(".form-check-input:checked"))
+            .map(cb => Number(cb.value));
+    }
+
+    document.getElementById("btnDelete").addEventListener("click", async () => {
+        const ids = getSelectedUserIds();
+
+        const response = await fetch('/Item/Delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ids)
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            const text = await response.text();
+            alert(text);
+            location.reload();
+        }
+    });
+
+    document.querySelectorAll(".row-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+    });
+</script>

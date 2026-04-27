@@ -14,6 +14,8 @@ namespace Inventory_Managment
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
+            builder.Services.AddScoped<ItemService>();
+
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
             {

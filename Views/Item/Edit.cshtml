@@ -29,36 +29,40 @@
         var inventory = ViewBag.Inventory as Inventory;
     }
 
-    @foreach (var field in inventory.Fields.OrderBy(f => f.Order))
-    {
-        var prop = Model.GetType().GetProperty(field.Slot);
-        var value = prop?.GetValue(Model);
+    <div class="mb-3">
+        @foreach (var field in inventory.Fields.OrderBy(f => f.Order))
+        {
+            var prop = Model.GetType().GetProperty(field.Slot);
+            var value = prop?.GetValue(Model);
 
-        <div class="mb-3">
             <label>@field.Name</label>
 
             @if (field.Type == FieldType.String || field.Type == FieldType.Text)
             {
                 <input class="form-control"
-                       name="@field.Slot"
-                       value="@value" />
+                        name="@field.Slot"
+                        value="@value" />
             }
             else if (field.Type == FieldType.Number)
             {
                 <input type="number"
-                       class="form-control"
-                       name="@field.Slot"
-                       value="@value" />
+                        class="form-control"
+                        name="@field.Slot"
+                        value="@value" />
             }
             else if (field.Type == FieldType.Bool)
             {
                 <input type="checkbox"
-                       name="@field.Slot"
-                       value="true"
-                       @(value?.ToString() == "True" ? "checked" : "") />
+                        name="@field.Slot"
+                        value="true"
+                        @(value?.ToString() == "True" ? "checked" : "") />
             }
-        </div>
-    }
+        }
+        <label>Custom ID</label>
+        <input class="form-control"
+               name="CustomId"
+               value="@Model.CustomId" />
+    </div>
 
     <button class="btn btn-success">Save</button>
 </form>

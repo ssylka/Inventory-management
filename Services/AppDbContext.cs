@@ -17,6 +17,10 @@ namespace Inventory_Managment.Services
             modelBuilder.Entity<Item>()
                 .Property<uint>("xmin")
                 .IsRowVersion();
+
+            modelBuilder.Entity<Item>()
+                .HasIndex(x => new { x.CustomId, x.InventoryId })
+                .IsUnique();
         }
     }
 }

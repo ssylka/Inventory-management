@@ -1,13 +1,16 @@
 ﻿using Inventory_Managment.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Services
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
     {
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InventoryField> InventoryFields { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<InventoryAccess> InventoryAccess { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

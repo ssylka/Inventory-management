@@ -1,11 +1,16 @@
+using Inventory_Managment.Filters;
 using Inventory_Managment.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using static System.Formats.Asn1.AsnWriter;
+
 namespace Inventory_Managment
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +20,14 @@ namespace Inventory_Managment
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
             builder.Services.AddScoped<ItemService>();
+            builder.Services.AddScoped<InventoryService>();
+
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<InventoryEditFilter>();
+            builder.Services.AddScoped<ItemEditFilter>();
 
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
@@ -27,13 +40,24 @@ namespace Inventory_Managment
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Inventory}/{action=Index}/{id?}");
-            
-            app.Run();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+            }
+
+            await app.RunAsync();
         }
     }
 }

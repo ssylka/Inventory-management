@@ -1,11 +1,14 @@
-﻿using Inventory_Managment.Models;
+﻿using Inventory_Managment.Attributes;
+using Inventory_Managment.Models;
 using Inventory_Managment.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace Inventory_Managment.Controllers
 {
+    //[ItemEdit]
     public class ItemController : Controller
     {
         private readonly AppDbContext _context;
@@ -16,7 +19,7 @@ namespace Inventory_Managment.Controllers
             _context = context;
             _itemService = itemService;
         }
-
+        [AllowAnonymous] // All items are viewable by everyone, regardless of authentication status.
         public async Task<IActionResult> Index(int inventoryId)
         {
             var inventory = await _context.Inventories

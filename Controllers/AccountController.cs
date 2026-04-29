@@ -1,6 +1,7 @@
 ﻿using Inventory_Managment.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Inventory_Managment.Controllers
 {
@@ -74,6 +75,51 @@ namespace Inventory_Managment.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Inventory");
+        }
+        public IActionResult ExternalLogin(string provider)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            return Challenge(properties, provider);
+        }
+        public async Task<IActionResult> ExternalLoginCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            if (info == null)
+                return RedirectToAction("Login");
+
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider,
+                info.ProviderKey,
+                isPersistent: false
+            );
+
+            if (signInResult.Succeeded)
+                return RedirectToAction("Index", "Inventory");
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var name = info.Principal.FindFirstValue(ClaimTypes.Name);
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Name = name
+                };
+
+                await _userManager.CreateAsync(user);
+            }
+
+            await _userManager.AddLoginAsync(user, info);
+            await _signInManager.SignInAsync(user, false);
+
             return RedirectToAction("Index", "Inventory");
         }
     }

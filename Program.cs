@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Microsoft.AspNetCore.Authentication.Google;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace Inventory_Managment
@@ -29,6 +30,17 @@ namespace Inventory_Managment
 
             builder.Services.AddScoped<InventoryEditFilter>();
             builder.Services.AddScoped<ItemEditFilter>();
+            builder.Services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = builder.Configuration["Auth:Google:ClientId"];
+                    options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
+                });
+            //.AddFacebook(options =>
+            //{
+            //    options.AppId = builder.Configuration["Auth:Facebook:AppId"];
+            //    options.AppSecret = builder.Configuration["Auth:Facebook:AppSecret"];
+            //});
 
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())

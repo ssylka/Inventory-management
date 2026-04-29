@@ -1,11 +1,12 @@
 using Inventory_Managment.Filters;
 using Inventory_Managment.Models;
 using Inventory_Managment.Services;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
-using Microsoft.AspNetCore.Authentication.Google;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace Inventory_Managment
@@ -43,6 +44,13 @@ namespace Inventory_Managment
             //});
 
             var app = builder.Build();
+            // обрабатываем заголовки от прокси (Render)
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -69,7 +77,6 @@ namespace Inventory_Managment
                     await roleManager.CreateAsync(new IdentityRole("Admin"));
                 }
             }
-
             await app.RunAsync();
         }
     }

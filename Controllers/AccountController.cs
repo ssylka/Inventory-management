@@ -111,10 +111,12 @@ namespace Inventory_Managment.Controllers
                 {
                     UserName = email,
                     Email = email,
-                    Name = name
+                    Name = name ?? email, 
+                    EmailConfirmed = true
                 };
 
-                await _userManager.CreateAsync(user);
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded) return RedirectToAction("Login");
             }
 
             await _userManager.AddLoginAsync(user, info);

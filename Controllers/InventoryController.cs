@@ -10,9 +10,9 @@ namespace Inventory_Managment.Controllers
     public class InventoryController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly InventoryService _inventoryService;
-        public InventoryController(AppDbContext context, UserManager<IdentityUser> userManager, InventoryService inventoryService)
+        public InventoryController(AppDbContext context, UserManager<AppUser> userManager, InventoryService inventoryService)
         {
             _context = context;
             _userManager = userManager;

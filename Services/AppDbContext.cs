@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Services
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
     {
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InventoryField> InventoryFields { get; set; }

@@ -10,9 +10,9 @@ namespace Inventory_Managment.Filters
     public class ItemEditFilter : IAsyncActionFilter
     {
         private readonly AppDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ItemEditFilter(AppDbContext context, UserManager<IdentityUser> userManager)
+        public ItemEditFilter(AppDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
             _userManager = userManager;

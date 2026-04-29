@@ -1,4 +1,5 @@
 using Inventory_Managment.Filters;
+using Inventory_Managment.Models;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace Inventory_Managment
             builder.Services.AddScoped<ItemService>();
             builder.Services.AddScoped<InventoryService>();
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 

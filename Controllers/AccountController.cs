@@ -1,22 +1,21 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Inventory_Managment.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory_Managment.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
         public AccountController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
         }
-
-        // ---------------- REGISTER ----------------
 
         public IActionResult Register()
         {
@@ -24,12 +23,13 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register(string email, string password, string name)
         {
-            var user = new IdentityUser
+            var user = new AppUser
             {
                 UserName = email,
-                Email = email
+                Email = email,
+                Name = name
             };
 
             var result = await _userManager.CreateAsync(user, password);
@@ -45,8 +45,6 @@ namespace Inventory_Managment.Controllers
 
             return View();
         }
-
-        // ---------------- LOGIN ----------------
 
         public IActionResult Login()
         {
@@ -64,11 +62,14 @@ namespace Inventory_Managment.Controllers
                 return RedirectToAction("Index", "Inventory");
             }
 
-            ModelState.AddModelError("", "Invalid login");
+            else if (result.IsNotAllowed)
+                ModelState.AddModelError("", "You are not allowed to log in");
+            else if (result.IsLockedOut)
+                ModelState.AddModelError("", "You are locked out");
+            else
+                ModelState.AddModelError("", "Invalid login");
             return View();
         }
-
-        // ---------------- LOGOUT ----------------
 
         public async Task<IActionResult> Logout()
         {

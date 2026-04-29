@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,9 +33,9 @@
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item  ms-auto me-2">
+                            <li class="nav-item ms-auto me-2">
                                 <span class="nav-link text-muted">
-                                    Login: @User.Identity.Name
+                                    Hi, @currentUser?.Name
                                 </span>
                             </li>
                             <li class="nav-item">

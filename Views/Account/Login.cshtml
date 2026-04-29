@@ -1,7 +1,17 @@
-﻿<form method="post">
-    <input name="email" placeholder="Email" />
-    <input name="password" type="password" placeholder="Password" />
-    <button type="submit">Login</button>
+﻿<form method="post" class="mt-4" style="max-width: 400px;">
+    <h3 class="mb-4">Register</h3>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input name="email" class="form-control" placeholder="Enter email" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input name="password" type="password" class="form-control" placeholder="Enter password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Register</button>
 </form>
 
-<div asp-validation-summary="All"></div>
+<div asp-validation-summary="All" class="text-danger mt-3"></div>

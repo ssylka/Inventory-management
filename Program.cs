@@ -36,16 +36,16 @@ namespace Inventory_Managment
                 {
                     options.ClientId = builder.Configuration["Auth:Google:ClientId"];
                     options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = builder.Configuration["Auth:Facebook:AppId"];
+                    options.AppSecret = builder.Configuration["Auth:Facebook:AppSecret"];
                 });
-            //.AddFacebook(options =>
-            //{
-            //    options.AppId = builder.Configuration["Auth:Facebook:AppId"];
-            //    options.AppSecret = builder.Configuration["Auth:Facebook:AppSecret"];
-            //});
 
             var app = builder.Build();
-            // обрабатываем заголовки от прокси (Render)
 
+            // обрабатываем заголовки от прокси (Render)
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

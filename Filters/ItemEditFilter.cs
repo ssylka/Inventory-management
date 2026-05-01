@@ -29,6 +29,12 @@ namespace Inventory_Managment.Filters
             else if (context.ActionArguments.ContainsKey("item"))
             {
                 var item = context.ActionArguments["item"] as Item;
+
+                if (item == null)
+                {
+                    context.Result = new BadRequestResult();
+                    return;
+                }
                 inventoryId = item.InventoryId;
             }
             else

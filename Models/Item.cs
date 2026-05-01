@@ -10,7 +10,7 @@ namespace Inventory_Managment.Models
         public Inventory? Inventory { get; set; }
 
         public string? CustomId { get; set; }
-        public uint xmin { get; set; }// optimistic locking
+        public uint xmin { get; set; } // optimistic locking
         public string? String1 { get; set; }
         public string? String2 { get; set; }
         public string? String3 { get; set; }
@@ -27,6 +27,7 @@ namespace Inventory_Managment.Models
         public bool? Bool2 { get; set; }
         public bool? Bool3 { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
+        public DateTime EditedAt { get; set; } = DateTime.UtcNow;
     }
 }

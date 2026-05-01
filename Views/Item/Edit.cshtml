@@ -65,4 +65,11 @@
     </div>
 
     <button class="btn btn-success">Save</button>
+
+    <input type="hidden"
+           name="CreatedAt"
+           value="@Model.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
+    <input name="CustomId"
+           value="@Model.CustomId"
+           type="hidden"/>
 </form>

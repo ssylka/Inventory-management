@@ -29,10 +29,8 @@ namespace Inventory_Managment.Controllers
             var items = await _context.Items
                 .Where(i => i.InventoryId == inventoryId)
                 .ToListAsync();
-            items = items
-                .OrderBy(i =>
-                    i.CustomId ?? $"ITEM-{i.CreatedAt.Year}-{i.Id:D4}"
-                ).ToList();
+
+            items = items.OrderBy(i => i.CustomId).ToList();
 
             ViewBag.Inventory = inventory;
 
@@ -74,6 +72,7 @@ namespace Inventory_Managment.Controllers
                 ModelState.AddModelError("CustomId", "ID already exists. Try again.");
                 return View(item);
             }
+            item.CreatedAt = DateTime.UtcNow;
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
 
@@ -97,8 +96,6 @@ namespace Inventory_Managment.Controllers
 
             ViewBag.Inventory = inventory;
 
-            _context.Items.Update(item);
-            await _context.SaveChangesAsync();
             return View(item);
         }
 
@@ -129,7 +126,7 @@ namespace Inventory_Managment.Controllers
             }
             catch (DbUpdateException)
             {
-                TempData["Error"] = "This ID already exists.";
+                TempData["Error"] = "There is an error with CustomID\nPlease, set a valid CustomID.";
 
                 return View(item);
             }

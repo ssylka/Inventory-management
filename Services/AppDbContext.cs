@@ -7,6 +7,7 @@ namespace Inventory_Managment.Services
 {
     public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
     {
+        public DbSet<CustomIdElement> CustomIdElements { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InventoryField> InventoryFields { get; set; }
         public DbSet<Item> Items { get; set; }

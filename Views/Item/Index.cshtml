@@ -32,6 +32,7 @@
                 <th>@field.Name</th>
             }
             <th>Custom ID</th>
+            <th>Edited</th>
             <th>Created</th>
         </tr>
     </thead>
@@ -62,6 +63,7 @@
                         <td>@(value ?? "-")</td>
                     }
                     <td>@item.CustomId</td>
+                    <th>@item.EditedAt</th>
                     <td>@item.CreatedAt</td>
                 </tr>
             }

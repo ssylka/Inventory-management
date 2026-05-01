@@ -1,0 +1,14 @@
+﻿namespace Inventory_Managment.Models
+{
+    public enum CustomIdElementType
+    {
+        Fixed,
+        Random20,
+        Random32,
+        Random6,
+        Random9,
+        Guid,
+        DateTime,
+        Sequence
+    }
+}

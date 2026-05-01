@@ -1,0 +1,147 @@
+﻿@model List<CustomIdElement>
+
+@{
+    var inventoryId = ViewBag.InventoryId;
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Custom ID</h2>
+
+    <!-- Preview -->
+    <div class="alert alert-info">
+        <strong>Preview:</strong>
+        <span id="preview">---</span>
+    </div>
+
+    <form method="post">
+        <input type="hidden" name="inventoryId" value="@inventoryId" />
+
+        <div id="elements" class="list-group mb-3">
+
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="list-group-item element d-flex gap-2 align-items-center">
+
+                    <!-- TYPE -->
+                    <select class="form-select type" name="[@i].Type">
+                        @foreach (var t in Enum.GetValues(typeof(CustomIdElementType)))
+                        {
+                            <option value="@t" selected="@(Model[i].Type == (CustomIdElementType)t)">
+                                @t
+                            </option>
+                        }
+                    </select>
+
+                    <!-- VALUE -->
+                    <input class="form-control value"
+                           name="[@i].Value"
+                           placeholder="Text"
+                           value="@Model[i].Value" />
+
+                    <!-- FORMAT -->
+                    <input class="form-control format"
+                           name="[@i].Format"
+                           placeholder="Format (D3, yyyy)"
+                           value="@Model[i].Format" />
+
+                    <!-- ORDER -->
+                    <input type="hidden" name="[@i].Order" value="@i" class="order" />
+
+                    <!-- DELETE -->
+                    <button type="button" class="btn btn-danger btn-sm remove">X</button>
+
+                </div>
+            }
+        </div>
+
+        <button type="button" id="add" class="btn btn-secondary mb-3">
+            Add Element
+        </button>
+
+        <br />
+
+        <button class="btn btn-success">Save</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+
+    const container = document.getElementById("elements");
+
+    // 🔥 DRAG & DROP
+    new Sortable(container, {
+        animation: 150,
+        onEnd: updateOrder
+    });
+
+    // ➕ ADD
+    document.getElementById("add").onclick = () => {
+        const index = container.children.length;
+
+        const html = `
+        <div class="list-group-item element d-flex gap-2 align-items-center">
+
+            <select class="form-select type" name="[${index}].Type">
+                <option value="Fixed">Fixed</option>
+                <option value="Random20">Random20</option>
+                <option value="Random32">Random32</option>
+                <option value="Random6">Random6</option>
+                <option value="Random9">Random9</option>
+                <option value="Guid">Guid</option>
+                <option value="DateTime">DateTime</option>
+                <option value="Sequence">Sequence</option>
+            </select>
+
+            <input class="form-control value" name="[${index}].Value" placeholder="Text" />
+            <input class="form-control format" name="[${index}].Format" placeholder="Format" />
+
+            <input type="hidden" name="[${index}].Order" value="${index}" class="order" />
+
+            <button type="button" class="btn btn-danger btn-sm remove">X</button>
+
+        </div>`;
+
+        container.insertAdjacentHTML("beforeend", html);
+    };
+
+    // ❌ REMOVE
+    container.addEventListener("click", e => {
+        if (e.target.classList.contains("remove")) {
+            e.target.closest(".element").remove();
+            updateOrder();
+        }
+    });
+
+    // 🔢 ORDER UPDATE
+    function updateOrder() {
+        [...container.children].forEach((el, i) => {
+            el.querySelector(".order").value = i;
+        });
+    }
+
+    function updatePreview() {
+        let result = "";
+
+        document.querySelectorAll(".element").forEach(el => {
+            const type = el.querySelector(".type").value;
+            const value = el.querySelector(".value").value;
+            const format = el.querySelector(".format").value;
+
+            if (type === "Fixed") result += value || "TXT";
+            else if (type === "Sequence") result += "001";
+            else if (type === "DateTime") result += "2025";
+            else if (type === "Random6") result += "123456";
+            else if (type === "Random9") result += "123456789";
+            else if (type === "Guid") result += "xxxx-xxxx";
+            else result += "X";
+        });
+
+        document.getElementById("preview").innerText = result;
+    }
+
+    document.addEventListener("input", updatePreview);
+
+</script>

@@ -7,9 +7,7 @@
         public int InventoryId { get; set; }
 
         public CustomIdElementType Type { get; set; }
-
-        public string? Format { get; set; }   // yyyy, D3
-        public string? Value { get; set; } 
+        public string? Value { get; set; } // and format is exeests, e.g. yyyy, D3
 
         public int Order { get; set; } 
 

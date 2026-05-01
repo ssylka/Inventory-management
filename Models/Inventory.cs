@@ -17,5 +17,6 @@ namespace Inventory_Managment.Models
         public List<InventoryField> Fields { get; set; } = new();
         public List<Item> Items { get; set; } = new();
         public bool IsPublic { get; set; } = false;
+        public int LastSequence { get; set; }
     }
 }

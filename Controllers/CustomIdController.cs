@@ -26,7 +26,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(List<CustomIdElement> elements, int inventoryId)
+        public async Task<IActionResult> Edit(List<CustomIdElement> elements, int inventoryId)
         {
             var old = _context.CustomIdElements
                 .Where(e => e.InventoryId == inventoryId);

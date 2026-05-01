@@ -6,25 +6,29 @@
 
 <div class="container mt-4">
 
-    <h2 class="mb-3">Custom ID</h2>
+    <h3 class="mb-3">Custom ID</h3>
 
-    <!-- Preview -->
+    <!-- PREVIEW -->
     <div class="alert alert-info">
-        <strong>Preview:</strong>
-        <span id="preview">---</span>
+        <strong>Preview:</strong> <span id="preview">---</span>
     </div>
 
+    <!-- FORM -->
     <form method="post">
         <input type="hidden" name="inventoryId" value="@inventoryId" />
 
-        <div id="elements" class="list-group mb-3">
+        <!-- ELEMENTS -->
+        <div id="elements" class="list-group">
 
             @for (int i = 0; i < Model.Count; i++)
             {
-                <div class="list-group-item element d-flex gap-2 align-items-center">
+                <div class="list-group-item element d-flex align-items-center gap-3">
 
-                    <!-- TYPE -->
-                    <select class="form-select type" name="[@i].Type">
+                    <!-- drag -->
+                    <span class="drag-handle text-muted" style="cursor:grab;">↕</span>
+
+                    <!-- type -->
+                    <select name="[@i].Type" class="form-select type" style="max-width: 220px;">
                         @foreach (var t in Enum.GetValues(typeof(CustomIdElementType)))
                         {
                             <option value="@t" selected="@(Model[i].Type == (CustomIdElementType)t)">
@@ -33,78 +37,98 @@
                         }
                     </select>
 
-                    <!-- VALUE -->
-                    <input class="form-control value"
-                           name="[@i].Value"
-                           placeholder="Text"
-                           value="@Model[i].Value" />
+                    <!-- value -->
+                    <div class="flex-grow-1 d-flex gap-2 align-items-center">
 
-                    <!-- FORMAT -->
-                    <input class="form-control format"
-                           name="[@i].Format"
-                           placeholder="Format (D3, yyyy)"
-                           value="@Model[i].Format" />
+                        <input name="[@i].Value"
+                               value="@Model[i].Value"
+                               class="form-control value"
+                               placeholder="Value / format (D3, yyyy, X5)" />
 
-                    <!-- ORDER -->
-                    <input type="hidden" name="[@i].Order" value="@i" class="order" />
+                        <!-- help -->
+                        <span class="text-muted" title="Use D3, yyyy, X5 etc">?</span>
 
-                    <!-- DELETE -->
-                    <button type="button" class="btn btn-danger btn-sm remove">X</button>
+                        <!-- hidden order -->
+                        <input type="hidden" name="[@i].Order" value="@i" class="order" />
+
+                        <!-- remove -->
+                        <button type="button" class="btn btn-outline-danger btn-sm remove">✕</button>
+
+                    </div>
 
                 </div>
             }
+
         </div>
 
-        <button type="button" id="add" class="btn btn-secondary mb-3">
-            Add Element
+        <!-- ADD -->
+        <button type="button" id="add" class="btn btn-secondary mt-3">
+            Add element
         </button>
 
-        <br />
+        <!-- SAVE -->
+        <button class="btn btn-success mt-3 ms-2">
+            Save
+        </button>
 
-        <button class="btn btn-success">Save</button>
     </form>
+
 </div>
 
+<!-- SORTABLE -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
 
     const container = document.getElementById("elements");
 
-    // 🔥 DRAG & DROP
-    new Sortable(container, {
-        animation: 150,
-        onEnd: updateOrder
-    });
+    // ✅ drag & drop
+    if (container) {
+        new Sortable(container, {
+            animation: 150,
+            handle: ".drag-handle",
+            onEnd: updateOrder
+        });
+    }
 
     // ➕ ADD
     document.getElementById("add").onclick = () => {
         const index = container.children.length;
 
         const html = `
-        <div class="list-group-item element d-flex gap-2 align-items-center">
+        <div class="list-group-item element d-flex align-items-center gap-3">
 
-            <select class="form-select type" name="[${index}].Type">
+            <span class="drag-handle text-muted">↕</span>
+
+            <select name="[${index}].Type" class="form-select type" style="max-width: 220px;">
                 <option value="Fixed">Fixed</option>
-                <option value="Random20">Random20</option>
-                <option value="Random32">Random32</option>
-                <option value="Random6">Random6</option>
-                <option value="Random9">Random9</option>
-                <option value="Guid">Guid</option>
-                <option value="DateTime">DateTime</option>
+                <option value="Random20">20-bit random</option>
+                <option value="Random32">32-bit random</option>
+                <option value="Random6">6-digit random</option>
+                <option value="Random9">9-digit random</option>
+                <option value="Guid">GUID</option>
+                <option value="DateTime">Date/time</option>
                 <option value="Sequence">Sequence</option>
             </select>
 
-            <input class="form-control value" name="[${index}].Value" placeholder="Text" />
-            <input class="form-control format" name="[${index}].Format" placeholder="Format" />
+            <div class="flex-grow-1 d-flex gap-2 align-items-center">
 
-            <input type="hidden" name="[${index}].Order" value="${index}" class="order" />
+                <input name="[${index}].Value"
+                       class="form-control value"
+                       placeholder="Value / format" />
 
-            <button type="button" class="btn btn-danger btn-sm remove">X</button>
+                <input type="hidden" name="[${index}].Order" value="${index}" class="order" />
+
+                <button type="button" class="btn btn-outline-danger btn-sm remove">✕</button>
+
+            </div>
 
         </div>`;
 
         container.insertAdjacentHTML("beforeend", html);
+
+        updateOrder();
+        updatePreview();
     };
 
     // ❌ REMOVE
@@ -112,6 +136,7 @@
         if (e.target.classList.contains("remove")) {
             e.target.closest(".element").remove();
             updateOrder();
+            updatePreview();
         }
     });
 
@@ -119,29 +144,43 @@
     function updateOrder() {
         [...container.children].forEach((el, i) => {
             el.querySelector(".order").value = i;
+
+            // 🔥 важно: обновляем name
+            el.querySelectorAll("select, input").forEach(input => {
+                if (input.name.includes(".Type"))
+                    input.name = `[${i}].Type`;
+
+                if (input.name.includes(".Value"))
+                    input.name = `[${i}].Value`;
+
+                if (input.name.includes(".Order"))
+                    input.name = `[${i}].Order`;
+            });
         });
     }
 
+    // 👀 PREVIEW
     function updatePreview() {
         let result = "";
 
         document.querySelectorAll(".element").forEach(el => {
             const type = el.querySelector(".type").value;
-            const value = el.querySelector(".value").value;
-            const format = el.querySelector(".format").value;
+            const val = el.querySelector(".value").value;
 
-            if (type === "Fixed") result += value || "TXT";
+            if (type === "Fixed") result += val || "TXT";
             else if (type === "Sequence") result += "001";
             else if (type === "DateTime") result += "2025";
             else if (type === "Random6") result += "123456";
             else if (type === "Random9") result += "123456789";
-            else if (type === "Guid") result += "xxxx-xxxx";
+            else if (type === "Guid") result += "xxxx";
             else result += "X";
         });
 
         document.getElementById("preview").innerText = result;
     }
 
+    // live preview
     document.addEventListener("input", updatePreview);
+    updatePreview();
 
 </script>

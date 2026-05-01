@@ -50,10 +50,10 @@ namespace Inventory_Managment.Services
                     Guid.NewGuid().ToString(),
 
                 CustomIdElementType.DateTime =>
-                    DateTime.UtcNow.ToString(el.Format ?? "yyyy"),
+                    DateTime.UtcNow.ToString(el.Value ?? "yyyy"),
 
                 CustomIdElementType.Sequence =>
-                    await GetNextSequence(inventoryId, el.Format),
+                    await GetNextSequence(inventoryId, el.Value),
 
                 _ => ""
             };

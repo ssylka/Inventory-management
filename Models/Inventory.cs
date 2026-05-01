@@ -18,5 +18,6 @@ namespace Inventory_Managment.Models
         public List<Item> Items { get; set; } = new();
         public bool IsPublic { get; set; } = false;
         public int LastSequence { get; set; }
+        public uint xmin { get; set; } // optimistic locking
     }
 }

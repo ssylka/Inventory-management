@@ -33,11 +33,12 @@ namespace Inventory_Managment.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Inventory inventory)
         {
+            ModelState.Remove(nameof(Inventory.CreatorId));//  ВРЕМЕНННО. УБРАТЬ ПРИ СОЗДАНИИ АВТОРИЗАЦИИ !!!!!!!!!!!!!
+            inventory.CreatorId = _userManager.GetUserId(User);
+
             if (!ModelState.IsValid)
                 return View(inventory);
 
-            inventory.CreatorId = _userManager.GetUserId(User);
-            
             _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
 
@@ -45,7 +46,7 @@ namespace Inventory_Managment.Controllers
         }
         [HttpPost]
         //[ServiceFilter]
-        public async Task<IActionResult> Delete([FromBody] List<int> ids)
+        public async Task<IActionResult> Delete([FromBody] List<int> ids) // НЕ ЗАУБДЬ ПРО оптимитсик лок!
         {
             var items = await _context.Inventories
                 .Where(i => ids.Contains(i.Id))

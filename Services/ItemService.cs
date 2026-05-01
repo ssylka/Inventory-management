@@ -17,7 +17,7 @@ namespace Inventory_Managment.Services
                 .ToListAsync();
 
             if (!elements.Any())
-                return await GetNextSequence(inventoryId, null);
+                return (await GetNextSequence(inventoryId)).ToString();
 
             var parts = new List<string>();
 
@@ -35,50 +35,42 @@ namespace Inventory_Managment.Services
                 CustomIdElementType.Fixed => el.Value ?? "",
 
                 CustomIdElementType.Random20 =>
-                    Random.Shared.Next(0, 1 << 20).ToString(),
+                    Random.Shared.Next(0, 1 << 20).ToString(el.Value ?? "D6"),
 
                 CustomIdElementType.Random32 =>
-                    Random.Shared.Next().ToString(),
+                    Random.Shared.Next().ToString(el.Value ?? "D9"),
 
                 CustomIdElementType.Random6 =>
-                    Random.Shared.Next(0, 999999).ToString("D6"),
+                    Random.Shared.Next(0, 999999).ToString(el.Value ??"D6"),
 
                 CustomIdElementType.Random9 =>
-                    Random.Shared.Next(0, 999999999).ToString("D9"),
+                    Random.Shared.Next(0, 999999999).ToString(el.Value ?? "D9"),
 
                 CustomIdElementType.Guid =>
-                    Guid.NewGuid().ToString(),
+                    Guid.NewGuid().ToString(el.Value),
 
                 CustomIdElementType.DateTime =>
                     DateTime.UtcNow.ToString(el.Value ?? "yyyy"),
 
                 CustomIdElementType.Sequence =>
-                    await GetNextSequence(inventoryId, el.Value),
+                    (await GetNextSequence(inventoryId)).ToString(el.Value ?? "D"),
 
                 _ => ""
             };
         }
-        private async Task<string> GetNextSequence(int inventoryId, string? format)
+        public async Task<int> GetNextSequence(int inventoryId)
         {
-            var customIds = await _context.Items
-                .Where(i => i.InventoryId == inventoryId && i.CustomId != null)
-                .Select(i => i.CustomId!)
-                .ToListAsync();
+            var inventory = await _context.Inventories
+                .FirstOrDefaultAsync(i => i.Id == inventoryId);
 
-            int max = 0;
+            if (inventory == null)
+                throw new Exception("Inventory not found");
 
-            foreach (var id in customIds)
-            {
-                if (int.TryParse(id, out int num))
-                {
-                    if (num > max)
-                        max = num;
-                }
-            }
+            inventory.LastSequence++;
 
-            var next = max + 1;
+            await _context.SaveChangesAsync();
 
-            return next.ToString(format ?? "D");
+            return inventory.LastSequence;
         }
     }
 }

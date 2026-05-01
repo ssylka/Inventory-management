@@ -126,7 +126,7 @@ namespace Inventory_Managment.Controllers
             }
             catch (DbUpdateException)
             {
-                TempData["Error"] = "There is an error with CustomID\nPlease, set a valid CustomID.";
+                TempData["Error"] = "There is an error with CustomID. Please, set a valid and unique CustomID.";
 
                 return View(item);
             }

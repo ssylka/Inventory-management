@@ -26,7 +26,13 @@
 <form method="post">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="CreatorId" />
-
+    <input type="hidden" asp-for="xmin" />
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
     <div class="mb-3">
         <label>Title</label>
         <input class="form-control" asp-for="Title" />

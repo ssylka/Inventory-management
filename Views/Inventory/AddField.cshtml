@@ -47,12 +47,7 @@
 
     <div class="mb-3">
         <label>Type</label>
-        <select class="form-control" asp-for="Type">
-            <option value="String">String</option>
-            <option value="Text">Text</option>
-            <option value="Link">Link</option>
-            <option value="Number">Number</option>
-            <option value="Bool">Bool</option>
+        <select class="form-control" asp-for="Type" asp-items="Html.GetEnumSelectList<FieldType>()">
         </select>
     </div>
 

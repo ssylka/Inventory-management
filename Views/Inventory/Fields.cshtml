@@ -10,7 +10,11 @@
     </button>
 
     <h2>Fields for @Model.Title</h2>
-    
+
+    <div id="saveStatus" class="ms-3 text-muted">
+        <span class="badge bg-success">Saved</span>
+    </div>
+
     <a href="/Inventory/Edit/@Model.Id"
        class="btn btn-light ms-auto me-1">
         Edit
@@ -23,9 +27,12 @@
     </a>
 </div>
 
+<form id="inventoryForm">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="xmin" value="@Model.xmin" id="xmin" />
 <table class="table">
     <thead>
-        <tr
+        <tr>
             <th></th>
             <th>
                 <input type="checkbox" class="btn-check" id="btn-check-outlined">
@@ -37,36 +44,42 @@
         </tr>
     </thead>
     <tbody id="elements">
-        @foreach (var field in Model.Fields)
+        @for (int i = 0; i < Model.Fields.Count; i++)
         {
-            <tr>
-                <th><span class="drag-handle text-muted">↕</span></th>
-                <td class="row-checkbox">
-                    <input class="form-check-input" type="checkbox" value="@field.Id" />
+                <tr data-id="@Model.Fields[i].Id"
+                    onclick="window.location='/Inventory/EditField/@Model.Fields[i].Id'"
+                    style="cursor:pointer;">
+                <td>
+                    <span class="drag-handle text-muted me-3">↕</span>
                 </td>
-                <td>@field.Name</td>
-                <td>@field.Description</td>
-                <td>@field.Type</td>
+                <td class="row-checkbox">
+                    <input class="form-check-input" type="checkbox" value="@Model.Fields[i].Id" />
+                </td>
+
+                <td>@Model.Fields[i].Name</td>
+                <td>@Model.Fields[i].Description</td>
+                <td>@Model.Fields[i].Type</td>
             </tr>
         }
     </tbody>
 </table>
+
+</form>
+
 
 <a href="/Inventory/AddField/@Model.Id" class="btn btn-primary">
     Add Field
 </a>
 <a class="btn btn-danger" id="btnDelete">Delete</a>
 
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="~/js/AutoSave.js"></script>
+
+
 
 <script>
-    const container = document.getElementById("elements");
-
-    new Sortable(container, {
-        animation: 150,
-        handle: ".drag-handle"
-    });
-
+    
     document.getElementById('btn-check-outlined').addEventListener('change', function() {
         var checkboxes = document.querySelectorAll('.form-check-input');
         for (var checkbox of checkboxes) {
@@ -99,6 +112,11 @@
 
     document.querySelectorAll(".row-checkbox").forEach(checkbox => {
         checkbox.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+    });
+    document.querySelectorAll(".drag-handle").forEach(handle => {
+        handle.addEventListener("click", function (e) {
             e.stopPropagation();
         });
     });

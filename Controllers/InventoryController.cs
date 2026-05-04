@@ -1,4 +1,6 @@
-﻿using Inventory_Managment.Models;
+﻿using Inventory_Managment.Attributes;
+using Inventory_Managment.Models;
+using Inventory_Managment.Models.Dto;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -45,13 +47,78 @@ namespace Inventory_Managment.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var inventory = await _context.Inventories
+                .Include(i => i.Fields)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (inventory == null)
+                return NotFound();
+
+            return View(inventory);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Inventory inventory)
+        {
+            if (!ModelState.IsValid)
+                return View(inventory);
+            try
+            {
+                _context.Inventories.Update(inventory);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                TempData["Error"] = "This item has been or is being modified by another user. Please return to the inventory's field list.";
+
+                return View(inventory);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(inventory);
+            }
+            return RedirectToAction("Index");
+            //var existing = await _context.Inventories
+            //    .Include(i => i.Fields)
+            //    .FirstOrDefaultAsync(i => i.Id == inventory.Id);
+
+            //if (existing == null)
+            //    return NotFound();
+            //_context.Entry(existing).OriginalValues["xmin"] = inventory.xmin;
+            //try
+            //{
+            //    _context.Entry(existing).CurrentValues.SetValues(inventory);
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    var fresh = await _context.Inventories
+            //        .AsNoTracking()
+            //        .Include(i => i.Fields)
+            //        .FirstOrDefaultAsync(i => i.Id == inventory.Id);
+
+            //    ModelState.Clear();
+
+            //    TempData["Error"] = "This inventory has been or is being modified by another user. Please return to the item list.";
+            //    return View(fresh);
+            //    //return BadRequest("The inventory has been modified by another user. Please reload the page and try again.");
+            //}
+
+            //return RedirectToAction("Index");
+        }
+
         //[ServiceFilter]
         public async Task<IActionResult> Fields(int id)
         {
             var inventory = await _context.Inventories
                 .Include(i => i.Fields)
                 .FirstOrDefaultAsync(i => i.Id == id);
-
+            inventory.Fields = inventory.Fields
+                .OrderBy(f => f.Order)
+                .ToList();
             return View(inventory);
         }
         //[ServiceFilter]
@@ -87,36 +154,26 @@ namespace Inventory_Managment.Controllers
 
             return RedirectToAction("Fields", new { id = field.InventoryId });
         }
-        public async Task<IActionResult> Edit(int id)
-        {
-            var inventory = await _context.Inventories
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (inventory == null)
-                return NotFound();
-
-            return View(inventory);
-        }
         [HttpPost]
-        public async Task<IActionResult> Edit(Inventory inventory)
+        //[InventoryEdit]
+        public async Task<IActionResult> UpdateFieldOrder([FromBody] List<FieldOrderDto> fields)
         {
-            if (!ModelState.IsValid)
-                return View(inventory);
+            foreach (var field in fields)
+            {
+                var entity = await _context.InventoryFields
+                    .FirstOrDefaultAsync(f => f.Id == field.Id);
 
-            var existing = await _context.Inventories
-                .FirstOrDefaultAsync(i => i.Id == inventory.Id);
-
-            if (existing == null)
-                return NotFound();
-
-            existing.Title = inventory.Title;
-            existing.Description = inventory.Description;
-            existing.IsPublic = inventory.IsPublic;
+                if (entity != null)
+                {
+                    entity.Order = field.Order;
+                }
+            }
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return Ok();
         }
+
         [HttpPost]
         //[ServiceFilter]
         public async Task<IActionResult> Delete([FromBody] List<int> ids)
@@ -126,12 +183,47 @@ namespace Inventory_Managment.Controllers
                 .ToListAsync();
 
             if (inventories.Count != ids.Count)
-                return Conflict("Some inventories no longer exist.\nPlease try again.");
-
+            {
+                return BadRequest("Some Inventories no longer exist. Please try again.");
+            }
             _context.Inventories.RemoveRange(inventories);
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+        public async Task<IActionResult> EditField(int id)
+        {
+            var field = await _context.InventoryFields
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (field == null)
+                return NotFound();
+
+            return View(field);
+        }
+        [HttpPost]
+        //[ValidateAntiForgeryToken] 
+        public async Task<IActionResult> EditField(InventoryField model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            try
+            {
+                _context.InventoryFields.Update(model);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                TempData["Error"] = "This field has been or is being modified by another user. Please return to the inventory's field list.";
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(model);
+            }
+            return RedirectToAction("Index");
         }
         [HttpPost]
         //[ServiceFilter]
@@ -142,11 +234,17 @@ namespace Inventory_Managment.Controllers
                 .ToListAsync();
 
             if (inventoryFields.Count != ids.Count)
-                return Conflict("Some inventory's fields no longer exist.\nPlease try again.");
+                return BadRequest("Some inventory's fields no longer exist. Please try again.");
 
-            _context.InventoryFields.RemoveRange(inventoryFields);
-            await _context.SaveChangesAsync();
-
+            try
+            {
+                _context.InventoryFields.RemoveRange(inventoryFields);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest("Some inventory's fields have been modified by another user. Please try again.");
+            }
             return Ok();
         }
     }

@@ -145,7 +145,9 @@ namespace Inventory_Managment.Controllers
                 .ToListAsync();
 
             if (items.Count != ids.Count)
-                return Conflict("Some items no longer exist.\nPlease try again.");
+            {
+                return BadRequest("Some items no longer exist. Please try again.");
+            }
             try
             {
                 _context.Items.RemoveRange(items);
@@ -153,9 +155,7 @@ namespace Inventory_Managment.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                TempData["Error"] = "This item has been or is being modified by another user. Please return to the item list.";
-
-                return Conflict("Some items no longer exist.\nPlease try again.");
+                return BadRequest("Some items no longer exist. Please try again.");
             }
 
             return Ok();

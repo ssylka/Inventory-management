@@ -21,6 +21,7 @@ namespace Inventory_Managment.Models
         public int Order { get; set; }
 
         public bool ShowInTable { get; set; } = true;
+        public uint xmin { get; set; } // optimistic locking
 
     }
     

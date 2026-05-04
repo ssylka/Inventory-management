@@ -10,20 +10,42 @@
     </button>
 
     <h2>Fields for @Model.Title</h2>
+    
+    <a href="/Inventory/Edit/@Model.Id"
+       class="btn btn-light ms-auto me-1">
+        Edit
+    </a>
+    <a href="/CustomId/Edit?inventoryId=@Model.Id" class="btn btn-warning me-1">
+        Custom ID
+    </a>
+    <a href="/Item/Index?inventoryId=@Model.Id" class="btn btn-success">
+        Open Items
+    </a>
 </div>
 
 <table class="table">
     <thead>
-        <tr>
+        <tr
+            <th></th>
+            <th>
+                <input type="checkbox" class="btn-check" id="btn-check-outlined">
+                <label class="btn btn-outline-secondary" for="btn-check-outlined">Select all</label>
+            </th>
             <th>Name</th>
+            <th>Description</th>
             <th>Type</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="elements">
         @foreach (var field in Model.Fields)
         {
             <tr>
+                <th><span class="drag-handle text-muted">↕</span></th>
+                <td class="row-checkbox">
+                    <input class="form-check-input" type="checkbox" value="@field.Id" />
+                </td>
                 <td>@field.Name</td>
+                <td>@field.Description</td>
                 <td>@field.Type</td>
             </tr>
         }
@@ -33,9 +55,51 @@
 <a href="/Inventory/AddField/@Model.Id" class="btn btn-primary">
     Add Field
 </a>
-<a href="/CustomId/Edit?inventoryId=@Model.Id" class="btn btn-warning">
-    Custom ID
-</a>
-<a href="/Item/Index?inventoryId=@Model.Id" class="btn btn-success">
-    Open Items
-</a>
+<a class="btn btn-danger" id="btnDelete">Delete</a>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+    const container = document.getElementById("elements");
+
+    new Sortable(container, {
+        animation: 150,
+        handle: ".drag-handle"
+    });
+
+    document.getElementById('btn-check-outlined').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.form-check-input');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+
+    function getSelectedUserIds() {
+        return Array.from(document.querySelectorAll(".form-check-input:checked"))
+            .map(cb => Number(cb.value));
+    }
+
+    document.getElementById("btnDelete").addEventListener("click", async () => {
+        const ids = getSelectedUserIds();
+
+        const response = await fetch('/Inventory/DeleteFields', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ids)
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            const text = await response.text();
+            alert(text);
+            location.reload();
+        }
+    });
+
+    document.querySelectorAll(".row-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+    });
+</script>

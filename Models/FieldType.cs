@@ -4,6 +4,7 @@
      {
          String,
          Text,
+         Link,
          Number,
          Bool
      }

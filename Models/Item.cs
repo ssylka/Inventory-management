@@ -18,6 +18,9 @@ namespace Inventory_Managment.Models
         public string? Text1 { get; set; }
         public string? Text2 { get; set; }
         public string? Text3 { get; set; }
+        public string? Link1 { get; set; }
+        public string? Link2 { get; set; }
+        public string? Link3 { get; set; }
 
         public int? Number1 { get; set; }
         public int? Number2 { get; set; }

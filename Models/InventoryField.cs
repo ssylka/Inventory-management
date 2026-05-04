@@ -11,6 +11,7 @@ namespace Inventory_Managment.Models
 
         [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; }
+        public string? Description { get; set; }
 
         [Required(ErrorMessage = "Type is required.")]
         public FieldType Type { get; set; }

@@ -44,22 +44,7 @@ namespace Inventory_Managment.Controllers
 
             return RedirectToAction("Index");
         }
-        [HttpPost]
-        //[ServiceFilter]
-        public async Task<IActionResult> Delete([FromBody] List<int> ids) // НЕ ЗАУБДЬ ПРО оптимитсик лок!
-        {
-            var items = await _context.Inventories
-                .Where(i => ids.Contains(i.Id))
-                .ToListAsync();
 
-            if (items.Count != ids.Count)
-                return Conflict("Some inventories no longer exist.\nPlease try again.");
-
-            _context.Inventories.RemoveRange(items);
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
         //[ServiceFilter]
         public async Task<IActionResult> Fields(int id)
         {
@@ -73,7 +58,7 @@ namespace Inventory_Managment.Controllers
         public IActionResult AddField(int id)
         {
             ViewBag.InventoryId = id;
-            return View();
+            return View(new InventoryField { InventoryId = id, ShowInTable = true });
         }
         //[ServiceFilter]
 
@@ -102,6 +87,67 @@ namespace Inventory_Managment.Controllers
 
             return RedirectToAction("Fields", new { id = field.InventoryId });
         }
-        
+        public async Task<IActionResult> Edit(int id)
+        {
+            var inventory = await _context.Inventories
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (inventory == null)
+                return NotFound();
+
+            return View(inventory);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(Inventory inventory)
+        {
+            if (!ModelState.IsValid)
+                return View(inventory);
+
+            var existing = await _context.Inventories
+                .FirstOrDefaultAsync(i => i.Id == inventory.Id);
+
+            if (existing == null)
+                return NotFound();
+
+            existing.Title = inventory.Title;
+            existing.Description = inventory.Description;
+            existing.IsPublic = inventory.IsPublic;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        //[ServiceFilter]
+        public async Task<IActionResult> Delete([FromBody] List<int> ids)
+        {
+            var inventories = await _context.Inventories
+                .Where(i => ids.Contains(i.Id))
+                .ToListAsync();
+
+            if (inventories.Count != ids.Count)
+                return Conflict("Some inventories no longer exist.\nPlease try again.");
+
+            _context.Inventories.RemoveRange(inventories);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        [HttpPost]
+        //[ServiceFilter]
+        public async Task<IActionResult> DeleteFields([FromBody] List<int> ids) 
+        {
+            var inventoryFields = await _context.InventoryFields
+                .Where(i => ids.Contains(i.Id))
+                .ToListAsync();
+
+            if (inventoryFields.Count != ids.Count)
+                return Conflict("Some inventory's fields no longer exist.\nPlease try again.");
+
+            _context.InventoryFields.RemoveRange(inventoryFields);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }

@@ -402,7 +402,7 @@
     });
 
     function updateOrder() {
-        [...container.children].forEach((el, i) => {
+        Array.from(container.children).forEach((el, i) => {
             el.querySelector(".order").value = i;
         });
         updatePreview();

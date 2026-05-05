@@ -45,7 +45,7 @@ namespace Inventory_Managment.Controllers
             _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Fields", new { id = inventory.Id });
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -87,7 +87,7 @@ namespace Inventory_Managment.Controllers
                 TempData["Error"] = ex.Message;
                 return View(inventory);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Fields", new { id = inventory.Id });
         }
         [HttpGet]
         public async Task<IActionResult> GetTags(string term)
@@ -214,7 +214,7 @@ namespace Inventory_Managment.Controllers
                 TempData["Error"] = ex.Message;
                 return View(model);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Fields", new { id = model.InventoryId });
         }
         [HttpPost]
         //[ServiceFilter]

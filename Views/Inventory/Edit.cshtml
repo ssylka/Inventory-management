@@ -134,7 +134,7 @@
         removeSuggestions();
 
         const list = document.createElement("ul");
-        list.className = "list-group position-absolute w-100 shadow";
+        list.className = "tag-suggestions list-group position-absolute w-100 shadow";
 
         list.style.top = "100%";
         list.style.left = "0";
@@ -157,7 +157,7 @@
     }
 
     function removeSuggestions() {
-        document.querySelectorAll(".list-group").forEach(x => x.remove());
+        document.querySelectorAll(".tag-suggestions").forEach(x => x.remove());
     }
 
     document.addEventListener("click", (e) => {

@@ -1,4 +1,6 @@
 ﻿using Inventory_Managment.Models;
+using Inventory_Managment.Models.Directory;
+using Inventory_Managment.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Services
@@ -37,6 +39,55 @@ namespace Inventory_Managment.Services
 
             return _context.InventoryAccess
                 .Any(a => a.InventoryId == inv.Id && a.UserId == userId);
+        }
+        public async Task UpdateTagsForInventoryAsync(Inventory inventory)
+        {
+            // diff update
+            var existing = await _context.InventoryTags
+                .Include(x => x.Tag)
+                .Where(x => x.InventoryId == inventory.Id && x.Tag != null)
+                .ToListAsync();
+
+            var existingNames = existing
+                .Select(x => x.Tag.Name)
+                .ToHashSet();
+
+            var newNames = inventory.TagNames
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .ToHashSet();
+
+            var toRemove = existing
+                .Where(x => !newNames.Contains(x.Tag.Name))
+                .ToList();
+
+            _context.InventoryTags.RemoveRange(toRemove);
+
+            var toAdd = newNames
+                .Where(n => !existingNames.Contains(n) 
+                            && !string.IsNullOrWhiteSpace(n))
+                .Select(t => t.Trim())
+                .Distinct()
+                .ToList();
+
+            foreach (var tagName in toAdd)
+            {
+                var tag = await _context.Tags
+                    .FirstOrDefaultAsync(t => t.Name == tagName);
+
+                if (tag == null)
+                {
+                    tag = new Tag { Name = tagName };
+                    _context.Tags.Add(tag);
+                }
+
+                _context.InventoryTags.Add(new InventoryTag
+                {
+                    InventoryId = inventory.Id,
+                    Tag = tag
+                });
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

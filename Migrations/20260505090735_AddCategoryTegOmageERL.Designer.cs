@@ -3,6 +3,7 @@ using System;
 using Inventory_Managment.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory_Managment.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260505090735_AddCategoryTegOmageERL")]
+    partial class AddCategoryTegOmageERL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,7 +134,7 @@ namespace Inventory_Managment.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
 
                     b.HasData(
                         new
@@ -270,21 +273,6 @@ namespace Inventory_Managment.Migrations
                     b.ToTable("InventoryFields");
                 });
 
-            modelBuilder.Entity("Inventory_Managment.Models.InventoryTag", b =>
-                {
-                    b.Property<int>("InventoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("InventoryId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("InventoryTags");
-                });
-
             modelBuilder.Entity("Inventory_Managment.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -364,23 +352,6 @@ namespace Inventory_Managment.Migrations
                         .IsUnique();
 
                     b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("Inventory_Managment.Models.Tag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -548,25 +519,6 @@ namespace Inventory_Managment.Migrations
                     b.Navigation("Inventory");
                 });
 
-            modelBuilder.Entity("Inventory_Managment.Models.InventoryTag", b =>
-                {
-                    b.HasOne("Inventory_Managment.Models.Inventory", "Inventory")
-                        .WithMany()
-                        .HasForeignKey("InventoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Inventory_Managment.Models.Tag", "Tag")
-                        .WithMany("InventoryTags")
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Inventory");
-
-                    b.Navigation("Tag");
-                });
-
             modelBuilder.Entity("Inventory_Managment.Models.Item", b =>
                 {
                     b.HasOne("Inventory_Managment.Models.Inventory", "Inventory")
@@ -634,11 +586,6 @@ namespace Inventory_Managment.Migrations
                     b.Navigation("Fields");
 
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("Inventory_Managment.Models.Tag", b =>
-                {
-                    b.Navigation("InventoryTags");
                 });
 #pragma warning restore 612, 618
         }

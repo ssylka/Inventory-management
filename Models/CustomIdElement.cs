@@ -1,4 +1,6 @@
-﻿namespace Inventory_Managment.Models
+﻿using Inventory_Managment.Models.Directory;
+
+namespace Inventory_Managment.Models
 {
     public class CustomIdElement
     {

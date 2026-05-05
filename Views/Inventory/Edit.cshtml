@@ -47,9 +47,122 @@
 
     <div class="mb-3">
         <label>Is public?</label>
-        <input class="form-control form-check-input ms-4" type="checkbox" asp-for="IsPublic"></input>
+        <input class="form-control form-check-input ms-4" type="checkbox" asp-for="IsPublic"/>
         <span asp-validation-for="IsPublic" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Category?</label>
+        <select asp-for="CategoryId" class="form-select">
+            @foreach (var c in ViewBag.Categories)
+            {
+                <option value="@c.Id">@c.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Tags</label>
+        <div id="tags-container">
+            @for (int i = 0; i < Model.TagNames.Count; i++)
+            {
+                <div class="tag-item position-relative d-flex mb-1">
+                    <input name="TagNames[@i]" value="@Model.TagNames[i]" class="form-control me-2" />
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>
+                </div>
+            }
+        </div>
+
+        <button type="button" onclick="addTag()" class="btn btn-outline-secondary btn-sm">+ Add tag</button>
+
+    </div>
+
+    <div class="mb-3">
+        <label>Image URL</label>
+        <input type="text" asp-for="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
     </div>
 
     <button class="btn btn-success">Save</button>
 </form>
+
+<script>
+    function addTag() {
+        const container = document.getElementById("tags-container");
+        const index = container.children.length;
+
+        const div = document.createElement("div");
+        div.className = "tag-item d-flex mb-1";
+
+        div.innerHTML = `
+            <input name="TagNames[${index}]" class="form-control me-2" />
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>
+        `;
+
+        container.appendChild(div);
+    }
+
+    function removeTag(button) {
+        button.parentElement.remove();
+        reindexTags();
+    }
+
+    function reindexTags() {
+        const inputs = document.querySelectorAll("#tags-container input");
+
+        inputs.forEach((input, i) => {
+            input.name = `TagNames[${i}]`;
+        });
+    }
+
+    document.addEventListener("input", async (e) => {
+        if (!e.target.matches("#tags-container input")) return;
+
+        const input = e.target;
+        const value = input.value;
+
+        if (!value) return;
+
+        const res = await fetch(`/Inventory/GetTags?term=${value}`);
+        const data = await res.json();
+
+        showSuggestions(input, data);
+    });
+
+    function showSuggestions(input, tags) {
+        removeSuggestions();
+
+        const list = document.createElement("ul");
+        list.className = "list-group position-absolute w-100 shadow";
+
+        list.style.top = "100%";
+        list.style.left = "0";
+        list.style.zIndex = 1000;
+
+        tags.forEach(tag => {
+            const li = document.createElement("li");
+            li.className = "list-group-item list-group-item-action";
+            li.textContent = tag;
+
+            li.onclick = () => {
+                input.value = tag;
+                list.remove();
+            };
+
+            list.appendChild(li);
+        });
+
+        input.parentElement.appendChild(list);
+    }
+
+    function removeSuggestions() {
+        document.querySelectorAll(".list-group").forEach(x => x.remove());
+    }
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".tag-item")) {
+            removeSuggestions();
+        }
+    });
+</script>

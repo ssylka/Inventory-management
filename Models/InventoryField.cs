@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using Inventory_Managment.Models.Directory;
 using System.ComponentModel.DataAnnotations;
 
 namespace Inventory_Managment.Models
@@ -14,7 +14,7 @@ namespace Inventory_Managment.Models
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Type is required.")]
-        public FieldType Type { get; set; }
+        public Directory.FieldType Type { get; set; }
 
         public string? Slot { get; set; }
 

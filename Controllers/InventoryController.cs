@@ -1,5 +1,6 @@
 ﻿using Inventory_Managment.Attributes;
 using Inventory_Managment.Models;
+using Inventory_Managment.Models.Directory;
 using Inventory_Managment.Models.Dto;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -49,12 +50,16 @@ namespace Inventory_Managment.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var inventory = await _context.Inventories
-                .Include(i => i.Fields)
-                .FirstOrDefaultAsync(i => i.Id == id);
+            ViewBag.Categories = await _context.Set<Category>().ToListAsync();
 
-            if (inventory == null)
-                return NotFound();
+            var inventory = await _context.Inventories
+               .Include(i => i.InventoryTags)
+               .ThenInclude(it => it.Tag)
+               .FirstOrDefaultAsync(i => i.Id == id);
+
+            inventory.TagNames = inventory.InventoryTags
+                .Select(it => it.Tag.Name)
+                .ToList();
 
             return View(inventory);
         }
@@ -62,17 +67,19 @@ namespace Inventory_Managment.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Inventory inventory)
         {
+            ViewBag.Categories = await _context.Set<Category>().ToListAsync();
+
             if (!ModelState.IsValid)
                 return View(inventory);
             try
             {
                 _context.Inventories.Update(inventory);
+                await _inventoryService.UpdateTagsForInventoryAsync(inventory);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 TempData["Error"] = "This item has been or is being modified by another user. Please return to the inventory's field list.";
-
                 return View(inventory);
             }
             catch (Exception ex)
@@ -81,33 +88,17 @@ namespace Inventory_Managment.Controllers
                 return View(inventory);
             }
             return RedirectToAction("Index");
-            //var existing = await _context.Inventories
-            //    .Include(i => i.Fields)
-            //    .FirstOrDefaultAsync(i => i.Id == inventory.Id);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetTags(string term)
+        {
+            var tags = await _context.Tags
+                .Where(t => t.Name.StartsWith(term))
+                .Select(t => t.Name)
+                .Take(10)
+                .ToListAsync();
 
-            //if (existing == null)
-            //    return NotFound();
-            //_context.Entry(existing).OriginalValues["xmin"] = inventory.xmin;
-            //try
-            //{
-            //    _context.Entry(existing).CurrentValues.SetValues(inventory);
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    var fresh = await _context.Inventories
-            //        .AsNoTracking()
-            //        .Include(i => i.Fields)
-            //        .FirstOrDefaultAsync(i => i.Id == inventory.Id);
-
-            //    ModelState.Clear();
-
-            //    TempData["Error"] = "This inventory has been or is being modified by another user. Please return to the item list.";
-            //    return View(fresh);
-            //    //return BadRequest("The inventory has been modified by another user. Please reload the page and try again.");
-            //}
-
-            //return RedirectToAction("Index");
+            return Ok(tags);
         }
 
         //[ServiceFilter]

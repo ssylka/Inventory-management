@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Inventory_Managment.Models.Directory;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inventory_Managment.Models
 {
@@ -18,5 +20,11 @@ namespace Inventory_Managment.Models
         public bool IsPublic { get; set; } = false;
         public int LastSequence { get; set; }
         public uint xmin { get; set; } // optimistic locking
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
+        public string? ImageUrl { get; set; }
+        public List<InventoryTag> InventoryTags { get; set; } = new();
+        [NotMapped]
+        public List<string> TagNames { get; set; } = new();
     }
 }

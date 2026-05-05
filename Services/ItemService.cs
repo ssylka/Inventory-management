@@ -1,4 +1,5 @@
 ﻿using Inventory_Managment.Models;
+using Inventory_Managment.Models.Directory;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Services

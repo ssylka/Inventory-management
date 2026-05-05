@@ -1,4 +1,4 @@
-﻿namespace Inventory_Managment.Models
+﻿namespace Inventory_Managment.Models.Directory
 {
     public enum CustomIdElementType
     {

@@ -28,14 +28,16 @@ namespace Inventory_Managment.Controllers
             return View(inventories);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Categories = await _context.Set<Category>().ToListAsync();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Inventory inventory)
         {
+            ViewBag.Categories = await _context.Set<Category>().ToListAsync();
             ModelState.Remove(nameof(Inventory.CreatorId));//  ВРЕМЕНННО. УБРАТЬ ПРИ СОЗДАНИИ АВТОРИЗАЦИИ !!!!!!!!!!!!!
             inventory.CreatorId = _userManager.GetUserId(User);
 
@@ -90,10 +92,12 @@ namespace Inventory_Managment.Controllers
             return RedirectToAction("Fields", new { id = inventory.Id });
         }
         [HttpGet]
-        public async Task<IActionResult> GetTags(string term)
+        public async Task<IActionResult> GetTags(string term, string? ids)
         {
+            List<string> existingTags = ids?.Split(',').ToList() ?? new List<string>();
             var tags = await _context.Tags
                 .Where(t => t.Name.StartsWith(term))
+                .Where(t => !existingTags.Contains(t.Id.ToString()))
                 .Select(t => t.Name)
                 .Take(10)
                 .ToListAsync();

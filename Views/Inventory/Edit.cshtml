@@ -68,7 +68,7 @@
             @for (int i = 0; i < Model.TagNames.Count; i++)
             {
                 <div class="tag-item position-relative d-flex mb-1">
-                    <input name="TagNames[@i]" value="@Model.TagNames[i]" class="form-control me-2" />
+                    <input id="@Model.InventoryTags[@i].TagId" name="TagNames[@i]" value="@Model.TagNames[i]" class="form-control me-2" />
                     <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>
                 </div>
             }
@@ -93,7 +93,7 @@
         const index = container.children.length;
 
         const div = document.createElement("div");
-        div.className = "tag-item d-flex mb-1";
+        div.className = "tag-item position-relative d-flex mb-1";
 
         div.innerHTML = `
             <input name="TagNames[${index}]" class="form-control me-2" />
@@ -121,10 +121,11 @@
 
         const input = e.target;
         const value = input.value;
+		const ids = Array.from(document.querySelectorAll("#tags-container input")).map(x => x.id);
 
         if (!value) return;
 
-        const res = await fetch(`/Inventory/GetTags?term=${value}`);
+        const res = await fetch(`/Inventory/GetTags?term=${value}&ids=${ids.join(",")}`);
         const data = await res.json();
 
         showSuggestions(input, data);

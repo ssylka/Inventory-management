@@ -84,7 +84,7 @@ namespace Inventory_Managment.Controllers
                 return View(item);
             }
 
-            return RedirectToAction("Index", new { inventoryId = item.InventoryId });
+            return Redirect($"/Inventory/Details/{item.InventoryId}#items");
         }
         public async Task<IActionResult> Edit(int id)
         {
@@ -139,7 +139,7 @@ namespace Inventory_Managment.Controllers
                 TempData["Error"] = ex.Message;
                 return View(item);
             }
-            return RedirectToAction("Index", new { inventoryId = item.InventoryId });
+            return Redirect($"/Inventory/Details/{item.InventoryId}#items");
         }
         [HttpPost]
         public async Task<IActionResult> Delete([FromBody] List<int> ids)

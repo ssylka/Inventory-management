@@ -1,0 +1,554 @@
+@using Inventory_Managment.Models.Directory
+@model Inventory_Managment.Models.Dto.InventoryDetailsViewModel
+
+@{
+    var inv = Model.Inventory;
+    var fields = inv.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order).ToList();
+    var allFields = inv.Fields.OrderBy(f => f.Order).ToList();
+}
+
+<div class="d-flex align-items-center mb-3">
+    <button type="button" class="btn btn-light me-3">
+        <a asp-controller="Inventory" asp-action="Index" style="text-decoration:none;color:black">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace" viewBox="0 0 16 16">
+                <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z"/>
+                <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
+            </svg>
+        </a>
+    </button>
+    <h2 class="mb-0">@inv.Title</h2>
+    <span id="save-status" class="ms-3"><span class="badge bg-success">Saved</span></span>
+</div>
+
+<ul class="nav nav-tabs mb-3" id="inventoryTabs">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-items">Items</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-fields">Fields</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-settings">Settings</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-custom-id">Custom ID</button>
+    </li>
+</ul>
+
+<div class="tab-content">
+
+    <div class="tab-pane fade show active" id="tab-items">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" class="btn-check" id="items-select-all">
+                        <label class="btn btn-outline-secondary btn-sm" for="items-select-all">All</label>
+                    </th>
+                    @foreach (var f in fields)
+                    {
+                        <th data-bs-toggle="tooltip" title="@f.Description">@f.Name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="@(fields.Count + 4)" class="text-center text-muted">No items yet</td></tr>
+                }
+                else
+                {
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr onclick="window.location='/Item/Edit/@item.Id'" style="cursor:pointer;">
+                            <td class="item-checkbox-cell">
+                                <input class="form-check-input item-checkbox" type="checkbox" value="@item.Id" />
+                            </td>
+                            @foreach (var f in fields)
+                            {
+                                var prop = item.GetType().GetProperty(f.Slot);
+                                var val = prop?.GetValue(item);
+                                if (prop?.PropertyType == typeof(bool?))
+                                {
+                                    <td><input class="form-check-input" type="checkbox" @(val?.Equals(true) == true ? "checked" : "") disabled /></td>
+                                }
+                                else
+                                {
+                                    <td>@(val ?? "-")</td>
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <a href="/Item/Create?inventoryId=@inv.Id" class="btn btn-primary mb-3">Add Item</a>
+        <button class="btn btn-danger mb-3" id="items-delete-btn">Delete</button>
+    </div>
+
+    <div class="tab-pane fade" id="tab-fields">
+        <table class="table mt-2">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <input type="checkbox" class="btn-check" id="fields-select-all">
+                        <label class="btn btn-outline-secondary btn-sm" for="fields-select-all">All</label>
+                    </th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>In table</th>
+                </tr>
+            </thead>
+            <tbody id="elements">
+                @for (int i = 0; i < allFields.Count; i++)
+                {
+                    <tr data-id="@allFields[i].Id"
+                        onclick="window.location='/Inventory/EditField/@allFields[i].Id'"
+                        style="cursor:pointer;">
+                        <td><span class="drag-handle text-muted">↕</span></td>
+                        <td class="field-checkbox-cell">
+                            <input class="form-check-input field-checkbox" type="checkbox" value="@allFields[i].Id" />
+                        </td>
+                        <td>@allFields[i].Name</td>
+                        <td>@allFields[i].Description</td>
+                        <td>@allFields[i].Type</td>
+                        <td>@(allFields[i].ShowInTable ? "✓" : "")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a href="/Inventory/AddField/@inv.Id" class="btn btn-primary">Add Field</a>
+        <button class="btn btn-danger" id="fields-delete-btn">Delete</button>
+    </div>
+
+    <div class="tab-pane fade" id="tab-settings">
+        <div id="settings-conflict-alert" class="alert alert-danger d-none mt-2"></div>
+
+        <input type="hidden" id="settings-id" value="@inv.Id" />
+        <input type="hidden" id="settings-xmin" value="@inv.xmin" />
+        <input type="hidden" id="settings-creator" value="@inv.CreatorId" />
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input id="settings-title" class="form-control" value="@inv.Title" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea id="settings-description" class="form-control" rows="4">@inv.Description</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select id="settings-category" class="form-select">
+                @foreach (var cat in Model.Categories)
+                {
+                    <option value="@cat.Id" selected="@(inv.CategoryId == cat.Id ? "selected" : null)">@cat.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input id="settings-public" class="form-check-input" type="checkbox" @(inv.IsPublic ? "checked" : "") />
+            <label class="form-check-label" for="settings-public">Public (all authenticated users can edit)</label>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input id="settings-imageurl" class="form-control" value="@inv.ImageUrl" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tags</label>
+            <div id="tags-container">
+                @for (int i = 0; i < inv.TagNames.Count; i++)
+                {
+                    <div class="tag-item position-relative d-flex mb-1">
+                        <input id="@inv.InventoryTags[i].TagId"
+                               name="TagNames[@i]"
+                               value="@inv.TagNames[i]"
+                               class="form-control me-2 tag-input" />
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>
+                    </div>
+                }
+            </div>
+            <button type="button" onclick="addTag()" class="btn btn-outline-secondary btn-sm mt-1">+ Add tag</button>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab-custom-id">
+        <div class="alert alert-info">
+            <strong>Preview:</strong> <span id="preview">---</span>
+        </div>
+
+        <div id="cid-elements" class="list-group">
+                @for (int i = 0; i < Model.CustomIdElements.Count; i++)
+                {
+                    var el = Model.CustomIdElements[i];
+                    <div class="list-group-item element d-flex flex-column gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="drag-handle text-muted">↕</span>
+                            <select name="[@i].Type" class="form-select type" style="max-width:220px;">
+                                @foreach (var t in Enum.GetValues(typeof(CustomIdElementType)))
+                                {
+                                    <option value="@t" selected ="@(el.Type == (CustomIdElementType)t ? "selected" : null)">@t</option>
+                                }
+                            </select>
+                            <div class="flex-grow-1 d-flex gap-2 align-items-center">
+                                <input name="[@i].Value" value="@el.Value" class="form-control value" placeholder="Format (D3, yyyy, MM...)" />
+                                <button type="button" class="btn btn-outline-secondary btn-sm help-btn"
+                                        data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-html="true">?</button>
+                                <input type="hidden" name="[@i].Order" value="@i" class="order" />
+                                <button type="button" class="btn btn-outline-danger btn-sm remove">✕</button>
+                            </div>
+                        </div>
+                        <div class="form-text help-text"></div>
+                    </div>
+                }
+            </div>
+
+        <button type="button" id="cid-add" class="btn btn-secondary mt-3">Add element</button>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+let hasChanges = false;
+let currentXmin = @inv.xmin;
+let currentFieldOrders = [];
+
+function setStatus(text, cls) {
+    document.getElementById("save-status").innerHTML = `<span class="badge ${cls}">${text}</span>`;
+}
+
+function markChanged() {
+    hasChanges = true;
+    setStatus("Unsaved", "bg-warning");
+}
+
+async function doSave() {
+    if (!hasChanges) return;
+    setStatus("Saving…", "bg-secondary");
+
+    const tagNames = Array.from(document.querySelectorAll('#tags-container .tag-input'))
+        .map(i => i.value.trim()).filter(v => v);
+
+    const cidElements = Array.from(document.querySelectorAll('#cid-elements .element')).map((el, i) => ({
+        Type: el.querySelector('.type').value,
+        Value: el.querySelector('.value').value || null,
+        Order: i
+    }));
+
+    const dto = {
+        Id: Number(document.getElementById('settings-id').value),
+        xmin: currentXmin,
+        Title: document.getElementById('settings-title').value,
+        Description: document.getElementById('settings-description').value,
+        CategoryId: Number(document.getElementById('settings-category').value),
+        IsPublic: document.getElementById('settings-public').checked,
+        ImageUrl: document.getElementById('settings-imageurl').value || null,
+        TagNames: tagNames,
+        CustomIdElements: cidElements,
+        FieldOrders: currentFieldOrders
+    };
+
+    try {
+        const res = await fetch('/Inventory/AutoSave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+        });
+        if (res.ok) {
+            const data = await res.json();
+            currentXmin = data.xmin;
+            hasChanges = false;
+            setStatus("Saved", "bg-success");
+            const alert = document.getElementById('settings-conflict-alert');
+            if (alert) alert.classList.add('d-none');
+        } else if (res.status === 409) {
+            const conflictAlert = document.getElementById('settings-conflict-alert');
+            if (conflictAlert) { conflictAlert.textContent = await res.text(); conflictAlert.classList.remove('d-none'); }
+            setStatus("Conflict", "bg-danger");
+        } else {
+            setStatus("Error", "bg-danger");
+        }
+    } catch {
+        setStatus("Error", "bg-danger");
+    }
+}
+
+// ── Tags management (global for onclick= attributes) ──────────────────────
+function addTag() {
+    const container = document.getElementById("tags-container");
+    const index = container.children.length;
+    const div = document.createElement("div");
+    div.className = "tag-item position-relative d-flex mb-1";
+    div.innerHTML = `
+        <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
+        <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
+    container.appendChild(div);
+    markChanged();
+}
+
+function removeTag(button) {
+    button.parentElement.remove();
+    reindexTags();
+    markChanged();
+}
+
+function reindexTags() {
+    document.querySelectorAll("#tags-container input").forEach((input, i) => {
+        input.name = `TagNames[${i}]`;
+    });
+}
+
+// ── DOM-ready ─────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Tooltips
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+
+    // Items tab
+    document.getElementById("items-select-all").addEventListener("change", function () {
+        document.querySelectorAll(".item-checkbox").forEach(cb => cb.checked = this.checked);
+    });
+    document.querySelectorAll(".item-checkbox-cell").forEach(cell => {
+        cell.addEventListener("click", e => e.stopPropagation());
+    });
+    document.getElementById("items-delete-btn").addEventListener("click", async () => {
+        const ids = Array.from(document.querySelectorAll(".item-checkbox:checked")).map(cb => Number(cb.value));
+        const res = await fetch('/Item/Delete', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ids)
+        });
+        if (res.ok) location.reload();
+        else { alert(await res.text()); location.reload(); }
+    });
+
+    // Fields tab
+    document.getElementById("fields-select-all").addEventListener("change", function () {
+        document.querySelectorAll(".field-checkbox").forEach(cb => cb.checked = this.checked);
+    });
+    document.querySelectorAll(".field-checkbox-cell").forEach(cell => {
+        cell.addEventListener("click", e => e.stopPropagation());
+    });
+    document.getElementById("fields-delete-btn").addEventListener("click", async () => {
+        const ids = Array.from(document.querySelectorAll(".field-checkbox:checked")).map(cb => Number(cb.value));
+        const res = await fetch('/Inventory/DeleteFields', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ids)
+        });
+        if (res.ok) location.reload();
+        else { alert(await res.text()); location.reload(); }
+    });
+    document.querySelectorAll(".drag-handle").forEach(h => h.addEventListener("click", e => e.stopPropagation()));
+
+    // Fields SortableJS — tracks order for auto-save
+    currentFieldOrders = [...document.querySelectorAll('#elements tr[data-id]')]
+        .map((row, i) => ({ Id: Number(row.dataset.id), Order: i }));
+
+    new Sortable(document.getElementById("elements"), {
+        animation: 150,
+        handle: ".drag-handle",
+        onEnd: () => {
+            currentFieldOrders = [...document.querySelectorAll('#elements tr[data-id]')]
+                .map((row, i) => ({ Id: Number(row.dataset.id), Order: i }));
+            markChanged();
+        }
+    });
+
+    // Settings change listeners
+    document.querySelectorAll('#tab-settings input, #tab-settings textarea, #tab-settings select').forEach(el => {
+        el.addEventListener('input', markChanged);
+        el.addEventListener('change', markChanged);
+    });
+
+    // Tags autocomplete
+    document.addEventListener("input", async (e) => {
+        if (!e.target.matches("#tags-container .tag-input")) return;
+        const input = e.target;
+        const value = input.value;
+        if (!value) return;
+        const ids = Array.from(document.querySelectorAll("#tags-container .tag-input")).map(x => x.id).filter(x => x);
+        const res = await fetch(`/Inventory/GetTags?term=${value}&ids=${ids.join(",")}`);
+        showTagSuggestions(input, await res.json());
+    });
+
+    function showTagSuggestions(input, tags) {
+        removeTagSuggestions();
+        if (!tags.length) return;
+        const list = document.createElement("ul");
+        list.className = "tag-suggestions list-group position-absolute w-100 shadow";
+        list.style.cssText = "top:100%;left:0;z-index:1000";
+        tags.forEach(tag => {
+            const li = document.createElement("li");
+            li.className = "list-group-item list-group-item-action";
+            li.textContent = tag;
+            li.onclick = () => { input.value = tag; list.remove(); markChanged(); };
+            list.appendChild(li);
+        });
+        input.parentElement.appendChild(list);
+    }
+
+    function removeTagSuggestions() {
+        document.querySelectorAll(".tag-suggestions").forEach(x => x.remove());
+    }
+
+    document.addEventListener("click", e => { if (!e.target.closest(".tag-item")) removeTagSuggestions(); });
+
+    // Custom ID tab
+    const cidContainer = document.getElementById("cid-elements");
+
+    function applyNumberFormat(num, format) {
+        if (!format) return num.toString();
+        const dMatch = format.match(/D(\d+)/i);
+        if (dMatch) return num.toString().padStart(parseInt(dMatch[1]), "0") + format.replace(dMatch[0], "");
+        if (format.toUpperCase().startsWith("X")) return num.toString(16).toUpperCase();
+        return num.toString() + format;
+    }
+
+    function applyDateFormat(date, format) {
+        if (!format) return date.getFullYear().toString();
+        return format
+            .replace("yyyy", date.getFullYear()).replace("yy", String(date.getFullYear()).slice(-2))
+            .replace("MM", String(date.getMonth() + 1).padStart(2, "0")).replace("dd", String(date.getDate()).padStart(2, "0"))
+            .replace("HH", String(date.getHours()).padStart(2, "0")).replace("mm", String(date.getMinutes()).padStart(2, "0"))
+            .replace("ss", String(date.getSeconds()).padStart(2, "0"));
+    }
+
+    function formatCidValue(type, val) {
+        try {
+            const now = new Date();
+            if (type === "Sequence") return applyNumberFormat(5, val);
+            if (type === "Random6") return applyNumberFormat(123456, val);
+            if (type === "Random9") return applyNumberFormat(123456789, val);
+            if (type === "Random20") return applyNumberFormat(523456, val);
+            if (type === "Random32") return applyNumberFormat(834729104, val);
+            if (type === "DateTime") return applyDateFormat(now, val);
+            if (type === "Guid") {
+                const g = "550e8400-e29b-41d4-a716-446655440000";
+                if (!val || val === "D") return g;
+                if (val === "N") return g.replace(/-/g, "");
+                if (val === "B") return `{${g}}`;
+                if (val === "P") return `(${g})`;
+                return g;
+            }
+            if (type === "Fixed") return val || "TXT";
+            return "X";
+        } catch { return "ERR"; }
+    }
+
+    function updateCidPreview() {
+        let result = "";
+        document.querySelectorAll("#cid-elements .element").forEach(el => {
+            result += formatCidValue(el.querySelector(".type").value, el.querySelector(".value").value);
+        });
+        document.getElementById("preview").innerText = result || "---";
+    }
+
+    function getCidHelp(type) {
+        const helps = {
+            Fixed:    { text: "Static text.",                   popover: "<b>Fixed text</b><br>Any constant value.<br><code>BOOK-</code>, <code>ID_</code>" },
+            Sequence: { text: "Auto-increment number.",          popover: "<b>Sequence</b><br><code>D</code> → 1, <code>D3</code> → 001, <code>D6</code> → 000001" },
+            DateTime: { text: "Date/time format.",               popover: "<b>Date/time</b><br><code>yyyy</code> → 2026, <code>MM</code> → 05, <code>dd</code> → 01" },
+            Random6:  { text: "6-digit random.",                 popover: "<b>Random 6 digits</b><br>Example: <code>483920</code>" },
+            Random9:  { text: "9-digit random.",                 popover: "<b>Random 9 digits</b><br>Example: <code>384729104</code>" },
+            Random20: { text: "20-bit random (0–1,048,575).",    popover: "<b>20-bit random</b><br>Example: <code>582391</code>" },
+            Random32: { text: "32-bit random.",                  popover: "<b>32-bit random</b><br>Example: <code>834729104</code>" },
+            Guid:     { text: "GUID.",                           popover: "<b>GUID</b><br>Formats: <code>N</code>, <code>D</code>, <code>B</code>, <code>P</code>" }
+        };
+        return helps[type] || { text: "", popover: "" };
+    }
+
+    function initCidElement(el) {
+        const type = el.querySelector(".type").value;
+        const help = getCidHelp(type);
+        const helpText = el.querySelector(".help-text");
+        const btn = el.querySelector(".help-btn");
+        if (helpText) helpText.innerText = help.text;
+        if (btn) {
+            btn.setAttribute("data-bs-content", help.popover);
+            bootstrap.Popover.getInstance(btn)?.dispose();
+            new bootstrap.Popover(btn);
+        }
+        if (el.dataset.init) return;
+        el.dataset.init = true;
+        el.querySelector(".type").addEventListener("change", () => { initCidElement(el); updateCidPreview(); markChanged(); });
+        el.querySelector(".value").addEventListener("input", () => { updateCidPreview(); markChanged(); });
+    }
+
+    document.querySelectorAll("#cid-elements .element").forEach(initCidElement);
+
+    new MutationObserver(mutations => {
+        mutations.forEach(m => m.addedNodes.forEach(n => { if (n.classList?.contains("element")) initCidElement(n); }));
+    }).observe(cidContainer, { childList: true });
+
+    new Sortable(cidContainer, {
+        animation: 150,
+        handle: ".drag-handle",
+        onStart: () => document.querySelectorAll(".help-btn").forEach(btn => bootstrap.Popover.getInstance(btn)?.dispose()),
+        onEnd: () => { updateCidOrder(); document.querySelectorAll("#cid-elements .element").forEach(initCidElement); markChanged(); }
+    });
+
+    document.getElementById("cid-add").onclick = () => {
+        const i = cidContainer.children.length;
+        cidContainer.insertAdjacentHTML("beforeend", `
+        <div class="list-group-item element d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <span class="drag-handle text-muted">↕</span>
+                <select class="form-select type" style="max-width:220px;">
+                    <option value="Fixed">Fixed</option>
+                    <option value="Sequence">Sequence</option>
+                    <option value="DateTime">DateTime</option>
+                    <option value="Random6">Random6</option>
+                    <option value="Random9">Random9</option>
+                    <option value="Random20">Random20</option>
+                    <option value="Random32">Random32</option>
+                    <option value="Guid">Guid</option>
+                </select>
+                <div class="flex-grow-1 d-flex gap-2 align-items-center">
+                    <input class="form-control value" placeholder="Format" />
+                    <button type="button" class="btn btn-outline-secondary btn-sm help-btn"
+                            data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-html="true">?</button>
+                    <input type="hidden" class="order" value="${i}" />
+                    <button type="button" class="btn btn-outline-danger btn-sm remove">✕</button>
+                </div>
+            </div>
+            <div class="form-text help-text"></div>
+        </div>`);
+        markChanged();
+    };
+
+    cidContainer.addEventListener("click", e => {
+        if (e.target.classList.contains("remove")) {
+            e.target.closest(".element").remove();
+            updateCidOrder();
+            markChanged();
+        }
+    });
+
+    function updateCidOrder() {
+        Array.from(cidContainer.children).forEach((el, i) => {
+            el.querySelector(".order").value = i;
+        });
+        updateCidPreview();
+    }
+
+    updateCidPreview();
+
+    // Auto-save interval + unsaved guard
+    setInterval(doSave, 8000);
+    window.addEventListener("beforeunload", e => {
+        if (hasChanges) { e.preventDefault(); e.returnValue = ""; }
+    });
+});
+</script>

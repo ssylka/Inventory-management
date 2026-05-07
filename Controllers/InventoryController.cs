@@ -28,6 +28,102 @@ namespace Inventory_Managment.Controllers
             return View(inventories);
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var inventory = await _context.Inventories
+                .Include(i => i.Fields.OrderBy(f => f.Order))
+                .Include(i => i.InventoryTags).ThenInclude(it => it.Tag)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (inventory == null)
+                return NotFound();
+
+            inventory.TagNames = inventory.InventoryTags
+                .Select(it => it.Tag.Name)
+                .ToList();
+
+            var vm = new InventoryDetailsViewModel
+            {
+                Inventory = inventory,
+                Categories = await _context.Set<Category>().ToListAsync(),
+                Items = await _context.Items
+                    .Where(i => i.InventoryId == id)
+                    .OrderBy(i => i.CustomId)
+                    .ToListAsync(),
+                CustomIdElements = await _context.CustomIdElements
+                    .Where(e => e.InventoryId == id)
+                    .OrderBy(e => e.Order)
+                    .ToListAsync()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AutoSave([FromBody] InventoryEditDto dto)
+        {
+            var inventory = await _context.Inventories
+                .FirstOrDefaultAsync(i => i.Id == dto.Id);
+
+            if (inventory == null)
+                return NotFound();
+
+            _context.Entry(inventory).Property(x => x.xmin).OriginalValue = dto.xmin;
+
+            inventory.Title = dto.Title;
+            inventory.Description = dto.Description;
+            inventory.CategoryId = dto.CategoryId;
+            inventory.ImageUrl = dto.ImageUrl;
+            inventory.IsPublic = dto.IsPublic;
+            inventory.TagNames = dto.TagNames;
+
+            try
+            {
+                // 1. Настройки + теги (включает SaveChangesAsync с проверкой xmin)
+                await _inventoryService.UpdateTagsForInventoryAsync(inventory);
+
+                // 2. Custom ID — заменяем все элементы целиком
+                var oldElements = _context.CustomIdElements
+                    .Where(e => e.InventoryId == dto.Id);
+                _context.CustomIdElements.RemoveRange(oldElements);
+                _context.CustomIdElements.AddRange(dto.CustomIdElements.Select(e => new CustomIdElement
+                {
+                    InventoryId = dto.Id,
+                    Type = Enum.Parse<CustomIdElementType>(e.Type),
+                    Value = string.IsNullOrEmpty(e.Value) ? null : e.Value,
+                    Order = e.Order
+                }));
+                await _context.SaveChangesAsync();
+
+                // 3. Порядок полей
+                if (dto.FieldOrders.Count > 0)
+                {
+                    var fieldIds = dto.FieldOrders.Select(f => f.Id).ToList();
+                    var dbFields = await _context.InventoryFields
+                        .Where(f => fieldIds.Contains(f.Id))
+                        .ToListAsync();
+
+                    foreach (var fo in dto.FieldOrders)
+                    {
+                        var dbField = dbFields.FirstOrDefault(f => f.Id == fo.Id);
+                        if (dbField != null) dbField.Order = fo.Order;
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                await _context.Entry(inventory).ReloadAsync();
+                return Ok(new { xmin = inventory.xmin });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Conflict("Modified by another user. Reload the page.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await _context.Set<Category>().ToListAsync();
@@ -47,7 +143,7 @@ namespace Inventory_Managment.Controllers
             _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Fields", new { id = inventory.Id });
+            return Redirect($"/Inventory/Details/{inventory.Id}#fields");
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -92,7 +188,7 @@ namespace Inventory_Managment.Controllers
                 TempData["Error"] = ex.Message;
                 return View(inventory);
             }
-            return RedirectToAction("Fields", new { id = inventory.Id });
+            return Redirect($"/Inventory/Details/{inventory.Id}#settings");
         }
         [HttpGet]
         public async Task<IActionResult> GetTags(string term, string? ids)
@@ -150,7 +246,7 @@ namespace Inventory_Managment.Controllers
             _context.InventoryFields.Add(field);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Fields", new { id = field.InventoryId });
+            return Redirect($"/Inventory/Details/{field.InventoryId}#fields");
         }
         [HttpPost]
         //[InventoryEdit]
@@ -221,7 +317,7 @@ namespace Inventory_Managment.Controllers
                 TempData["Error"] = ex.Message;
                 return View(model);
             }
-            return RedirectToAction("Fields", new { id = model.InventoryId });
+            return Redirect($"/Inventory/Details/{model.InventoryId}#fields");
         }
         [HttpPost]
         //[ServiceFilter]

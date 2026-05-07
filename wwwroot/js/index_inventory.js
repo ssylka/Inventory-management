@@ -30,7 +30,7 @@ document.getElementById("btnDelete").addEventListener("click", async () => {
 document.querySelectorAll(".inventory-row").forEach(row => {
     row.addEventListener("click", function () {
         const id = this.dataset.id;
-        window.location.href = `/Inventory/Fields/${id}`;
+        window.location.href = `/Inventory/Details/${id}#tab-items`;
     });
 });
 

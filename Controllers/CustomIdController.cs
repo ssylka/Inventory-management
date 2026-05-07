@@ -42,7 +42,7 @@ namespace Inventory_Managment.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Fields", "Inventory", new { id = inventoryId });
+            return Redirect($"/Inventory/Details/{inventoryId}#custom-id");
         }
     }
 }

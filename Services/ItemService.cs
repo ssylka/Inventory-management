@@ -69,8 +69,6 @@ namespace Inventory_Managment.Services
 
             inventory.LastSequence++;
 
-            await _context.SaveChangesAsync();
-
             return inventory.LastSequence;
         }
     }

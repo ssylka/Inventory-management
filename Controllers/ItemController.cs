@@ -63,18 +63,26 @@ namespace Inventory_Managment.Controllers
 
                 return View(item);
             }
+
+            item.CustomId = await _itemService.GenerateCustomIdAsync(item.InventoryId);
+            item.CreatedAt = DateTime.UtcNow;
+            _context.Items.Add(item);
+
             try
             {
-                item.CustomId = await _itemService.GenerateCustomIdAsync(item.InventoryId);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                ModelState.AddModelError("CustomId", "ID already exists. Try again.");
+                var inventory = await _context.Inventories
+                    .Include(i => i.Fields)
+                    .FirstOrDefaultAsync(i => i.Id == item.InventoryId);
+
+                ViewBag.Inventory = inventory;
+                ViewBag.InventoryId = item.InventoryId;
+                ModelState.AddModelError("", "ID already exists. Try again.");
                 return View(item);
             }
-            item.CreatedAt = DateTime.UtcNow;
-            _context.Items.Add(item);
-            await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", new { inventoryId = item.InventoryId });
         }
@@ -83,16 +91,12 @@ namespace Inventory_Managment.Controllers
             var item = await _context.Items
                 .FirstOrDefaultAsync(i => i.Id == id);
 
+            if (item == null)
+                return NotFound();
+
             var inventory = await _context.Inventories
                 .Include(i => i.Fields)
                 .FirstOrDefaultAsync(i => i.Id == item.InventoryId);
-
-            var items = await _context.Items
-                .Where(i => i.InventoryId == inventory.Id)
-                .ToListAsync();
-
-            if (item == null)
-                return NotFound();
 
             ViewBag.Inventory = inventory;
 

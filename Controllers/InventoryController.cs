@@ -38,7 +38,7 @@ namespace Inventory_Managment.Controllers
         public async Task<IActionResult> Create(Inventory inventory)
         {
             ViewBag.Categories = await _context.Set<Category>().ToListAsync();
-            ModelState.Remove(nameof(Inventory.CreatorId));//  ВРЕМЕНННО. УБРАТЬ ПРИ СОЗДАНИИ АВТОРИЗАЦИИ !!!!!!!!!!!!!
+            ModelState.Remove(nameof(Inventory.CreatorId)); // поле не приходит из формы — убираем ошибку валидации до проверки ModelState
             inventory.CreatorId = _userManager.GetUserId(User);
 
             if (!ModelState.IsValid)
@@ -58,6 +58,9 @@ namespace Inventory_Managment.Controllers
                .Include(i => i.InventoryTags)
                .ThenInclude(it => it.Tag)
                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (inventory == null)
+                return NotFound();
 
             inventory.TagNames = inventory.InventoryTags
                 .Select(it => it.Tag.Name)

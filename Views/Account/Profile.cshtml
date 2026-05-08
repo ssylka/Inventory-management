@@ -1,0 +1,26 @@
+@using Inventory_Managment.Models
+@model AppUser
+
+@{
+    var inventories = ViewBag.Inventories as List<Inventory> ?? new List<Inventory>();
+}
+
+<h2>@Model.Name</h2>
+<p class="text-muted">@Model.Email</p>
+
+<h5 class="mt-4">Inventories</h5>
+@if (!inventories.Any())
+{
+    <p class="text-muted">No public inventories.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var inv in inventories)
+        {
+            <li class="list-group-item">
+                <a href="/Inventory/Details/@inv.Id">@inv.Title</a>
+            </li>
+        }
+    </ul>
+}

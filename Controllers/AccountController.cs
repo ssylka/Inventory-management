@@ -1,6 +1,8 @@
 ﻿using Inventory_Managment.Models;
+using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Inventory_Managment.Controllers
@@ -9,13 +11,16 @@ namespace Inventory_Managment.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly AppDbContext _context;
 
         public AccountController(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         public IActionResult Register()
@@ -84,6 +89,19 @@ namespace Inventory_Managment.Controllers
 
             return Challenge(properties, provider);
         }
+        public async Task<IActionResult> Profile(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            var inventories = await _context.Inventories
+                .Where(i => i.CreatorId == userId && (i.IsPublic || User.Identity!.IsAuthenticated))
+                .ToListAsync();
+
+            ViewBag.Inventories = inventories;
+            return View(user);
+        }
+
         public async Task<IActionResult> ExternalLoginCallback()
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();

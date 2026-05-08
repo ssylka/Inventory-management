@@ -134,7 +134,7 @@ namespace Inventory_Managment.Controllers
         public async Task<IActionResult> Create(Inventory inventory)
         {
             ViewBag.Categories = await _context.Set<Category>().ToListAsync();
-            ModelState.Remove(nameof(Inventory.CreatorId)); // поле не приходит из формы — убираем ошибку валидации до проверки ModelState
+            ModelState.Remove(nameof(Inventory.CreatorId)); // ВРЕМЕННО!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             inventory.CreatorId = _userManager.GetUserId(User);
 
             if (!ModelState.IsValid)
@@ -146,50 +146,6 @@ namespace Inventory_Managment.Controllers
             return Redirect($"/Inventory/Details/{inventory.Id}#fields");
         }
 
-        public async Task<IActionResult> Edit(int id)
-        {
-            ViewBag.Categories = await _context.Set<Category>().ToListAsync();
-
-            var inventory = await _context.Inventories
-               .Include(i => i.InventoryTags)
-               .ThenInclude(it => it.Tag)
-               .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (inventory == null)
-                return NotFound();
-
-            inventory.TagNames = inventory.InventoryTags
-                .Select(it => it.Tag.Name)
-                .ToList();
-
-            return View(inventory);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(Inventory inventory)
-        {
-            ViewBag.Categories = await _context.Set<Category>().ToListAsync();
-
-            if (!ModelState.IsValid)
-                return View(inventory);
-            try
-            {
-                _context.Inventories.Update(inventory);
-                await _inventoryService.UpdateTagsForInventoryAsync(inventory);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                TempData["Error"] = "This item has been or is being modified by another user. Please return to the inventory's field list.";
-                return View(inventory);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return View(inventory);
-            }
-            return Redirect($"/Inventory/Details/{inventory.Id}#settings");
-        }
         [HttpGet]
         public async Task<IActionResult> GetTags(string term, string? ids)
         {
@@ -202,18 +158,6 @@ namespace Inventory_Managment.Controllers
                 .ToListAsync();
 
             return Ok(tags);
-        }
-
-        //[ServiceFilter]
-        public async Task<IActionResult> Fields(int id)
-        {
-            var inventory = await _context.Inventories
-                .Include(i => i.Fields)
-                .FirstOrDefaultAsync(i => i.Id == id);
-            inventory.Fields = inventory.Fields
-                .OrderBy(f => f.Order)
-                .ToList();
-            return View(inventory);
         }
         //[ServiceFilter]
         public IActionResult AddField(int id)
@@ -247,25 +191,6 @@ namespace Inventory_Managment.Controllers
             await _context.SaveChangesAsync();
 
             return Redirect($"/Inventory/Details/{field.InventoryId}#fields");
-        }
-        [HttpPost]
-        //[InventoryEdit]
-        public async Task<IActionResult> UpdateFieldOrder([FromBody] List<FieldOrderDto> fields)
-        {
-            foreach (var field in fields)
-            {
-                var entity = await _context.InventoryFields
-                    .FirstOrDefaultAsync(f => f.Id == field.Id);
-
-                if (entity != null)
-                {
-                    entity.Order = field.Order;
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
         }
 
         [HttpPost]

@@ -17,6 +17,8 @@ namespace Inventory_Managment.Services
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<InventoryTag> InventoryTags { get; set; }
+        public DbSet<DiscussionPost> DiscussionPosts { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,6 +58,10 @@ namespace Inventory_Managment.Services
 
             modelBuilder.Entity<Item>()
                 .HasIndex(x => new { x.CustomId, x.InventoryId })
+                .IsUnique();
+
+            modelBuilder.Entity<PostLike>()
+                .HasIndex(l => new { l.PostId, l.UserId })
                 .IsUnique();
 
             modelBuilder.Entity<Category>().HasData(

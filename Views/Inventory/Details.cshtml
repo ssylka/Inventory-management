@@ -25,6 +25,9 @@
         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-items">Items</button>
     </li>
     <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-discussion">Discussion</button>
+    </li>
+    <li class="nav-item">
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-fields">Fields</button>
     </li>
     <li class="nav-item">
@@ -43,7 +46,7 @@
             <div class="alert alert-danger">@TempData["Error"]</div>
         }
 
-        <table class="table table-bordered text-center">
+        <table class="table table-bordered text-center table-striped">
             <thead>
                 <tr>
                     <th>
@@ -67,7 +70,7 @@
                     {
                         <tr onclick="window.location='/Item/Edit/@item.Id'" style="cursor:pointer;">
                             <td class="item-checkbox-cell">
-                                <input class="form-check-input item-checkbox" type="checkbox" value="@item.Id" />
+                                <input class="form-check-input" type="checkbox" value="@item.Id" />
                             </td>
                             @foreach (var f in fields)
                             {
@@ -128,6 +131,29 @@
 
         <a href="/Inventory/AddField/@inv.Id" class="btn btn-primary">Add Field</a>
         <button class="btn btn-danger" id="fields-delete-btn">Delete</button>
+    </div>
+
+    <!-- ========== DISCUSSION TAB ========== -->
+    <div class="tab-pane fade" id="tab-discussion">
+        <div id="discussion-posts" class="mb-4"></div>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="card mt-2">
+                <div class="card-body">
+                    <label class="form-label fw-semibold">New post</label>
+                    <textarea id="discussion-input" class="form-control mb-2" rows="3"
+                          placeholder="Markdown is supported…"></textarea>
+                    <button id="discussion-submit" class="btn btn-primary">Post</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-secondary mt-2">
+                <a href="/Account/Login">Log in</a> to participate in the discussion.
+            </div>
+        }
     </div>
 
     <div class="tab-pane fade" id="tab-settings">
@@ -222,99 +248,154 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 
 <script>
-let hasChanges = false;
-let currentXmin = @inv.xmin;
-let currentFieldOrders = [];
+    let hasChanges = false;
+    let currentXmin = @inv.xmin;
+    let currentFieldOrders = [];
 
-function setStatus(text, cls) {
-    document.getElementById("save-status").innerHTML = `<span class="badge ${cls}">${text}</span>`;
-}
+    // ── Discussion ────────────────────────────────────────────────────────────
+    let lastPostId = 0;
+    const isAuth = @(User.Identity?.IsAuthenticated == true ? "true" : "false");
 
-function markChanged() {
-    hasChanges = true;
-    setStatus("Unsaved", "bg-warning");
-}
+    function escHtml(s) {
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 
-async function doSave() {
-    if (!hasChanges) return;
-    setStatus("Saving…", "bg-secondary");
+    function fmtDate(iso) {
+        return new Date(iso).toLocaleString();
+    }
 
-    const tagNames = Array.from(document.querySelectorAll('#tags-container .tag-input'))
-        .map(i => i.value.trim()).filter(v => v);
+    function buildPost(p) {
+        const likeSection = isAuth
+            ? `<button class="btn btn-sm ${p.likedByMe ? 'btn-primary' : 'btn-outline-secondary'} like-btn"
+                       data-post-id="${p.id}">❤ <span class="like-count">${p.likeCount}</span></button>`
+            : `<span class="badge bg-secondary">❤ ${p.likeCount}</span>`;
+        return `
+        <div class="discussion-post mb-3 p-3 border rounded" data-post-id="${p.id}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <a href="/Account/Profile/${p.userId}" class="fw-bold text-decoration-none">${escHtml(p.userName)}</a>
+                    <span class="text-muted ms-2 small">${fmtDate(p.createdAt)}</span>
+                </div>
+                ${likeSection}
+            </div>
+            <div class="post-content">${DOMPurify.sanitize(marked.parse(p.text))}</div>
+        </div>`;
+    }
 
-    const cidElements = Array.from(document.querySelectorAll('#cid-elements .element')).map((el, i) => ({
-        Type: el.querySelector('.type').value,
-        Value: el.querySelector('.value').value || null,
-        Order: i
-    }));
+    async function loadPosts(after) {
+        try {
+            const res = await fetch(`/Discussion/Posts?inventoryId=@inv.Id&after=${after}`);
+            if (!res.ok) return;
+            const posts = await res.json();
+            const container = document.getElementById('discussion-posts');
+            posts.forEach(p => {
+                container.insertAdjacentHTML('beforeend', buildPost(p));
+                lastPostId = p.id;
+            });
+        } catch { /* network error — skip silently */ }
+    }
 
-    const dto = {
-        Id: Number(document.getElementById('settings-id').value),
-        xmin: currentXmin,
-        Title: document.getElementById('settings-title').value,
-        Description: document.getElementById('settings-description').value,
-        CategoryId: Number(document.getElementById('settings-category').value),
-        IsPublic: document.getElementById('settings-public').checked,
-        ImageUrl: document.getElementById('settings-imageurl').value || null,
-        TagNames: tagNames,
-        CustomIdElements: cidElements,
-        FieldOrders: currentFieldOrders
-    };
+    function setStatus(text, cls) {
+        document.getElementById("save-status").innerHTML = `<span class="badge ${cls}">${text}</span>`;
+    }
 
-    try {
-        const res = await fetch('/Inventory/AutoSave', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dto)
-        });
-        if (res.ok) {
-            const data = await res.json();
-            currentXmin = data.xmin;
-            hasChanges = false;
-            setStatus("Saved", "bg-success");
-            const alert = document.getElementById('settings-conflict-alert');
-            if (alert) alert.classList.add('d-none');
-        } else if (res.status === 409) {
-            const conflictAlert = document.getElementById('settings-conflict-alert');
-            if (conflictAlert) { conflictAlert.textContent = await res.text(); conflictAlert.classList.remove('d-none'); }
-            setStatus("Conflict", "bg-danger");
-        } else {
+    function markChanged() {
+        hasChanges = true;
+        setStatus("Unsaved", "bg-warning");
+    }
+
+    async function doSave() {
+        if (!hasChanges) return;
+        setStatus("Saving…", "bg-secondary");
+
+        const tagNames = Array.from(document.querySelectorAll('#tags-container .tag-input'))
+            .map(i => i.value.trim()).filter(v => v);
+
+        const cidElements = Array.from(document.querySelectorAll('#cid-elements .element')).map((el, i) => ({
+            Type: el.querySelector('.type').value,
+            Value: el.querySelector('.value').value || null,
+            Order: i
+        }));
+
+        const dto = {
+            Id: Number(document.getElementById('settings-id').value),
+            xmin: currentXmin,
+            Title: document.getElementById('settings-title').value,
+            Description: document.getElementById('settings-description').value,
+            CategoryId: Number(document.getElementById('settings-category').value),
+            IsPublic: document.getElementById('settings-public').checked,
+            ImageUrl: document.getElementById('settings-imageurl').value || null,
+            TagNames: tagNames,
+            CustomIdElements: cidElements,
+            FieldOrders: currentFieldOrders
+        };
+
+        try {
+            const res = await fetch('/Inventory/AutoSave', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dto)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                currentXmin = data.xmin;
+                hasChanges = false;
+                setStatus("Saved", "bg-success");
+                const alert = document.getElementById('settings-conflict-alert');
+                if (alert) alert.classList.add('d-none');
+            } else if (res.status === 409) {
+                const conflictAlert = document.getElementById('settings-conflict-alert');
+                if (conflictAlert) { conflictAlert.textContent = await res.text(); conflictAlert.classList.remove('d-none'); }
+                setStatus("Conflict", "bg-danger");
+            } else {
+                setStatus("Error", "bg-danger");
+            }
+        } catch {
             setStatus("Error", "bg-danger");
         }
-    } catch {
-        setStatus("Error", "bg-danger");
     }
-}
 
-// ── Tags management (global for onclick= attributes) ──────────────────────
-function addTag() {
-    const container = document.getElementById("tags-container");
-    const index = container.children.length;
-    const div = document.createElement("div");
-    div.className = "tag-item position-relative d-flex mb-1";
-    div.innerHTML = `
-        <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
-        <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
-    container.appendChild(div);
-    markChanged();
-}
+    // ── Tags management (global for onclick= attributes) ──────────────────────
+    function addTag() {
+        const container = document.getElementById("tags-container");
+        const index = container.children.length;
+        const div = document.createElement("div");
+        div.className = "tag-item position-relative d-flex mb-1";
+        div.innerHTML = `
+            <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
+        container.appendChild(div);
+        markChanged();
+    }
 
-function removeTag(button) {
-    button.parentElement.remove();
-    reindexTags();
-    markChanged();
-}
+    function removeTag(button) {
+        button.parentElement.remove();
+        reindexTags();
+        markChanged();
+    }
 
-function reindexTags() {
-    document.querySelectorAll("#tags-container input").forEach((input, i) => {
-        input.name = `TagNames[${i}]`;
-    });
-}
+    function reindexTags() {
+        document.querySelectorAll("#tags-container input").forEach((input, i) => {
+            input.name = `TagNames[${i}]`;
+        });
+    }
 
-// ── DOM-ready ─────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        const hash = window.location.hash;
+        if (hash && hash !== "#tab-items") {
+            const tabBtn = document.querySelector(`[data-bs-target="${hash}"]`);
+            if (tabBtn) new bootstrap.Tab(tabBtn).show();
+        }
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(btn => {
+            btn.addEventListener("shown.bs.tab", e => {
+                history.replaceState(null, null, e.target.dataset.bsTarget);
+            });
+        });
 
     // Tooltips
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
@@ -431,8 +512,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (type === "Sequence") return applyNumberFormat(5, val);
             if (type === "Random6") return applyNumberFormat(123456, val);
             if (type === "Random9") return applyNumberFormat(123456789, val);
-            if (type === "Random20") return applyNumberFormat(523456, val);
-            if (type === "Random32") return applyNumberFormat(834729104, val);
+            if (type === "Random20") return applyNumberFormat(123456, val);
+            if (type === "Random32") return applyNumberFormat(123456789, val);
             if (type === "DateTime") return applyDateFormat(now, val);
             if (type === "Guid") {
                 const g = "550e8400-e29b-41d4-a716-446655440000";
@@ -549,6 +630,57 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(doSave, 8000);
     window.addEventListener("beforeunload", e => {
         if (hasChanges) { e.preventDefault(); e.returnValue = ""; }
+    });
+
+    // ── Discussion ────────────────────────────────────────────
+    await loadPosts(0);
+    setInterval(() => loadPosts(lastPostId), 3000);
+
+    const submitBtn = document.getElementById('discussion-submit');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+            const input = document.getElementById('discussion-input');
+            const text = input.value.trim();
+            if (!text) return;
+            submitBtn.disabled = true;
+            try {
+                const res = await fetch('/Discussion/AddPost', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ inventoryId: @inv.Id, text })
+                });
+                if (res.ok) {
+                    const post = await res.json();
+                    document.getElementById('discussion-posts')
+                        .insertAdjacentHTML('beforeend', buildPost(post));
+                    lastPostId = post.id;
+                    input.value = '';
+                }
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    document.getElementById('discussion-posts').addEventListener('click', async e => {
+        const btn = e.target.closest('.like-btn');
+        if (!btn) return;
+        const postId = Number(btn.dataset.postId);
+        btn.disabled = true;
+        try {
+            const res = await fetch('/Discussion/ToggleLike', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(postId)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                btn.className = `btn btn-sm ${data.liked ? 'btn-primary' : 'btn-outline-secondary'} like-btn`;
+                btn.querySelector('.like-count').textContent = data.count;
+            }
+        } finally {
+            btn.disabled = false;
+        }
     });
 });
 </script>

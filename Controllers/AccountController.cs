@@ -1,9 +1,11 @@
-﻿using Inventory_Managment.Models;
+using Inventory_Managment.Models;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text;
 
 namespace Inventory_Managment.Controllers
 {
@@ -12,21 +14,21 @@ namespace Inventory_Managment.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly AppDbContext _context;
+        private readonly EmailService _emailService;
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            AppDbContext context)
+            AppDbContext context,
+            EmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _emailService = emailService;
         }
 
-        public IActionResult Register()
-        {
-            return View();
-        }
+        public IActionResult Register() => View();
 
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password, string name)
@@ -40,40 +42,105 @@ namespace Inventory_Managment.Controllers
 
             var result = await _userManager.CreateAsync(user, password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Inventory");
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+                return View();
             }
 
-            foreach (var error in result.Errors)
-                ModelState.AddModelError("", error.Description);
+            await _userManager.AddToRoleAsync(user, "Unverified");
 
+            var rawToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(rawToken));
+            var confirmUrl = Url.Action("ConfirmEmail", "Account",
+                new { userId = user.Id, token = encodedToken }, Request.Scheme)!;
+
+            var body = $@"
+<h2>Welcome!</h2>
+<p>Thank you for creating an account.</p>
+<p>
+To finish setting up your account, please confirm your email address by clicking the button below:
+</p>
+<p style='margin: 24px 0;'>
+    <a href='{confirmUrl}'
+       style='
+            background-color:#2563eb;
+            color:white;
+            padding:12px 20px;
+            text-decoration:none;
+            border-radius:6px;
+            display:inline-block;
+            font-weight:bold;'>
+        Confirm Email
+    </a>
+</p>
+<p>
+If the button above does not work, copy and paste this link into your browser:
+</p>
+<p>
+{confirmUrl}
+</p>
+<p>
+If you did not create an account, you can safely ignore this email.
+</p>
+<hr>
+<p style='color:gray;font-size:12px;'>
+This email was sent automatically. Please do not reply.
+</p>";
+
+            await _emailService.SendEmail(
+                email,
+                "Confirm your email",
+                body);
+
+            ViewBag.EmailSent = true;
             return View();
         }
 
-        public IActionResult Login()
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            return View();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            var rawToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            var result = await _userManager.ConfirmEmailAsync(user, rawToken);
+
+            if (!result.Succeeded)
+                return BadRequest("The confirmation link is invalid.");
+
+            await _userManager.RemoveFromRoleAsync(user, "Unverified");
+            await _userManager.AddToRoleAsync(user, "Active");
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction("Index", "Inventory");
         }
+
+        public IActionResult Login() => View();
 
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var result = await _signInManager.PasswordSignInAsync(
-                email, password, false, false);
-
-            if (result.Succeeded)
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null && await _userManager.IsInRoleAsync(user, "Blocked"))
             {
-                return RedirectToAction("Index", "Inventory");
+                ModelState.AddModelError("", "Your account has been blocked.");
+                return View();
             }
 
-            else if (result.IsNotAllowed)
-                ModelState.AddModelError("", "You are not allowed to log in");
+            var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+
+            if (result.Succeeded)
+                return RedirectToAction("Index", "Inventory");
+
+            if (result.IsNotAllowed)
+                ModelState.AddModelError("", "Please confirm your email before logging in.");
             else if (result.IsLockedOut)
-                ModelState.AddModelError("", "You are locked out");
+                ModelState.AddModelError("", "You are locked out.");
             else
-                ModelState.AddModelError("", "Invalid login");
+                ModelState.AddModelError("", "Invalid email or password.");
+
             return View();
         }
 
@@ -82,13 +149,71 @@ namespace Inventory_Managment.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Inventory");
         }
+
         public IActionResult ExternalLogin(string provider)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-
             return Challenge(properties, provider);
         }
+
+        public async Task<IActionResult> ExternalLoginCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction("Login");
+
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider, info.ProviderKey, isPersistent: true);
+
+            if (signInResult.Succeeded)
+                return RedirectToAction("Index", "Inventory");
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                     ?? info.Principal.FindFirstValue("email");
+
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login");
+
+            var name = info.Principal.FindFirstValue(ClaimTypes.Name)
+                    ?? info.Principal.FindFirstValue("name");
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Name = name ?? email,
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded) return RedirectToAction("Login");
+            }
+            else
+            {
+                if (!user.EmailConfirmed)
+                {
+                    user.EmailConfirmed = true;
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, "Active") &&
+                !await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                await _userManager.RemoveFromRoleAsync(user, "Unverified");
+                await _userManager.AddToRoleAsync(user, "Active");
+            }
+
+            await _userManager.AddLoginAsync(user, info); 
+            await _signInManager.SignInAsync(user, isPersistent: true);
+
+            return RedirectToAction("Index", "Inventory");
+        }
+
         public async Task<IActionResult> Profile(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -100,47 +225,6 @@ namespace Inventory_Managment.Controllers
 
             ViewBag.Inventories = inventories;
             return View(user);
-        }
-
-        public async Task<IActionResult> ExternalLoginCallback()
-        {
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-
-            if (info == null)
-                return RedirectToAction("Login");
-
-            var signInResult = await _signInManager.ExternalLoginSignInAsync(
-                info.LoginProvider,
-                info.ProviderKey,
-                isPersistent: false
-            );
-
-            if (signInResult.Succeeded)
-                return RedirectToAction("Index", "Inventory");
-
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            var name = info.Principal.FindFirstValue(ClaimTypes.Name);
-
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user == null)
-            {
-                user = new AppUser
-                {
-                    UserName = email,
-                    Email = email,
-                    Name = name ?? email, 
-                    EmailConfirmed = true
-                };
-
-                var result = await _userManager.CreateAsync(user);
-                if (!result.Succeeded) return RedirectToAction("Login");
-            }
-
-            await _userManager.AddLoginAsync(user, info);
-            await _signInManager.SignInAsync(user, false);
-
-            return RedirectToAction("Index", "Inventory");
         }
     }
 }

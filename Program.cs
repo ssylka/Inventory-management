@@ -25,10 +25,14 @@ namespace Inventory_Managment
             builder.Services.AddScoped<ItemService>();
             builder.Services.AddScoped<InventoryService>();
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+            })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<InventoryEditFilter>();
             builder.Services.AddScoped<ItemEditFilter>();
             builder.Services.AddAuthentication()
@@ -45,7 +49,7 @@ namespace Inventory_Managment
 
             var app = builder.Build();
 
-            // обрабатываем заголовки от прокси (Render)
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (Render)
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -69,12 +73,12 @@ namespace Inventory_Managment
                 pattern: "{controller=Inventory}/{action=Index}/{id?}");
 
             using (var scope = app.Services.CreateScope())
-            {
+            {   
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-                if (!await roleManager.RoleExistsAsync("Admin"))
+                foreach (var role in new[] { "Admin", "Active", "Blocked", "Unverified" })
                 {
-                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
             await app.RunAsync();

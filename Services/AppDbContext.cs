@@ -38,6 +38,11 @@ namespace Inventory_Managment.Services
                 .WithMany(t => t.InventoryTags)
                 .HasForeignKey(x => x.TagId);
 
+            modelBuilder.Entity<Inventory>()
+                .HasOne(x => x.Creator)
+                .WithMany()
+                .HasForeignKey(x => x.CreatorId);
+
             modelBuilder.Entity<Tag>()
                 .HasIndex(t => t.Name)
                 .IsUnique();

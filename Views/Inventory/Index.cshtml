@@ -24,8 +24,11 @@
     </tbody>
 </table>
 
-<a href="/Inventory/Create" class="btn btn-primary">Create</a>
-<a class="btn btn-danger" id="btnDelete">Delete</a>
+@if (User.IsInRole("Active") || User.IsInRole("Admin"))
+{
+    <a href="/Inventory/Create" class="btn btn-primary">Create</a>
+    <a class="btn btn-danger" id="btnDelete">Delete</a>
+}
 
 <script src="~/js/index_inventory.js" asp-append-version="true"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

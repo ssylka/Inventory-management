@@ -43,7 +43,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> AddPost([FromBody] AddPostDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Text))
@@ -75,7 +75,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> ToggleLike([FromBody] int postId)
         {
             var userId = _userManager.GetUserId(User)!;

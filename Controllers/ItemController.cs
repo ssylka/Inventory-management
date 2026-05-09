@@ -37,6 +37,7 @@ namespace Inventory_Managment.Controllers
             return View(items);
         }
 
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> Create(int inventoryId)
         {
             var inventory = await _context.Inventories
@@ -50,6 +51,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> Create(Item item)
         {
             if (!ModelState.IsValid)
@@ -86,6 +88,7 @@ namespace Inventory_Managment.Controllers
 
             return Redirect($"/Inventory/Details/{item.InventoryId}#items");
         }
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var item = await _context.Items
@@ -104,6 +107,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> Edit(Item item)
         {
             var inventory = await _context.Inventories
@@ -142,6 +146,7 @@ namespace Inventory_Managment.Controllers
             return Redirect($"/Inventory/Details/{item.InventoryId}#items");
         }
         [HttpPost]
+        [Authorize(Roles = "Active,Admin")]
         public async Task<IActionResult> Delete([FromBody] List<int> ids)
         {
             var items = await _context.Items

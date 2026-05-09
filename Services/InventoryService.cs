@@ -31,14 +31,22 @@ namespace Inventory_Managment.Services
 
             throw new Exception("You cannot add more than 3 fields of this type.");
         }
-        public bool CanEdit(Inventory inv, string userId, bool isAdmin)
+        // Can add/edit/delete items: admin, creator, explicit access, or any active user if public
+        public bool CanEdit(Inventory inv, string? userId, bool isAdmin, bool isActive)
         {
             if (isAdmin) return true;
+            if (!isActive || string.IsNullOrEmpty(userId)) return false;
             if (inv.CreatorId == userId) return true;
             if (inv.IsPublic) return true;
-
             return _context.InventoryAccess
                 .Any(a => a.InventoryId == inv.Id && a.UserId == userId);
+        }
+
+        // Can edit inventory settings/fields/custom-id: admin or creator only
+        public bool CanEditSettings(Inventory inv, string? userId, bool isAdmin)
+        {
+            if (isAdmin) return true;
+            return !string.IsNullOrEmpty(userId) && inv.CreatorId == userId;
         }
         public async Task UpdateTagsForInventoryAsync(Inventory inventory)
         {

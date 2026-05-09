@@ -8,5 +8,7 @@ namespace Inventory_Managment.Models.Dto
         public List<Category> Categories { get; set; } = new();
         public List<Item> Items { get; set; } = new();
         public List<CustomIdElement> CustomIdElements { get; set; } = new();
+        public bool CanEditItems { get; set; }
+        public bool CanEditSettings { get; set; }
     }
 }

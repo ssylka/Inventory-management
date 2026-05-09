@@ -3,8 +3,11 @@
 
 @{
     var inv = Model.Inventory;
-    var fields = inv.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order).ToList();
     var allFields = inv.Fields.OrderBy(f => f.Order).ToList();
+    bool canEditItems = Model.CanEditItems;
+    bool canEditSettings = Model.CanEditSettings;
+    bool canWrite = User.IsInRole("Active") || User.IsInRole("Admin");
+    var fields = inv.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order).ToList();
 }
 
 <div class="d-flex align-items-center mb-3">
@@ -27,15 +30,18 @@
     <li class="nav-item">
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-discussion">Discussion</button>
     </li>
-    <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-fields">Fields</button>
-    </li>
-    <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-settings">Settings</button>
-    </li>
-    <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-custom-id">Custom ID</button>
-    </li>
+    @if (canEditSettings)
+    {
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-fields">Fields</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-settings">Settings</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-custom-id">Custom ID</button>
+        </li>
+    }
 </ul>
 
 <div class="tab-content">
@@ -49,29 +55,37 @@
         <table class="table table-bordered text-center table-striped">
             <thead>
                 <tr>
-                    <th>
-                        <input type="checkbox" class="btn-check" id="items-select-all">
-                        <label class="btn btn-outline-secondary btn-sm" for="items-select-all">All</label>
-                    </th>
+                    @if (canEditItems)
+                    {
+                        <th>
+                            <input type="checkbox" class="btn-check" id="items-select-all">
+                            <label class="btn btn-outline-secondary btn-sm" for="items-select-all">All</label>
+                        </th>
+                    }
                     @foreach (var f in fields)
                     {
                         <th data-bs-toggle="tooltip" title="@f.Description">@f.Name</th>
                     }
+                    <th>Custom ID</th>
                 </tr>
             </thead>
             <tbody>
                 @if (!Model.Items.Any())
                 {
-                    <tr><td colspan="@(fields.Count + 4)" class="text-center text-muted">No items yet</td></tr>
+                    <tr><td class="text-center text-muted colspan="@Model.Inventory.Fields.Count">No items yet</td></tr>
                 }
                 else
                 {
                     @foreach (var item in Model.Items)
                     {
-                        <tr onclick="window.location='/Item/Edit/@item.Id'" style="cursor:pointer;">
-                            <td class="item-checkbox-cell">
-                                <input class="form-check-input" type="checkbox" value="@item.Id" />
-                            </td>
+                        <tr onclick="@(canEditItems ? $"window.location='/Item/Edit/{item.Id}'" : null)"
+                            style="@(canEditItems ? "cursor:pointer;" : null)">
+                            @if (canEditItems)
+                            {
+                                <td class="item-checkbox-cell">
+                                    <input class="form-check-input item-checkbox" type="checkbox" value="@item.Id" />
+                                </td>
+                            }
                             @foreach (var f in fields)
                             {
                                 var prop = item.GetType().GetProperty(f.Slot);
@@ -85,14 +99,37 @@
                                     <td>@(val ?? "-")</td>
                                 }
                             }
+                            <td>@item.CustomId</td>
                         </tr>
                     }
                 }
             </tbody>
         </table>
 
-        <a href="/Item/Create?inventoryId=@inv.Id" class="btn btn-primary mb-3">Add Item</a>
-        <button class="btn btn-danger mb-3" id="items-delete-btn">Delete</button>
+        @if (canEditItems)
+        {
+            <a href="/Item/Create?inventoryId=@inv.Id" class="btn btn-primary mb-3">Add Item</a>
+            <button class="btn btn-danger mb-3" id="items-delete-btn">Delete</button>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="tab-discussion">
+        <div id="discussion-posts" class="mb-4"></div>
+        @if (canWrite)
+        {
+            <div class="card mt-2">
+                <div class="card-body">
+                    <label class="form-label fw-semibold">New post</label>
+                    <textarea id="discussion-input" class="form-control mb-2" rows="3"
+                              placeholder="Markdown is supported…"></textarea>
+                    <button id="discussion-submit" class="btn btn-primary">Post</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Log in to participate in the discussion.</p>
+        }
     </div>
 
     <div class="tab-pane fade" id="tab-fields">
@@ -131,29 +168,6 @@
 
         <a href="/Inventory/AddField/@inv.Id" class="btn btn-primary">Add Field</a>
         <button class="btn btn-danger" id="fields-delete-btn">Delete</button>
-    </div>
-
-    <!-- ========== DISCUSSION TAB ========== -->
-    <div class="tab-pane fade" id="tab-discussion">
-        <div id="discussion-posts" class="mb-4"></div>
-
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <div class="card mt-2">
-                <div class="card-body">
-                    <label class="form-label fw-semibold">New post</label>
-                    <textarea id="discussion-input" class="form-control mb-2" rows="3"
-                          placeholder="Markdown is supported…"></textarea>
-                    <button id="discussion-submit" class="btn btn-primary">Post</button>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-secondary mt-2">
-                <a href="/Account/Login">Log in</a> to participate in the discussion.
-            </div>
-        }
     </div>
 
     <div class="tab-pane fade" id="tab-settings">
@@ -258,7 +272,9 @@
 
     // ── Discussion ────────────────────────────────────────────────────────────
     let lastPostId = 0;
-    const isAuth = @(User.Identity?.IsAuthenticated == true ? "true" : "false");
+    const isAuth = @((User.IsInRole("Active") || User.IsInRole("Admin")) ? "true" : "false");
+    const canEditItems = @(canEditItems.ToString().ToLower());
+    const canEditSettings = @(canEditSettings.ToString().ToLower());
 
     function escHtml(s) {
         return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -400,58 +416,62 @@
     // Tooltips
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
-    // Items tab
-    document.getElementById("items-select-all").addEventListener("change", function () {
-        document.querySelectorAll(".item-checkbox").forEach(cb => cb.checked = this.checked);
-    });
-    document.querySelectorAll(".item-checkbox-cell").forEach(cell => {
-        cell.addEventListener("click", e => e.stopPropagation());
-    });
-    document.getElementById("items-delete-btn").addEventListener("click", async () => {
-        const ids = Array.from(document.querySelectorAll(".item-checkbox:checked")).map(cb => Number(cb.value));
-        const res = await fetch('/Item/Delete', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ids)
+    // Items tab (only rendered when canEditItems)
+    if (canEditItems) {
+        document.getElementById("items-select-all").addEventListener("change", function () {
+            document.querySelectorAll(".item-checkbox").forEach(cb => cb.checked = this.checked);
         });
-        if (res.ok) location.reload();
-        else { alert(await res.text()); location.reload(); }
-    });
-
-    // Fields tab
-    document.getElementById("fields-select-all").addEventListener("change", function () {
-        document.querySelectorAll(".field-checkbox").forEach(cb => cb.checked = this.checked);
-    });
-    document.querySelectorAll(".field-checkbox-cell").forEach(cell => {
-        cell.addEventListener("click", e => e.stopPropagation());
-    });
-    document.getElementById("fields-delete-btn").addEventListener("click", async () => {
-        const ids = Array.from(document.querySelectorAll(".field-checkbox:checked")).map(cb => Number(cb.value));
-        const res = await fetch('/Inventory/DeleteFields', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ids)
+        document.querySelectorAll(".item-checkbox-cell").forEach(cell => {
+            cell.addEventListener("click", e => e.stopPropagation());
         });
-        if (res.ok) location.reload();
-        else { alert(await res.text()); location.reload(); }
-    });
-    document.querySelectorAll(".drag-handle").forEach(h => h.addEventListener("click", e => e.stopPropagation()));
+        document.getElementById("items-delete-btn").addEventListener("click", async () => {
+            const ids = Array.from(document.querySelectorAll(".item-checkbox:checked")).map(cb => Number(cb.value));
+            const res = await fetch('/Item/Delete', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ids)
+            });
+            if (res.ok) location.reload();
+            else { alert(await res.text()); location.reload(); }
+        });
+    }
 
-    // Fields SortableJS — tracks order for auto-save
-    currentFieldOrders = [...document.querySelectorAll('#elements tr[data-id]')]
-        .map((row, i) => ({ Id: Number(row.dataset.id), Order: i }));
+    // Fields/Settings/Custom ID tabs (only rendered when canEditSettings)
+    if (canEditSettings) {
+        document.getElementById("fields-select-all").addEventListener("change", function () {
+            document.querySelectorAll(".field-checkbox").forEach(cb => cb.checked = this.checked);
+        });
+        document.querySelectorAll(".field-checkbox-cell").forEach(cell => {
+            cell.addEventListener("click", e => e.stopPropagation());
+        });
+        document.getElementById("fields-delete-btn").addEventListener("click", async () => {
+            const ids = Array.from(document.querySelectorAll(".field-checkbox:checked")).map(cb => Number(cb.value));
+            const res = await fetch('/Inventory/DeleteFields', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ids)
+            });
+            if (res.ok) location.reload();
+            else { alert(await res.text()); location.reload(); }
+        });
+        document.querySelectorAll(".drag-handle").forEach(h => h.addEventListener("click", e => e.stopPropagation()));
 
-    new Sortable(document.getElementById("elements"), {
-        animation: 150,
-        handle: ".drag-handle",
-        onEnd: () => {
-            currentFieldOrders = [...document.querySelectorAll('#elements tr[data-id]')]
-                .map((row, i) => ({ Id: Number(row.dataset.id), Order: i }));
-            markChanged();
-        }
-    });
+        // Fields SortableJS — tracks order for auto-save
+        currentFieldOrders = [...document.querySelectorAll('#elements tr[data-id]')]
+            .map((row, i) => ({ Id: Number(row.dataset.id), Order: i }));
 
-    // Settings change listeners
-    document.querySelectorAll('#tab-settings input, #tab-settings textarea, #tab-settings select').forEach(el => {
-        el.addEventListener('input', markChanged);
-        el.addEventListener('change', markChanged);
-    });
+        new Sortable(document.getElementById("elements"), {
+            animation: 150,
+            handle: ".drag-handle",
+            onEnd: () => {
+                currentFieldOrders = [...document.querySelectorAll('#elements tr[data-id]')]
+                    .map((row, i) => ({ Id: Number(row.dataset.id), Order: i }));
+                markChanged();
+            }
+        });
+
+        // Settings change listeners
+        document.querySelectorAll('#tab-settings input, #tab-settings textarea, #tab-settings select').forEach(el => {
+            el.addEventListener('input', markChanged);
+            el.addEventListener('change', markChanged);
+        });
+    }
 
     // Tags autocomplete
     document.addEventListener("input", async (e) => {
@@ -647,7 +667,7 @@
                 const res = await fetch('/Discussion/AddPost', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ inventoryId: @inv.Id, text })
+                    body: JSON.stringify({ inventoryId: @inv.Id, text: text })
                 });
                 if (res.ok) {
                     const post = await res.json();

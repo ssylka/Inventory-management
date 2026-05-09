@@ -1,8 +1,5 @@
-﻿document.getElementById('btn-check-outlined').addEventListener('change', function () {
-    var checkboxes = document.querySelectorAll('.form-check-input');
-    for (var checkbox of checkboxes) {
-        checkbox.checked = this.checked;
-    }
+document.getElementById('btn-check-outlined')?.addEventListener('change', function () {
+    document.querySelectorAll('.form-check-input').forEach(cb => cb.checked = this.checked);
 });
 
 function getSelectedUserIds() {
@@ -10,9 +7,8 @@ function getSelectedUserIds() {
         .map(cb => Number(cb.value));
 }
 
-document.getElementById("btnDelete").addEventListener("click", async () => {
+document.getElementById("btnDelete")?.addEventListener("click", async () => {
     const ids = getSelectedUserIds();
-
     const response = await fetch('/Inventory/Delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -23,19 +19,12 @@ document.getElementById("btnDelete").addEventListener("click", async () => {
     } else {
         const text = await response.text();
         alert(text);
-        location.reload()
+        location.reload();
     }
 });
 
 document.querySelectorAll(".inventory-row").forEach(row => {
     row.addEventListener("click", function () {
-        const id = this.dataset.id;
-        window.location.href = `/Inventory/Details/${id}#tab-items`;
-    });
-});
-
-document.querySelectorAll(".row-checkbox").forEach(checkbox => {
-    checkbox.addEventListener("click", function (e) {
-        e.stopPropagation();
+        window.location.href = `/Inventory/Details/${this.dataset.id}#tab-items`;
     });
 });

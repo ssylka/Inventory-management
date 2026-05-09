@@ -66,7 +66,10 @@ namespace Inventory_Managment.Controllers
                 return View(item);
             }
 
-            item.CustomId = await _itemService.GenerateCustomIdAsync(item.InventoryId);
+            // Generate only on first attempt; on retry the user may have edited the value
+            if (string.IsNullOrEmpty(item.CustomId))
+                item.CustomId = await _itemService.GenerateCustomIdAsync(item.InventoryId);
+
             item.CreatedAt = DateTime.UtcNow;
             _context.Items.Add(item);
 
@@ -82,7 +85,7 @@ namespace Inventory_Managment.Controllers
 
                 ViewBag.Inventory = inventory;
                 ViewBag.InventoryId = item.InventoryId;
-                ModelState.AddModelError("", "ID already exists. Try again.");
+                ModelState.AddModelError("CustomId", "This ID already exists. Please edit the value below and try again.");
                 return View(item);
             }
 

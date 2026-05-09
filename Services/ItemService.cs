@@ -68,6 +68,7 @@ namespace Inventory_Managment.Services
                 throw new Exception("Inventory not found");
 
             inventory.LastSequence++;
+            await _context.SaveChangesAsync(); // commit before item insert — survives rollback of the item
 
             return inventory.LastSequence;
         }

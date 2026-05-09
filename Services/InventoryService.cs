@@ -13,12 +13,12 @@ namespace Inventory_Managment.Services
         {
             _context = context;
         }
-        public string GetNextSlot(FieldType type, int inventoryId)
+        public async Task<string> GetNextSlotAsync(FieldType type, int inventoryId)
         {
-            var existing = _context.InventoryFields
+            var existing = await _context.InventoryFields
                 .Where(f => f.InventoryId == inventoryId && f.Type == type)
                 .Select(f => f.Slot)
-                .ToList();
+                .ToListAsync();
 
             var prefix = type.ToString();
 

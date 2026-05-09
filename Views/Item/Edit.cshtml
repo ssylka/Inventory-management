@@ -30,36 +30,35 @@
         var inventory = ViewBag.Inventory as Inventory;
     }
 
-    <div class="mb-3">
-        @foreach (var field in inventory.Fields.Where(i => i.ShowInTable).OrderBy(f => f.Order))
+    @foreach (var field in inventory.Fields.Where(i => i.ShowInTable).OrderBy(f => f.Order))
+    {
+        var prop = Model.GetType().GetProperty(field.Slot);
+        var value = prop?.GetValue(Model);
+
+        @if (field.Type == FieldType.Bool)
         {
-            var prop = Model.GetType().GetProperty(field.Slot);
-            var value = prop?.GetValue(Model);
-
-            <label>@field.Name</label>
-
-            @if (field.Type == FieldType.Number)
-            {
-                <input type="number"
-                        class="form-control"
-                        name="@field.Slot"
-                        value="@value" />
-            }
-            else if (field.Type == FieldType.Bool)
-            {
-                <input type="checkbox" 
-                        name="@field.Slot"
-                        value="true"
-                        class="ms-4 form-control form-check-input"
-                        @(value?.ToString() == "True" ? "checked" : "") />
-            }
-            else
-            {
-                <input class="form-control"
-                       name="@field.Slot"
-                       value="@value" />
-            }
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" name="@field.Slot" value="true"
+                       @(value?.ToString() == "True" ? "checked" : "") />
+                <label class="form-check-label">@field.Name</label>
+            </div>
         }
+        else
+        {
+            <div class="mb-3">
+                <label>@field.Name</label>
+                @if (field.Type == FieldType.Number)
+                {
+                    <input type="number" class="form-control" name="@field.Slot" value="@value" />
+                }
+                else
+                {
+                    <input class="form-control" name="@field.Slot" value="@value" />
+                }
+            </div>
+        }
+    }
+    <div class="mb-3">
         <label>Custom ID</label>
         <input class="form-control"
                name="CustomId"

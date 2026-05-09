@@ -184,8 +184,8 @@ namespace Inventory_Managment.Controllers
             }
             try
             {
-                field.Id = 0; // Ensure EF Core treats this as a new entity
-                field.Slot = _inventoryService.GetNextSlot(field.Type, field.InventoryId);
+                field.Id = 0;
+                field.Slot = await _inventoryService.GetNextSlotAsync(field.Type, field.InventoryId);
             }
             catch (Exception ex)
             {

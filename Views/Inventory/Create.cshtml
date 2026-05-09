@@ -34,16 +34,10 @@
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label>Is public?</label>
-
-        <div class="form-check ms-1">
-            <input class="form-check-input"
-                   type="checkbox"
-                   asp-for="IsPublic" />
-        </div>
-
-        <span asp-validation-for="IsPublic" class="text-danger"></span>
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IsPublic" />
+        <label class="form-check-label">Is public?</label>
+        <span asp-validation-for="IsPublic" class="text-danger d-block"></span>
     </div>
 
     <div class="mb-3">

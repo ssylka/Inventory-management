@@ -13,6 +13,8 @@
     <h2>Create Item</h2>
 </div>
 
+<div asp-validation-summary="All" class="alert alert-danger" style="display:@(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
 <form method="post">
     <input type="hidden" asp-for="InventoryId" value="@ViewBag.InventoryId" />
 
@@ -22,27 +24,35 @@
 
     @foreach (var field in inventory.Fields.OrderBy(f => f.Order))
     {
-        <div class="mb-3">
-            <label>@field.Name</label>
-
-            @if (field.Type == FieldType.String || field.Type == FieldType.Text)
-            {
-                <input class="form-control" name="@field.Slot" />
-            }
-            else if (field.Type == FieldType.Number)
-            {
-                <input type="number" class="form-control" name="@field.Slot" />
-            }
-            else if (field.Type == FieldType.Bool)
-            {
-                <input type="checkbox" 
-                        name="@field.Slot"
-                        value="true"
-                        class="ms-4 form-control form-check-input"
-                        checked />
-            }
-        </div>
+        @if (field.Type == FieldType.Bool)
+        {
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" name="@field.Slot" value="true" checked />
+                <label class="form-check-label">@field.Name</label>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label>@field.Name</label>
+                @if (field.Type == FieldType.Number)
+                {
+                    <input type="number" class="form-control" name="@field.Slot" />
+                }
+                else
+                {
+                    <input class="form-control" name="@field.Slot" />
+                }
+            </div>
+        }
     }
+
+    <div class="mb-3">
+        <label class="form-label">Custom ID</label>
+        <input asp-for="CustomId" class="form-control" placeholder="Auto-generated" />
+        <span asp-validation-for="CustomId" class="text-danger"></span>
+        <div class="form-text">Leave empty to auto-generate.</div>
+    </div>
 
     <button class="btn btn-success">Save</button>
 </form>

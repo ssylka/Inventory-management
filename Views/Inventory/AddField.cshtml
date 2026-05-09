@@ -12,16 +12,6 @@
 
     <h2>Add Field</h2>
 
-    <a href="/Inventory/Edit/@Model.Id"
-       class="btn btn-light ms-auto me-1">
-        Edit
-    </a>
-    <a href="/CustomId/Edit?inventoryId=@Model.Id" class="btn btn-warning me-1">
-        Custom ID
-    </a>
-    <a href="/Item/Index?inventoryId=@Model.Id" class="btn btn-success">
-        Open Items
-    </a>
 </div>
 
 
@@ -40,10 +30,10 @@
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label>Show in Table</label>
-        <input class="form-check-input form-control ms-4" asp-for="ShowInTable" type="checkbox" />
-        <span asp-validation-for="ShowInTable" class="text-danger"></span>
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="ShowInTable" />
+        <label class="form-check-label">Show in table</label>
+        <span asp-validation-for="ShowInTable" class="text-danger d-block"></span>
     </div>
 
     <div class="mb-3">

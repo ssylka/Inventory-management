@@ -1,26 +1,188 @@
 @using Inventory_Managment.Models
-@model AppUser
+@model Inventory_Managment.Models.Dto.ProfileViewModel
 
 @{
-    var inventories = ViewBag.Inventories as List<Inventory> ?? new List<Inventory>();
+    ViewData["Title"] = Model.User.Name;
 }
 
-<h2>@Model.Name</h2>
-<p class="text-muted">@Model.Email</p>
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">@Model.User.Name</h2>
+        <p class="text-muted mb-0">@Model.User.Email</p>
+    </div>
+    @if (Model.IsOwnProfile)
+    {
+        <a asp-controller="Inventory" asp-action="Create" class="btn btn-primary">+ New Inventory</a>
+    }
+</div>
 
-<h5 class="mt-4">Inventories</h5>
-@if (!inventories.Any())
-{
-    <p class="text-muted">No public inventories.</p>
-}
-else
-{
-    <ul class="list-group">
-        @foreach (var inv in inventories)
+<h5 class="mt-4">My Inventories</h5>
+
+<div class="mb-2 d-flex gap-2 align-items-center">
+    <input id="owned-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="Filter by title…" />
+    <select id="owned-sort" class="form-select form-select-sm" style="max-width:180px">
+        <option value="title-asc">Title A→Z</option>
+        <option value="title-desc">Title Z→A</option>
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+    </select>
+    @if (Model.IsOwnProfile)
+    {
+        <button id="owned-delete-btn" class="btn btn-danger btn-sm ms-auto d-none">Delete selected</button>
+    }
+</div>
+
+<table class="table table-bordered table-striped" id="owned-table">
+    <thead>
+        <tr>
+            @if (Model.IsOwnProfile)
+            {
+                <th style="width:36px">
+                    <input type="checkbox" id="owned-select-all" />
+                </th>
+            }
+            <th>Title</th>
+            <th>Description</th>
+            <th>Public</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody id="owned-tbody">
+        @foreach (var inv in Model.OwnedInventories)
         {
-            <li class="list-group-item">
-                <a href="/Inventory/Details/@inv.Id">@inv.Title</a>
-            </li>
+            <tr data-id="@inv.Id"
+                data-title="@inv.Title.ToLower()"
+                data-date="@inv.CreatedAt.Ticks"
+                onclick="window.location='/Inventory/Details/@inv.Id'"
+                style="cursor:pointer">
+                @if (Model.IsOwnProfile)
+                {
+                    <td onclick="event.stopPropagation()">
+                        <input type="checkbox" class="owned-checkbox" value="@inv.Id" />
+                    </td>
+                }
+                <td>@inv.Title</td>
+                <td class="text-muted">@inv.Description</td>
+                <td>@(inv.IsPublic ? "✓" : "")</td>
+                <td>@inv.CreatedAt.ToString("yyyy-MM-dd")</td>
+            </tr>
         }
-    </ul>
+    </tbody>
+</table>
+@if (!Model.OwnedInventories.Any())
+{
+    <p class="text-muted">No inventories yet.</p>
+}
+
+<h5 class="mt-5">Write Access</h5>
+
+<div class="mb-2 d-flex gap-2 align-items-center">
+    <input id="access-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="Filter by title…" />
+    <select id="access-sort" class="form-select form-select-sm" style="max-width:180px">
+        <option value="title-asc">Title A→Z</option>
+        <option value="title-desc">Title Z→A</option>
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+    </select>
+</div>
+
+<table class="table table-bordered table-striped" id="access-table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Public</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody id="access-tbody">
+        @foreach (var inv in Model.AccessInventories)
+        {
+            <tr data-id="@inv.Id"
+                data-title="@inv.Title.ToLower()"
+                data-date="@inv.CreatedAt.Ticks"
+                onclick="window.location='/Inventory/Details/@inv.Id'"
+                style="cursor:pointer">
+                <td>@inv.Title</td>
+                <td class="text-muted">@inv.Description</td>
+                <td>@(inv.IsPublic ? "✓" : "")</td>
+                <td>@inv.CreatedAt.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (!Model.AccessInventories.Any())
+{
+    <p class="text-muted">No inventories with write access.</p>
+}
+
+@section Scripts {
+<script>
+    // Generic filter + sort for a tbody
+    function applyFilterSort(tbodyId, filterVal, sortVal) {
+        const tbody = document.getElementById(tbodyId);
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        // Filter
+        const term = filterVal.toLowerCase();
+        rows.forEach(r => {
+            r.style.display = r.dataset.title.includes(term) ? "" : "none";
+        });
+
+        // Sort only visible rows
+        const visible = rows.filter(r => r.style.display !== "none");
+        visible.sort((a, b) => {
+            switch (sortVal) {
+                case "title-asc":  return a.dataset.title.localeCompare(b.dataset.title);
+                case "title-desc": return b.dataset.title.localeCompare(a.dataset.title);
+                case "date-asc":   return Number(a.dataset.date) - Number(b.dataset.date);
+                case "date-desc":  return Number(b.dataset.date) - Number(a.dataset.date);
+            }
+        });
+        visible.forEach(r => tbody.appendChild(r));
+    }
+
+    // Owned table
+    const ownedFilter = document.getElementById("owned-filter");
+    const ownedSort   = document.getElementById("owned-sort");
+    function refreshOwned() { applyFilterSort("owned-tbody", ownedFilter.value, ownedSort.value); }
+    ownedFilter?.addEventListener("input", refreshOwned);
+    ownedSort?.addEventListener("change", refreshOwned);
+
+    // Access table
+    const accessFilter = document.getElementById("access-filter");
+    const accessSort   = document.getElementById("access-sort");
+    function refreshAccess() { applyFilterSort("access-tbody", accessFilter.value, accessSort.value); }
+    accessFilter?.addEventListener("input", refreshAccess);
+    accessSort?.addEventListener("change", refreshAccess);
+
+    // Delete owned inventories
+    const deleteBtn     = document.getElementById("owned-delete-btn");
+    const selectAll     = document.getElementById("owned-select-all");
+
+    document.getElementById("owned-tbody")?.addEventListener("change", e => {
+        if (!e.target.classList.contains("owned-checkbox")) return;
+        const anyChecked = document.querySelectorAll(".owned-checkbox:checked").length > 0;
+        deleteBtn?.classList.toggle("d-none", !anyChecked);
+    });
+
+    selectAll?.addEventListener("change", function () {
+        document.querySelectorAll(".owned-checkbox").forEach(cb => cb.checked = this.checked);
+        const anyChecked = document.querySelectorAll(".owned-checkbox:checked").length > 0;
+        deleteBtn?.classList.toggle("d-none", !anyChecked);
+    });
+
+    deleteBtn?.addEventListener("click", async () => {
+        const ids = Array.from(document.querySelectorAll(".owned-checkbox:checked"))
+            .map(cb => Number(cb.value));
+        if (!ids.length) return;
+        const res = await fetch('/Inventory/Delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ids)
+        });
+        if (res.ok) location.reload();
+        else alert(await res.text());
+    });
+</script>
 }

@@ -41,6 +41,9 @@
         <li class="nav-item">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-custom-id">Custom ID</button>
         </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-access">Access</button>
+        </li>
     }
 </ul>
 
@@ -256,7 +259,33 @@
                 }
             </div>
 
+        <div id="cid-trash" class="d-none mt-3 p-3 border border-danger rounded text-danger text-center"
+             style="background: #fff5f5; border-style: dashed !important;">
+            🗑 Drop here to remove
+        </div>
+
         <button type="button" id="cid-add" class="btn btn-secondary mt-3">Add element</button>
+    </div>
+
+    <div class="tab-pane fade" id="tab-access">
+
+        <div id="access-list" class="list-group mb-3">
+            @foreach (var u in Model.AccessUsers)
+            {
+                <div class="access-item list-group-item d-flex align-items-center justify-content-between"
+                     data-user-id="@u.Id">
+                    <div>
+                        <strong>@u.Name</strong>
+                        <span class="text-muted ms-2">@u.Email</span>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger btn-sm access-remove">Remove</button>
+                </div>
+            }
+        </div>
+
+        <div class="position-relative" style="max-width:400px;">
+            <input id="access-search" class="form-control" placeholder="Search by name or email…" autocomplete="off" />
+        </div>
     </div>
 
 </div>
@@ -270,7 +299,7 @@
     let currentXmin = @inv.xmin;
     let currentFieldOrders = [];
 
-    // ── Discussion ────────────────────────────────────────────────────────────
+    // Discussion
     let lastPostId = 0;
     const isAuth = @((User.IsInRole("Active") || User.IsInRole("Admin")) ? "true" : "false");
     const canEditItems = @(canEditItems.ToString().ToLower());
@@ -337,6 +366,11 @@
             Order: i
         }));
 
+        // Collect current access user IDs from the rendered list
+        const accessUserIds = Array.from(
+            document.querySelectorAll("#access-list .access-item")
+        ).map(el => el.dataset.userId);
+
         const dto = {
             Id: Number(document.getElementById('settings-id').value),
             xmin: currentXmin,
@@ -347,7 +381,8 @@
             ImageUrl: document.getElementById('settings-imageurl').value || null,
             TagNames: tagNames,
             CustomIdElements: cidElements,
-            FieldOrders: currentFieldOrders
+            FieldOrders: currentFieldOrders,
+            AccessUserIds: accessUserIds
         };
 
         try {
@@ -375,7 +410,7 @@
         }
     }
 
-    // ── Tags management (global for onclick= attributes) ──────────────────────
+    // Tags management
     function addTag() {
         const container = document.getElementById("tags-container");
         const index = container.children.length;
@@ -471,6 +506,64 @@
             el.addEventListener('input', markChanged);
             el.addEventListener('change', markChanged);
         });
+
+        // Access tab
+        const accessList   = document.getElementById("access-list");
+        const accessSearch = document.getElementById("access-search");
+
+        accessList.addEventListener("click", e => {
+            if (!e.target.classList.contains("access-remove")) return;
+            e.target.closest(".access-item").remove();
+            markChanged();
+        });
+
+        accessSearch.addEventListener("input", async () => {
+            const term = accessSearch.value.trim();
+            removeAccessSuggestions();
+            if (!term) return;
+
+            const existingIds = Array.from(accessList.querySelectorAll(".access-item"))
+                .map(el => el.dataset.userId).join(",");
+
+            const res = await fetch(`/Inventory/GetUsers?term=${encodeURIComponent(term)}&ids=${existingIds}`);
+            const users = await res.json();
+            showAccessSuggestions(accessSearch, users);
+        });
+
+        document.addEventListener("click", e => {
+            if (!e.target.closest("#tab-access .position-relative")) removeAccessSuggestions();
+        });
+
+        function showAccessSuggestions(input, users) {
+            removeAccessSuggestions();
+            if (!users.length) return;
+            const list = document.createElement("ul");
+            list.className = "access-suggestions list-group position-absolute w-100 shadow";
+            list.style.cssText = "top:100%;left:0;z-index:1000";
+            users.forEach(u => {
+                const li = document.createElement("li");
+                li.className = "list-group-item list-group-item-action";
+                li.innerHTML = `<strong>${u.name}</strong> <span class="text-muted">${u.email}</span>`;
+                li.onclick = () => {
+                    const div = document.createElement("div");
+                    div.className = "access-item list-group-item d-flex align-items-center justify-content-between";
+                    div.dataset.userId = u.id;
+                    div.innerHTML = `
+                        <div><strong>${u.name}</strong><span class="text-muted ms-2">${u.email}</span></div>
+                        <button type="button" class="btn btn-outline-danger btn-sm access-remove">Remove</button>`;
+                    accessList.appendChild(div);
+                    accessSearch.value = "";
+                    list.remove();
+                    markChanged();
+                };
+                list.appendChild(li);
+            });
+            input.parentElement.appendChild(list);
+        }
+
+        function removeAccessSuggestions() {
+            document.querySelectorAll(".access-suggestions").forEach(x => x.remove());
+        }
     }
 
     // Tags autocomplete
@@ -489,7 +582,7 @@
         if (!tags.length) return;
         const list = document.createElement("ul");
         list.className = "tag-suggestions list-group position-absolute w-100 shadow";
-        list.style.cssText = "top:100%;left:0;z-index:1000";
+        list.style.cssText = "top:100%;left:5%;z-index:1000";
         tags.forEach(tag => {
             const li = document.createElement("li");
             li.className = "list-group-item list-group-item-action";
@@ -528,7 +621,6 @@
         const dd = String(date.getDate()).padStart(2, '0');
         const mm = String(date.getMonth() + 1).padStart(2, '0');
         const yyyy = date.getFullYear();
-
        return `${dd}.${mm}.${yyyy}`;
     }
     function applyDateFormat(date, format) {
@@ -608,11 +700,41 @@
         mutations.forEach(m => m.addedNodes.forEach(n => { if (n.classList?.contains("element")) initCidElement(n); }));
     }).observe(cidContainer, { childList: true });
 
+    const trashZone = document.getElementById("cid-trash");
+
     new Sortable(cidContainer, {
         animation: 150,
         handle: ".drag-handle",
-        onStart: () => document.querySelectorAll(".help-btn").forEach(btn => bootstrap.Popover.getInstance(btn)?.dispose()),
-        onEnd: () => { updateCidOrder(); document.querySelectorAll("#cid-elements .element").forEach(initCidElement); markChanged(); }
+        group: {
+            name: "cid-group", 
+            pull: true,  
+            put: false 
+        },
+        onStart: () => {
+            // Reveal
+            trashZone.classList.remove("d-none");
+        },
+        onEnd: () => {
+            trashZone.classList.add("d-none");
+            updateCidOrder();
+            document.querySelectorAll("#cid-elements .element").forEach(initCidElement);
+            markChanged();
+        }
+    });
+
+    new Sortable(trashZone, {
+        animation: 150,
+        group: {
+            name: "cid-group",
+            pull: false, 
+            put: true
+        },
+        onAdd: (evt) => {
+            evt.item.remove();
+            updateCidOrder();
+            markChanged();
+            trashZone.classList.add("d-none");
+        }
     });
 
     document.getElementById("cid-add").onclick = () => {
@@ -661,13 +783,12 @@
 
     updateCidPreview();
 
-    // Auto-save interval + unsaved guard
     setInterval(doSave, 8000);
     window.addEventListener("beforeunload", e => {
         if (hasChanges) { e.preventDefault(); e.returnValue = ""; }
     });
 
-    // ── Discussion ────────────────────────────────────────────
+    // Discussion
     await loadPosts(0);
     setInterval(() => loadPosts(lastPostId), 3000);
 

@@ -1,4 +1,5 @@
 using Inventory_Managment.Models;
+using Inventory_Managment.Models.Dto;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -219,12 +220,29 @@ This email was sent automatically. Please do not reply.
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            var inventories = await _context.Inventories
-                .Where(i => i.CreatorId == id && (i.IsPublic || User.Identity!.IsAuthenticated))
+            var currentUserId = _userManager.GetUserId(User);
+            var isAuthenticated = User.Identity!.IsAuthenticated;
+
+            var owned = await _context.Inventories
+                .Where(i => i.CreatorId == id && (i.IsPublic || isAuthenticated))
                 .ToListAsync();
 
-            ViewBag.Inventories = inventories;
-            return View(user);
+            var access = await _context.InventoryAccess
+                .Where(a => a.UserId == id)
+                .Include(a => a.Inventory)
+                .Select(a => a.Inventory!)
+                .Where(i => i.IsPublic || isAuthenticated)
+                .ToListAsync();
+
+            var vm = new ProfileViewModel
+            {
+                User = user,
+                OwnedInventories = owned,
+                AccessInventories = access,
+                IsOwnProfile = currentUserId == id
+            };
+
+            return View(vm);
         }
     }
 }

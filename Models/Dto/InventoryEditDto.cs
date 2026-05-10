@@ -1,4 +1,4 @@
-﻿namespace Inventory_Managment.Models.Dto
+namespace Inventory_Managment.Models.Dto
 {
     public class InventoryEditDto
     {
@@ -12,5 +12,6 @@
         public uint xmin { get; set; }
         public List<CustomIdElementDto> CustomIdElements { get; set; } = new();
         public List<FieldOrderDto> FieldOrders { get; set; } = new();
+        public List<string> AccessUserIds { get; set; } = new();
     }
 }

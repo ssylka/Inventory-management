@@ -35,7 +35,7 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item ms-auto me-2">
-                                <a class="nav-link text-muted" asp-controller="Account" asp-action="Profile" asp-route-id="@currentUser?.Id">
+                                <a class="btn btn-info nav-link text-muted" asp-controller="Account" asp-action="Profile" asp-route-id="@currentUser?.Id">
                                     Hi, @currentUser?.Name
                                 </a>
                             </li>

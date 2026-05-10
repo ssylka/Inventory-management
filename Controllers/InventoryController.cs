@@ -46,6 +46,12 @@ namespace Inventory_Managment.Controllers
             var isAdmin = User.IsInRole("Admin");
             var isActive = User.IsInRole("Active");
 
+            var accessUsers = await _context.InventoryAccess
+                .Where(a => a.InventoryId == id)
+                .Include(a => a.User)
+                .Select(a => new AccessUserDto { Id = a.User!.Id, Name = a.User.Name, Email = a.User.Email ?? "" })
+                .ToListAsync();
+
             var vm = new InventoryDetailsViewModel
             {
                 Inventory = inventory,
@@ -59,7 +65,8 @@ namespace Inventory_Managment.Controllers
                     .OrderBy(e => e.Order)
                     .ToListAsync(),
                 CanEditItems = _inventoryService.CanEdit(inventory, userId, isAdmin, isActive),
-                CanEditSettings = _inventoryService.CanEditSettings(inventory, userId, isAdmin)
+                CanEditSettings = _inventoryService.CanEditSettings(inventory, userId, isAdmin),
+                AccessUsers = accessUsers
             };
 
             return View(vm);
@@ -86,10 +93,8 @@ namespace Inventory_Managment.Controllers
 
             try
             {
-                // 1. Настройки + теги (включает SaveChangesAsync с проверкой xmin)
                 await _inventoryService.UpdateTagsForInventoryAsync(inventory);
 
-                // 2. Custom ID — заменяем все элементы целиком
                 var oldElements = _context.CustomIdElements
                     .Where(e => e.InventoryId == dto.Id);
                 _context.CustomIdElements.RemoveRange(oldElements);
@@ -100,9 +105,24 @@ namespace Inventory_Managment.Controllers
                     Value = string.IsNullOrEmpty(e.Value) ? null : e.Value,
                     Order = e.Order
                 }));
+
+                // Access list diff-update: same pattern as tags — remove gone, add new
+                var existingAccess = await _context.InventoryAccess
+                    .Where(a => a.InventoryId == dto.Id)
+                    .ToListAsync();
+                var toRemove = existingAccess
+                    .Where(a => !dto.AccessUserIds.Contains(a.UserId))
+                    .ToList();
+                var existingIds = existingAccess.Select(a => a.UserId).ToHashSet();
+                var toAdd = dto.AccessUserIds
+                    .Where(uid => !existingIds.Contains(uid))
+                    .Select(uid => new InventoryAccess { InventoryId = dto.Id, UserId = uid });
+                _context.InventoryAccess.RemoveRange(toRemove);
+                _context.InventoryAccess.AddRange(toAdd);
+
                 await _context.SaveChangesAsync();
 
-                // 3. Порядок полей
+                // Field's order
                 if (dto.FieldOrders.Count > 0)
                 {
                     var fieldIds = dto.FieldOrders.Select(f => f.Id).ToList();
@@ -152,6 +172,23 @@ namespace Inventory_Managment.Controllers
             await _context.SaveChangesAsync();
 
             return Redirect($"/Inventory/Details/{inventory.Id}#fields");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers(string term, string? ids)
+        {
+            // Search by name OR email, exclude already-added users
+            var excludeIds = ids?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+                             ?? new List<string>();
+            var lower = term.ToLower();
+            var users = await _context.Users
+                .Where(u => !excludeIds.Contains(u.Id)
+                         && (u.Name.ToLower().Contains(lower) || (u.Email.ToLower().Contains(lower))))
+                .Select(u => new AccessUserDto { Id = u.Id, Name = u.Name, Email = u.Email ?? "" })
+                .Take(10)
+                .ToListAsync();
+
+            return Ok(users);
         }
 
         [HttpGet]

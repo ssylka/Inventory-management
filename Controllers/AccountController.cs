@@ -214,13 +214,13 @@ This email was sent automatically. Please do not reply.
             return RedirectToAction("Index", "Inventory");
         }
 
-        public async Task<IActionResult> Profile(string userId)
+        public async Task<IActionResult> Profile(string id)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
             var inventories = await _context.Inventories
-                .Where(i => i.CreatorId == userId && (i.IsPublic || User.Identity!.IsAuthenticated))
+                .Where(i => i.CreatorId == id && (i.IsPublic || User.Identity!.IsAuthenticated))
                 .ToListAsync();
 
             ViewBag.Inventories = inventories;

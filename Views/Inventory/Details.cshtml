@@ -506,34 +506,49 @@
 
     document.addEventListener("click", e => { if (!e.target.closest(".tag-item")) removeTagSuggestions(); });
 
-    // Custom ID tab
     const cidContainer = document.getElementById("cid-elements");
 
+    // format: [prefix][D|X][width][suffix], e.g. "-D3" → "-042", "X5_" → "1A3F0_"
     function applyNumberFormat(num, format) {
         if (!format) return num.toString();
-        const dMatch = format.match(/D(\d+)/i);
-        if (dMatch) return num.toString().padStart(parseInt(dMatch[1]), "0") + format.replace(dMatch[0], "");
-        if (format.toUpperCase().startsWith("X")) return num.toString(16).toUpperCase();
-        return num.toString() + format;
+        const match = format.match(/^(.*?)(D|X)(\d*)(.*?)$/i);
+        if (!match) return num.toString();
+        const prefix = match[1];
+        const spec   = match[2].toUpperCase();
+        const width  = parseInt(match[3]) || 0;
+        const suffix = match[4];
+        const numStr = spec === 'X'
+            ? num.toString(16).toUpperCase().padStart(width, '0')
+            : num.toString().padStart(width, '0');
+        return prefix + numStr + suffix;
     }
 
+    function getUsiallyDate(){
+        const date = new Date();
+        const dd = String(date.getDate()).padStart(2, '0');
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const yyyy = date.getFullYear();
+
+       return `${dd}.${mm}.${yyyy}`;
+    }
     function applyDateFormat(date, format) {
         if (!format) return date.getFullYear().toString();
         return format
             .replace("yyyy", date.getFullYear()).replace("yy", String(date.getFullYear()).slice(-2))
             .replace("MM", String(date.getMonth() + 1).padStart(2, "0")).replace("dd", String(date.getDate()).padStart(2, "0"))
             .replace("HH", String(date.getHours()).padStart(2, "0")).replace("mm", String(date.getMinutes()).padStart(2, "0"))
-            .replace("ss", String(date.getSeconds()).padStart(2, "0"));
+            .replace("ss", String(date.getSeconds()).padStart(2, "0"))
+            .replace("d", String(getUsiallyDate()));
     }
 
     function formatCidValue(type, val) {
         try {
             const now = new Date();
             if (type === "Sequence") return applyNumberFormat(5, val);
-            if (type === "Random6") return applyNumberFormat(123456, val);
-            if (type === "Random9") return applyNumberFormat(123456789, val);
-            if (type === "Random20") return applyNumberFormat(123456, val);
-            if (type === "Random32") return applyNumberFormat(123456789, val);
+            if (type === "Random6")  return applyNumberFormat(483920, val);       // up to 999 999
+            if (type === "Random9")  return applyNumberFormat(384729104, val);    // up to 999 999 999
+            if (type === "Random20") return applyNumberFormat(548293, val);       // up to 1 048 575 (2^20)
+            if (type === "Random32") return applyNumberFormat(2847291056, val);   // up to 4 294 967 295 (2^32)
             if (type === "DateTime") return applyDateFormat(now, val);
             if (type === "Guid") {
                 const g = "550e8400-e29b-41d4-a716-446655440000";
@@ -558,9 +573,9 @@
 
     function getCidHelp(type) {
         const helps = {
-            Fixed:    { text: "Static text.",                   popover: "<b>Fixed text</b><br>Any constant value.<br><code>BOOK-</code>, <code>ID_</code>" },
+            Fixed:    { text: "Static text.",                    popover: "<b>Fixed text</b><br>Any constant value.<br><code>BOOK-</code>, <code>ID_</code>" },
             Sequence: { text: "Auto-increment number.",          popover: "<b>Sequence</b><br><code>D</code> → 1, <code>D3</code> → 001, <code>D6</code> → 000001" },
-            DateTime: { text: "Date/time format.",               popover: "<b>Date/time</b><br><code>yyyy</code> → 2026, <code>MM</code> → 05, <code>dd</code> → 01" },
+            DateTime: { text: "Date/time format.",               popover: "<b>Date/time</b><br><code>yyyy</code> → 2026, <code>MM</code> → 05, <code>dd</code> → 01,<br> <code>d</code> →" + getUsiallyDate()},
             Random6:  { text: "6-digit random.",                 popover: "<b>Random 6 digits</b><br>Example: <code>483920</code>" },
             Random9:  { text: "9-digit random.",                 popover: "<b>Random 9 digits</b><br>Example: <code>384729104</code>" },
             Random20: { text: "20-bit random (0–1,048,575).",    popover: "<b>20-bit random</b><br>Example: <code>582391</code>" },

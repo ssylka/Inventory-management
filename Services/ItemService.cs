@@ -1,6 +1,7 @@
 ﻿using Inventory_Managment.Models;
 using Inventory_Managment.Models.Directory;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace Inventory_Managment.Services
 {
@@ -29,23 +30,46 @@ namespace Inventory_Managment.Services
 
             return string.Join("", parts);
         }
+        // Formats a number using pattern [prefix][D|X][width][suffix], e.g. "-D3" → "-042", "X5_" → "1A3F0_"
+        private static string FormatNumber(long num, string? format)
+        {
+            if (string.IsNullOrEmpty(format))
+                return num.ToString();
+
+            var match = Regex.Match(format, @"^(.*?)(D|X)(\d*)(.*?)$", RegexOptions.IgnoreCase);
+            if (!match.Success)
+                return num.ToString();
+
+            var prefix = match.Groups[1].Value;
+            var spec   = match.Groups[2].Value.ToUpper();
+            var width  = string.IsNullOrEmpty(match.Groups[3].Value) ? 0 : int.Parse(match.Groups[3].Value);
+            var suffix = match.Groups[4].Value;
+
+            var numStr = spec == "X"
+                ? num.ToString("X").PadLeft(width, '0')
+                : num.ToString().PadLeft(width, '0');
+
+            return prefix + numStr + suffix;
+        }
+
         private async Task<string> GeneratePart(CustomIdElement el, int inventoryId)
         {
             return el.Type switch
             {
-                CustomIdElementType.Fixed => el.Value ?? "",
-
-                CustomIdElementType.Random20 =>
-                    Random.Shared.Next(0, 1 << 20).ToString(el.Value ?? "D6"),
-
-                CustomIdElementType.Random32 =>
-                    Random.Shared.Next().ToString(el.Value ?? "D9"),
+                CustomIdElementType.Fixed =>
+                    el.Value ?? "",
 
                 CustomIdElementType.Random6 =>
-                    Random.Shared.Next(0, 999999).ToString(el.Value ??"D6"),
+                    FormatNumber(Random.Shared.Next(0, 1_000_000), el.Value),
 
                 CustomIdElementType.Random9 =>
-                    Random.Shared.Next(0, 999999999).ToString(el.Value ?? "D9"),
+                    FormatNumber(Random.Shared.Next(0, 1_000_000_000), el.Value),
+
+                CustomIdElementType.Random20 =>
+                    FormatNumber(Random.Shared.Next(0, 1 << 20), el.Value),
+
+                CustomIdElementType.Random32 =>
+                    FormatNumber(Random.Shared.NextInt64(0, 1L << 32), el.Value),
 
                 CustomIdElementType.Guid =>
                     Guid.NewGuid().ToString(el.Value),
@@ -54,11 +78,12 @@ namespace Inventory_Managment.Services
                     DateTime.UtcNow.ToString(el.Value ?? "yyyy"),
 
                 CustomIdElementType.Sequence =>
-                    (await GetNextSequence(inventoryId)).ToString(el.Value ?? "D"),
+                    FormatNumber(await GetNextSequence(inventoryId), el.Value),
 
                 _ => ""
             };
         }
+        
         public async Task<int> GetNextSequence(int inventoryId)
         {
             var inventory = await _context.Inventories

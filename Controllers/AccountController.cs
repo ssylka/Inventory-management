@@ -1,6 +1,7 @@
 using Inventory_Managment.Models;
 using Inventory_Managment.Models.Dto;
 using Inventory_Managment.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -34,6 +35,20 @@ namespace Inventory_Managment.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password, string name)
         {
+            if (string.IsNullOrWhiteSpace(email))
+                ModelState.AddModelError("email", "Email is required.");
+
+            if (string.IsNullOrWhiteSpace(password))
+                ModelState.AddModelError("password", "Password is required.");
+
+            if (string.IsNullOrWhiteSpace(name))
+                ModelState.AddModelError("name", "Name is required.");
+
+            if (!ModelState.IsValid)
+                return View();
+
+            name = name.Trim();
+
             var user = new AppUser
             {
                 UserName = email,

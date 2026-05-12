@@ -1,10 +1,13 @@
 ﻿using Inventory_Managment.Models;
 using Inventory_Managment.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Controllers
 {
+    [Authorize(Roles = "Admin, Active")]
+
     public class CustomIdController : Controller
     {
         private readonly AppDbContext _context;

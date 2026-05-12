@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "User Management";
+    var currentUserId = ViewBag.CurrentUserId as string;
 }
 
 <h2 class="mb-3">User Management</h2>
@@ -26,9 +27,10 @@
     <tbody id="users-tbody">
         @foreach (var u in Model)
         {
+            var isSelf = u.Id == currentUserId;
             <tr data-id="@u.Id" data-search="@(u.Name.ToLower()) @(u.Email.ToLower())">
                 <td><input class="form-check-input user-checkbox" type="checkbox" value="@u.Id" /></td>
-                <td>@u.Name</td>
+                <td>@u.Name @if (isSelf) { <span class="text-muted small">(you)</span> }</td>
                 <td class="text-muted">@u.Email</td>
                 <td>
                     @if (u.IsAdmin)      { <span class="badge bg-success">Admin</span> }
@@ -52,7 +54,7 @@
 
 @section Scripts {
 <script>
-    // ── Filter ───────────────────────────────────────────────────────────────
+    // Filter
     document.getElementById("user-filter").addEventListener("input", function () {
         const term = this.value.toLowerCase();
         document.querySelectorAll("#users-tbody tr").forEach(row => {
@@ -60,7 +62,7 @@
         });
     });
 
-    // ── Select-all ───────────────────────────────────────────────────────────
+    // Select-all
     document.getElementById("select-all").addEventListener("change", function () {
         document.querySelectorAll(".user-checkbox").forEach(cb => cb.checked = this.checked);
         updateActionBar();
@@ -80,26 +82,38 @@
         document.getElementById("action-bar").classList.toggle("d-none", !any);
     }
 
-    // ── Bulk action helper ───────────────────────────────────────────────────
+    // Bulk action helper
     async function bulkAction(action) {
         const ids = getSelectedIds();
         if (!ids.length) return;
 
-        await Promise.all(ids.map(id =>
+        const results = await Promise.all(ids.map(id =>
             fetch(`/Admin/${action}/${id}`, { method: "POST" })
         ));
+
+        const errors = await Promise.all(
+            results.filter(r => !r.ok).map(r => r.text())
+        );
+
+        if (errors.length) alert(errors.join("\n"));
         location.reload();
     }
 
-    // ── Delete with confirmation ─────────────────────────────────────────────
+    // Delete with confirmation
     async function bulkDelete() {
         const ids = getSelectedIds();
         if (!ids.length) return;
         if (!confirm(`Delete ${ids.length} user(s)? This cannot be undone.`)) return;
 
-        await Promise.all(ids.map(id =>
+        const results = await Promise.all(ids.map(id =>
             fetch(`/Admin/Delete/${id}`, { method: "POST" })
         ));
+
+        const errors = await Promise.all(
+            results.filter(r => !r.ok).map(r => r.text())
+        );
+
+        if (errors.length) alert(errors.join("\n"));
         location.reload();
     }
 

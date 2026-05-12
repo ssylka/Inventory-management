@@ -31,6 +31,13 @@ namespace Inventory_Managment
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+            {
+                // Re-validate the cookie against the DB security stamp on every request.
+                // This ensures role changes (block, remove admin, etc.) take effect immediately.
+                options.ValidationInterval = TimeSpan.Zero;
+            });
+
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddAuthentication()

@@ -20,9 +20,11 @@ namespace Inventory_Managment.Controllers
             _context = context;
         }
 
+        private string? CurrentUserId => _userManager.GetUserId(User);
+
         public async Task<IActionResult> Index()
         {
-            // Single query: join Users → UserRoles → Roles, group by user
+            ViewBag.CurrentUserId = CurrentUserId;
             var userRoles = await _context.Users
                 .GroupJoin(
                     _context.UserRoles,
@@ -33,7 +35,7 @@ namespace Inventory_Managment.Controllers
                     x => x.urs.DefaultIfEmpty(),
                     (x, ur) => new { x.u, RoleId = ur == null ? null : ur.RoleId })
                 .Join(
-                    _context.Roles.Select(r => new { r.Id, r.Name }),
+                    _context.Roles,
                     x => x.RoleId,
                     r => r.Id,
                     (x, r) => new { x.u, RoleName = r.Name })
@@ -58,8 +60,12 @@ namespace Inventory_Managment.Controllers
         [HttpPost]
         public async Task<IActionResult> Block(string id)
         {
+            if (id == CurrentUserId) return BadRequest("You cannot block yourself.");
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
+
+            var appUser = await _context.Users.FindAsync(id);
+            if (appUser != null) appUser.LockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
 
             await _userManager.RemoveFromRolesAsync(user,
                 new[] { "Active", "Admin", "Unverified" });
@@ -69,6 +75,7 @@ namespace Inventory_Managment.Controllers
                 await _userManager.AddToRoleAsync(user, "Blocked");
             }
 
+            await _userManager.UpdateSecurityStampAsync(user);
             return Ok();
         }
 
@@ -77,16 +84,21 @@ namespace Inventory_Managment.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
-
+            
+            var appUser = await _context.Users.FindAsync(id);
+            if (appUser != null) user.LockoutEnd = null;
+            
             await _userManager.RemoveFromRoleAsync(user, "Blocked");
             await _userManager.AddToRoleAsync(user, "Active");
 
+            await _userManager.UpdateSecurityStampAsync(user);
             return Ok();
         }
             
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
+            if (id == CurrentUserId) return BadRequest("You cannot delete yourself.");
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
@@ -106,6 +118,7 @@ namespace Inventory_Managment.Controllers
             if (!await _userManager.IsInRoleAsync(user, "Admin"))
                 await _userManager.AddToRoleAsync(user, "Admin");
 
+            await _userManager.UpdateSecurityStampAsync(user);
             return Ok();
         }
 
@@ -117,6 +130,7 @@ namespace Inventory_Managment.Controllers
 
             await _userManager.RemoveFromRoleAsync(user, "Admin");
 
+            await _userManager.UpdateSecurityStampAsync(user);
             return Ok();
         }
     }

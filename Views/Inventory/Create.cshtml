@@ -1,106 +1,86 @@
-﻿@model Inventory
+@model Inventory_Managment.Models.Inventory
 
 <div class="d-flex align-items-center mb-3">
     <button type="button" class="btn btn-light me-3">
-        <a asp-controller="Inventory"
-           asp-action="Index"
-           style="text-decoration: none; color: black">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 width="16"
-                 height="16"
-                 fill="currentColor"
-                 class="bi bi-backspace"
-                 viewBox="0 0 16 16">
-                <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z" />
-                <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" />
+        <a asp-controller="Inventory" asp-action="Index" style="text-decoration:none;color:black">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace" viewBox="0 0 16 16">
+                <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z"/>
+                <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
             </svg>
         </a>
     </button>
-
-    <h2>Create Inventory</h2>
+    <h2 class="mb-0">Create Inventory</h2>
 </div>
 
-<form method="post">
+<form method="post" style="max-width:600px">
 
     <div class="mb-3">
-        <label>Title</label>
+        <label class="form-label">Title</label>
         <input class="form-control" asp-for="Title" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Description</label>
+        <label class="form-label">Description</label>
         <textarea class="form-control" asp-for="Description"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="form-check mb-3">
         <input class="form-check-input" asp-for="IsPublic" />
-        <label class="form-check-label">Is public?</label>
-        <span asp-validation-for="IsPublic" class="text-danger d-block"></span>
+        <label class="form-check-label">Public (all authenticated users can edit items)</label>
     </div>
 
     <div class="mb-3">
-        <label>Category</label>
-
+        <label class="form-label">Category</label>
         <select asp-for="CategoryId" class="form-select">
             @foreach (var c in ViewBag.Categories)
             {
                 <option value="@c.Id">@c.Name</option>
             }
         </select>
-
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Tags</label>
+        <label class="form-label">Tags</label>
+        <div id="tags-container"></div>
+        <button type="button" onclick="addTag()" class="btn btn-outline-secondary btn-sm mt-1">+ Add tag</button>
+    </div>
 
-        <div id="tags-container">
+    <div class="mb-3">
+        <label class="form-label">Image</label>
+
+        @* Hidden field that carries the final Cloudinary URL to the server *@
+        <input type="hidden" asp-for="ImageUrl" id="image-url-hidden" />
+
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <label class="btn btn-outline-secondary mb-0" style="cursor:pointer">
+                Choose file
+                <input type="file" id="image-file-input" accept="image/*" class="d-none" />
+            </label>
+            <span id="image-upload-status" class="text-muted small"></span>
         </div>
 
-        <button type="button"
-                onclick="addTag()"
-                class="btn btn-outline-secondary btn-sm">
-            + Add tag
-        </button>
+        <div id="image-preview-wrapper" class="mt-2 d-none">
+            <img id="image-preview" src="" alt="Preview"
+                 class="rounded border" style="max-height:200px;max-width:100%;object-fit:contain;" />
+            <button type="button" id="image-remove-btn" class="btn btn-sm btn-outline-danger ms-2">Remove</button>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label>Image URL</label>
-
-        <input type="text"
-               asp-for="ImageUrl"
-               class="form-control" />
-
-        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-success">
-        Save
-    </button>
+    <button type="submit" class="btn btn-success" id="submit-btn">Save</button>
 </form>
 
 <script>
+    // ── Tag autocomplete (same pattern as Details page) ───────────────────────
     function addTag() {
         const container = document.getElementById("tags-container");
         const index = container.children.length;
-
         const div = document.createElement("div");
-
         div.className = "tag-item position-relative d-flex mb-1";
-
         div.innerHTML = `
-            <input name="TagNames[${index}]"
-                   class="form-control me-2" />
-
-            <button type="button"
-                    class="btn btn-danger btn-sm"
-                    onclick="removeTag(this)">
-                ×
-            </button>
-        `;
-
+            <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
         container.appendChild(div);
     }
 
@@ -110,85 +90,98 @@
     }
 
     function reindexTags() {
-        const inputs =
-            document.querySelectorAll("#tags-container input");
-
-        inputs.forEach((input, i) => {
+        document.querySelectorAll("#tags-container input").forEach((input, i) => {
             input.name = `TagNames[${i}]`;
         });
     }
 
     document.addEventListener("input", async (e) => {
-
-        if (!e.target.matches("#tags-container input"))
-            return;
-
+        if (!e.target.matches("#tags-container .tag-input")) return;
         const input = e.target;
-        const value = input.value;
-
-        if (!value)
-            return;
-
-        const ids = Array
-            .from(document.querySelectorAll("#tags-container input"))
-            .map(x => x.id)
-            .filter(x => x);
-
-        const res = await fetch(
-            `/Inventory/GetTags?term=${value}&ids=${ids.join(",")}`
-        );
-
-        const data = await res.json();
-
-        showSuggestions(input, data);
+        if (!input.value) return;
+        const ids = Array.from(document.querySelectorAll("#tags-container .tag-input"))
+            .map(x => x.id).filter(x => x);
+        const res = await fetch(`/Inventory/GetTags?term=${encodeURIComponent(input.value)}&ids=${ids.join(",")}`);
+        showTagSuggestions(input, await res.json());
     });
 
-    function showSuggestions(input, tags) {
-
-        removeSuggestions();
-
-        if (!tags.length)
-            return;
-
+    function showTagSuggestions(input, tags) {
+        removeTagSuggestions();
+        if (!tags.length) return;
         const list = document.createElement("ul");
-
-        list.className =
-            "tag-suggestions list-group position-absolute w-100 shadow";
-
-        list.style.top = "100%";
-        list.style.left = "0";
-        list.style.zIndex = "1000";
-
+        list.className = "tag-suggestions list-group position-absolute w-100 shadow";
+        list.style.cssText = "top:100%;left:0;z-index:1000";
         tags.forEach(tag => {
-
             const li = document.createElement("li");
-
-            li.className =
-                "list-group-item list-group-item-action";
-
+            li.className = "list-group-item list-group-item-action";
             li.textContent = tag;
-
-            li.onclick = () => {
-                input.value = tag;
-                list.remove();
-            };
-
+            li.onclick = () => { input.value = tag; list.remove(); };
             list.appendChild(li);
         });
-
         input.parentElement.appendChild(list);
     }
 
-    function removeSuggestions() {
-        document
-            .querySelectorAll(".tag-suggestions")
-            .forEach(x => x.remove());
+    function removeTagSuggestions() {
+        document.querySelectorAll(".tag-suggestions").forEach(x => x.remove());
     }
 
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".tag-item")) removeTagSuggestions();
+    });
 
-        if (!e.target.closest(".tag-item")) {
-            removeSuggestions();
+    // ── Image upload ──────────────────────────────────────────────────────────
+    const fileInput      = document.getElementById("image-file-input");
+    const hiddenUrl      = document.getElementById("image-url-hidden");
+    const status         = document.getElementById("image-upload-status");
+    const previewWrapper = document.getElementById("image-preview-wrapper");
+    const previewImg     = document.getElementById("image-preview");
+    const removeBtn      = document.getElementById("image-remove-btn");
+    const submitBtn      = document.getElementById("submit-btn");
+
+    fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        // Show a local blob preview immediately so the user doesn't wait
+        previewImg.src = URL.createObjectURL(file);
+        previewWrapper.classList.remove("d-none");
+
+        // Upload to server → Cloudinary
+        status.textContent = "Uploading…";
+        submitBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("/Inventory/UploadImage", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+
+            const data = await res.json();
+            hiddenUrl.value = data.url;           // save Cloudinary URL to hidden field
+            previewImg.src  = data.url;           // swap blob preview for real Cloudinary URL
+            status.textContent = "✓ Uploaded";
+            status.className = "text-success small";
+        } catch (err) {
+            status.textContent = "Upload failed: " + err.message;
+            status.className = "text-danger small";
+            previewWrapper.classList.add("d-none");
+            hiddenUrl.value = "";
+        } finally {
+            submitBtn.disabled = false;
         }
+    });
+
+    removeBtn.addEventListener("click", () => {
+        hiddenUrl.value = "";
+        fileInput.value = "";
+        previewWrapper.classList.add("d-none");
+        previewImg.src = "";
+        status.textContent = "";
+        status.className = "text-muted small";
     });
 </script>

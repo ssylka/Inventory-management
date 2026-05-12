@@ -1,5 +1,4 @@
-﻿using Inventory_Managment.Attributes;
-using Inventory_Managment.Models;
+﻿using Inventory_Managment.Models;
 using Inventory_Managment.Models.Directory;
 using Inventory_Managment.Models.Dto;
 using Inventory_Managment.Services;
@@ -15,11 +14,33 @@ namespace Inventory_Managment.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly InventoryService _inventoryService;
-        public InventoryController(AppDbContext context, UserManager<AppUser> userManager, InventoryService inventoryService)
+        private readonly ImageService _imageService;
+
+        public InventoryController(AppDbContext context, UserManager<AppUser> userManager,
+            InventoryService inventoryService, ImageService imageService)
         {
             _context = context;
             _userManager = userManager;
             _inventoryService = inventoryService;
+            _imageService = imageService;
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Active,Admin")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file provided.");
+
+            try
+            {
+                var url = await _imageService.UploadAsync(file);
+                return Ok(new { url });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         public async Task<IActionResult> Index()

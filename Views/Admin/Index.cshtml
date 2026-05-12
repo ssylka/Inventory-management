@@ -1,0 +1,112 @@
+@model List<Inventory_Managment.Models.Dto.UserAdminDto>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h2 class="mb-3">User Management</h2>
+
+<div class="mb-2 d-flex gap-2 align-items-center">
+    <input id="user-filter" class="form-control form-control-sm" style="max-width:300px"
+           placeholder="Filter by name or email…" />
+</div>
+
+<table class="table table-bordered table-striped table-hover align-middle">
+    <thead>
+        <tr>
+            <th style="width:40px">
+                <input type="checkbox" class="btn-check" id="select-all">
+                <label class="btn btn-outline-secondary btn-sm" for="select-all">All</label>
+            </th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody id="users-tbody">
+        @foreach (var u in Model)
+        {
+            <tr data-id="@u.Id" data-search="@(u.Name.ToLower()) @(u.Email.ToLower())">
+                <td><input class="form-check-input user-checkbox" type="checkbox" value="@u.Id" /></td>
+                <td>@u.Name</td>
+                <td class="text-muted">@u.Email</td>
+                <td>
+                    @if (u.IsAdmin)      { <span class="badge bg-success">Admin</span> }
+                    @if (u.IsBlocked)    { <span class="badge bg-danger">Blocked</span> }
+                    @if (u.IsUnverified) { <span class="badge bg-warning text-dark">Unverified</span> }
+                    @if (!u.IsAdmin && !u.IsBlocked && !u.IsUnverified) { <span class="badge bg-primary">Active</span> }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* Action buttons — appear only when at least one user is selected *@
+<div id="action-bar" class="d-none d-flex gap-2 flex-wrap mt-1">
+    <button id="btn-block"        class="btn btn-warning btn-sm">Block</button>
+    <button id="btn-unblock"      class="btn btn-success btn-sm">Unblock</button>
+    <button id="btn-make-admin"   class="btn btn-secondary btn-sm">Make Admin</button>
+    <button id="btn-remove-admin" class="btn btn-outline-secondary btn-sm">Remove Admin</button>
+    <button id="btn-delete"       class="btn btn-danger btn-sm">Delete</button>
+</div>
+
+@section Scripts {
+<script>
+    // ── Filter ───────────────────────────────────────────────────────────────
+    document.getElementById("user-filter").addEventListener("input", function () {
+        const term = this.value.toLowerCase();
+        document.querySelectorAll("#users-tbody tr").forEach(row => {
+            row.style.display = row.dataset.search.includes(term) ? "" : "none";
+        });
+    });
+
+    // ── Select-all ───────────────────────────────────────────────────────────
+    document.getElementById("select-all").addEventListener("change", function () {
+        document.querySelectorAll(".user-checkbox").forEach(cb => cb.checked = this.checked);
+        updateActionBar();
+    });
+
+    document.getElementById("users-tbody").addEventListener("change", e => {
+        if (e.target.classList.contains("user-checkbox")) updateActionBar();
+    });
+
+    function getSelectedIds() {
+        return Array.from(document.querySelectorAll(".user-checkbox:checked"))
+            .map(cb => cb.value);
+    }
+
+    function updateActionBar() {
+        const any = getSelectedIds().length > 0;
+        document.getElementById("action-bar").classList.toggle("d-none", !any);
+    }
+
+    // ── Bulk action helper ───────────────────────────────────────────────────
+    async function bulkAction(action) {
+        const ids = getSelectedIds();
+        if (!ids.length) return;
+
+        await Promise.all(ids.map(id =>
+            fetch(`/Admin/${action}/${id}`, { method: "POST" })
+        ));
+        location.reload();
+    }
+
+    // ── Delete with confirmation ─────────────────────────────────────────────
+    async function bulkDelete() {
+        const ids = getSelectedIds();
+        if (!ids.length) return;
+        if (!confirm(`Delete ${ids.length} user(s)? This cannot be undone.`)) return;
+
+        await Promise.all(ids.map(id =>
+            fetch(`/Admin/Delete/${id}`, { method: "POST" })
+        ));
+        location.reload();
+    }
+
+    document.getElementById("btn-block").addEventListener("click",        () => bulkAction("Block"));
+    document.getElementById("btn-unblock").addEventListener("click",      () => bulkAction("Unblock"));
+    document.getElementById("btn-make-admin").addEventListener("click",   () => bulkAction("AddAdmin"));
+    document.getElementById("btn-remove-admin").addEventListener("click", () => bulkAction("RemoveAdmin"));
+    document.getElementById("btn-delete").addEventListener("click",       bulkDelete);
+</script>
+}

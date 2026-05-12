@@ -1,5 +1,4 @@
-﻿using Inventory_Managment.Attributes;
-using Inventory_Managment.Models;
+﻿using Inventory_Managment.Models;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,6 @@ using Npgsql;
 
 namespace Inventory_Managment.Controllers
 {
-    //[ItemEdit]
     public class ItemController : Controller
     {
         private readonly AppDbContext _context;

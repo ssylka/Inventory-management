@@ -1,4 +1,3 @@
-using Inventory_Managment.Filters;
 using Inventory_Managment.Models;
 using Inventory_Managment.Services;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -33,8 +32,7 @@ namespace Inventory_Managment
                 .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<EmailService>();
-            builder.Services.AddScoped<InventoryEditFilter>();
-            builder.Services.AddScoped<ItemEditFilter>();
+            builder.Services.AddScoped<ImageService>();
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {

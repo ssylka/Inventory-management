@@ -1,4 +1,4 @@
-﻿using Inventory_Managment.Models;
+using Inventory_Managment.Models;
 using Inventory_Managment.Models.Directory;
 using Inventory_Managment.Models.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +8,12 @@ namespace Inventory_Managment.Services
     public class InventoryService
     {
         private readonly AppDbContext _context;
-        
+
         public InventoryService(AppDbContext context)
         {
             _context = context;
         }
+
         public async Task<string> GetNextSlotAsync(FieldType type, int inventoryId)
         {
             var existing = await _context.InventoryFields
@@ -31,6 +32,7 @@ namespace Inventory_Managment.Services
 
             throw new Exception("You cannot add more than 3 fields of this type.");
         }
+
         // Can add/edit/delete items: admin, creator, explicit access, or any active user if public
         public bool CanEdit(Inventory inv, string? userId, bool isAdmin, bool isActive)
         {
@@ -48,9 +50,9 @@ namespace Inventory_Managment.Services
             if (isAdmin) return true;
             return !string.IsNullOrEmpty(userId) && inv.CreatorId == userId;
         }
+
         public async Task UpdateTagsForInventoryAsync(Inventory inventory)
         {
-            // diff update
             var existing = await _context.InventoryTags
                 .Include(x => x.Tag)
                 .Where(x => x.InventoryId == inventory.Id && x.Tag != null)
@@ -72,8 +74,7 @@ namespace Inventory_Managment.Services
             _context.InventoryTags.RemoveRange(toRemove);
 
             var toAdd = newNames
-                .Where(n => !existingNames.Contains(n) 
-                            && !string.IsNullOrWhiteSpace(n))
+                .Where(n => !existingNames.Contains(n) && !string.IsNullOrWhiteSpace(n))
                 .Select(t => t.Trim())
                 .Distinct()
                 .ToList();

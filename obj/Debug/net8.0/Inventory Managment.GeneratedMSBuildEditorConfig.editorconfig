@@ -34,6 +34,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Стас/source/repos/Inventory Managment/Inventory Managment/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Стас/source/repos/Inventory Managment/Inventory Managment/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,10 +60,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Стас/source/repos/Inventory Managment/Inventory Managment/Views/Inventory/EditField.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XEVkaXRGaWVsZC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Стас/source/repos/Inventory Managment/Inventory Managment/Views/Inventory/Fields.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XEZpZWxkcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Стас/source/repos/Inventory Managment/Inventory Managment/Views/Inventory/Index.cshtml]

@@ -12,7 +12,7 @@
 
 <div class="d-flex align-items-center mb-3">
     <button type="button" class="btn btn-light me-3">
-        <a asp-controller="Inventory" asp-action="Index" style="text-decoration:none;color:black">
+        <a asp-controller="Inventory" asp-action="Index" asp-append-version="true" style="text-decoration:none;color:black">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace" viewBox="0 0 16 16">
                 <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z"/>
                 <path d="M13.683 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7.08a2 2 0 0 1-1.519-.698L.241 8.65a1 1 0 0 1 0-1.302L5.084 1.7A2 2 0 0 1 6.603 1zm-7.08 1a1 1 0 0 0-.76.35L1 8l4.844 5.65a1 1 0 0 0 .759.35h7.08a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
@@ -75,7 +75,7 @@
             <tbody>
                 @if (!Model.Items.Any())
                 {
-                    <tr><td class="text-center text-muted" colspan="@(Model.Inventory.Fields.Count + 1)">No items yet</td></tr>
+                    <tr><td class="text-center text-muted" colspan="@(Model.Inventory.Fields.Count + 2)">No items yet</td></tr>
                 }
                 else
                 {
@@ -297,52 +297,11 @@
 <script>
     let hasChanges = false;
     let currentXmin = @inv.xmin;
-    let currentFieldOrders = [];
-
-    // Discussion
+    let currentFieldOrders = [];         
     let lastPostId = 0;
     const isAuth = @((User.IsInRole("Active") || User.IsInRole("Admin")) ? "true" : "false");
     const canEditItems = @(canEditItems.ToString().ToLower());
     const canEditSettings = @(canEditSettings.ToString().ToLower());
-
-    function escHtml(s) {
-        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    function fmtDate(iso) {
-        return new Date(iso).toLocaleString();
-    }
-
-    function buildPost(p) {
-        const likeSection = isAuth
-            ? `<button class="btn btn-sm ${p.likedByMe ? 'btn-primary' : 'btn-outline-secondary'} like-btn"
-                       data-post-id="${p.id}">❤ <span class="like-count">${p.likeCount}</span></button>`
-            : `<span class="badge bg-secondary">❤ ${p.likeCount}</span>`;
-        return `
-        <div class="discussion-post mb-3 p-3 border rounded" data-post-id="${p.id}">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <div>
-                    <a href="/Account/Profile/${p.userId}" class="fw-bold text-decoration-none">${escHtml(p.userName)}</a>
-                    <span class="text-muted ms-2 small">${fmtDate(p.createdAt)}</span>
-                </div>
-                ${likeSection}
-            </div>
-            <div class="post-content">${DOMPurify.sanitize(marked.parse(p.text))}</div>
-        </div>`;
-    }
-
-    async function loadPosts(after) {
-        try {
-            const res = await fetch(`/Discussion/Posts?inventoryId=@inv.Id&after=${after}`);
-            if (!res.ok) return;
-            const posts = await res.json();
-            const container = document.getElementById('discussion-posts');
-            posts.forEach(p => {
-                container.insertAdjacentHTML('beforeend', buildPost(p));
-                lastPostId = p.id;
-            });
-        } catch { /* network error — skip silently */ }
-    }
 
     function setStatus(text, cls) {
         document.getElementById("save-status").innerHTML = `<span class="badge ${cls}">${text}</span>`;
@@ -436,17 +395,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-
-        const hash = window.location.hash;
-        if (hash && hash !== "#tab-items") {
-            const tabBtn = document.querySelector(`[data-bs-target="${hash}"]`);
-            if (tabBtn) new bootstrap.Tab(tabBtn).show();
-        }
-        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(btn => {
-            btn.addEventListener("shown.bs.tab", e => {
-                history.replaceState(null, null, e.target.dataset.bsTarget);
-            });
-        });
 
     // Tooltips
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
@@ -789,6 +737,49 @@
     });
 
     // Discussion
+
+    function escHtml(s) {
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function fmtDate(iso) {
+        return new Date(iso).toLocaleString();
+    }
+
+    function buildPost(p) {
+        const likeSection = isAuth
+            ? `<button class="btn btn-sm ${p.likedByMe ? 'btn-primary' : 'btn-outline-secondary'} like-btn"
+                        data-post-id="${p.id}">❤ <span class="like-count">${p.likeCount}</span></button>`
+            : `<span class="badge bg-secondary">❤ ${p.likeCount}</span>`;
+        return `
+        <div class="discussion-post mb-3 p-3 border rounded" data-post-id="${p.id}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <a href="/Account/Profile/${p.userId}" class="fw-bold text-decoration-none">${escHtml(p.userName)}</a>
+                    <span class="text-muted ms-2 small">${fmtDate(p.createdAt)}</span>
+                </div>
+                ${likeSection}
+            </div>
+            <div class="post-content">${DOMPurify.sanitize(marked.parse(p.text))}</div>
+        </div>`;
+    }
+
+    async function loadPosts(after) {
+        const res = await fetch(`/Discussion/Posts?inventoryId=@inv.Id&after=${after}`);
+        if (!res.ok) return;
+        const posts = await res.json();
+        const container = document.getElementById('discussion-posts');
+        posts.forEach(p => {
+            // Skip posts already rendered (e.g. optimistically inserted after submit)
+            if (container.querySelector(`[data-post-id="${p.id}"]`)) {
+                lastPostId = p.id;
+                return;
+            }
+            container.insertAdjacentHTML('beforeend', buildPost(p));
+            lastPostId = p.id;
+        });
+    }
+
     await loadPosts(0);
     setInterval(() => loadPosts(lastPostId), 3000);
 

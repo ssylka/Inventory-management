@@ -7,13 +7,18 @@
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h2 class="mb-0">@Model.User.Name</h2>
-        <p class="text-muted mb-0">@Model.User.Email</p>
+        <h2 class="mb-0">Name is @Model.User.Name</h2>
+        <p class="text-muted mb-0">Email: @Model.User.Email</p>
+        @if (Model.User.EmailConfirmed)
+        {
+            <p class="text-success">Email is confirmed</p>
+        }
+        else
+        {
+            <p class="text-danger">Email isn't confirmed</p>
+        }
+        <p>Role is <b> @Model.Role </b></p>
     </div>
-    @if (Model.IsOwnProfile)
-    {
-        <a asp-controller="Inventory" asp-action="Create" class="btn btn-primary">+ New Inventory</a>
-    }
 </div>
 
 <h5 class="mt-4">My Inventories</h5>
@@ -28,17 +33,18 @@
     </select>
     @if (Model.IsOwnProfile)
     {
-        <button id="owned-delete-btn" class="btn btn-danger btn-sm ms-auto d-none">Delete selected</button>
+        <button id="owned-delete-btn" class="btn btn-danger btn-sm d-none">Delete selected</button>
     }
 </div>
 
-<table class="table table-bordered table-striped" id="owned-table">
+<table class="table table-bordered table-striped align-middle text-center" id="owned-table">
     <thead>
         <tr>
             @if (Model.IsOwnProfile)
             {
-                <th style="width:36px">
-                    <input type="checkbox" id="owned-select-all" />
+                <th style="width:5%">
+                    <input type="checkbox" class="btn-check" id="owned-select-all">
+                    <label class="btn btn-outline-secondary btn-sm" for="owned-select-all">All</label>
                 </th>
             }
             <th>Title</th>
@@ -58,12 +64,12 @@
                 @if (Model.IsOwnProfile)
                 {
                     <td onclick="event.stopPropagation()">
-                        <input type="checkbox" class="owned-checkbox" value="@inv.Id" />
+                        <input class="form-check-input owned-checkbox" type="checkbox" value="@inv.Id" />
                     </td>
                 }
                 <td>@inv.Title</td>
                 <td class="text-muted">@inv.Description</td>
-                <td>@(inv.IsPublic ? "✓" : "")</td>
+                <td><input class="form-check-input" type="checkbox" @(inv.IsPublic ? "checked" : "") disabled /></td>
                 <td>@inv.CreatedAt.ToString("yyyy-MM-dd")</td>
             </tr>
         }
@@ -86,7 +92,7 @@
     </select>
 </div>
 
-<table class="table table-bordered table-striped" id="access-table">
+<table class="table table-bordered table-striped align-middle text-center" id="access-table">
     <thead>
         <tr>
             <th>Title</th>
@@ -105,7 +111,7 @@
                 style="cursor:pointer">
                 <td>@inv.Title</td>
                 <td class="text-muted">@inv.Description</td>
-                <td>@(inv.IsPublic ? "✓" : "")</td>
+                <td><input class="form-check-input" type="checkbox" @(inv.IsPublic ? "checked" : "") disabled /></td>
                 <td>@inv.CreatedAt.ToString("yyyy-MM-dd")</td>
             </tr>
         }
@@ -115,7 +121,10 @@
 {
     <p class="text-muted">No inventories with write access.</p>
 }
-
+@if (Model.IsOwnProfile)
+{
+    <a asp-controller="Inventory" asp-action="Create" class="btn btn-primary">+ New Inventory</a>
+}
 @section Scripts {
 <script>
     // Generic filter + sort for a tbody
@@ -157,8 +166,8 @@
     accessSort?.addEventListener("change", refreshAccess);
 
     // Delete owned inventories
-    const deleteBtn     = document.getElementById("owned-delete-btn");
-    const selectAll     = document.getElementById("owned-select-all");
+    const deleteBtn = document.getElementById("owned-delete-btn");
+    const selectAll = document.getElementById("owned-select-all");
 
     document.getElementById("owned-tbody")?.addEventListener("change", e => {
         if (!e.target.classList.contains("owned-checkbox")) return;
@@ -167,6 +176,7 @@
     });
 
     selectAll?.addEventListener("change", function () {
+        // Select only .owned-checkbox, not the disabled Public checkboxes (.form-check-input)
         document.querySelectorAll(".owned-checkbox").forEach(cb => cb.checked = this.checked);
         const anyChecked = document.querySelectorAll(".owned-checkbox:checked").length > 0;
         deleteBtn?.classList.toggle("d-none", !anyChecked);

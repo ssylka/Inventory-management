@@ -234,9 +234,12 @@ This email was sent automatically. Please do not reply.
                 .Where(i => i.IsPublic || isAuthenticated)
                 .ToListAsync();
 
+            var role = await _userManager.GetRolesAsync(user);
+
             var vm = new ProfileViewModel
             {
                 User = user,
+                Role = role.FirstOrDefault() ?? "User",
                 OwnedInventories = owned,
                 AccessInventories = access,
                 IsOwnProfile = currentUserId == id

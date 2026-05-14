@@ -770,7 +770,7 @@
         const posts = await res.json();
         const container = document.getElementById('discussion-posts');
         posts.forEach(p => {
-            // Skip posts already rendered (e.g. optimistically inserted after submit)
+            // Skip posts already rendered
             if (container.querySelector(`[data-post-id="${p.id}"]`)) {
                 lastPostId = p.id;
                 return;

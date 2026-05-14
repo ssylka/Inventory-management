@@ -14,38 +14,29 @@ namespace Inventory_Managment.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly InventoryService _inventoryService;
-        private readonly ImageService _imageService;
 
         public InventoryController(AppDbContext context, UserManager<AppUser> userManager,
-            InventoryService inventoryService, ImageService imageService)
+            InventoryService inventoryService)
         {
             _context = context;
             _userManager = userManager;
             _inventoryService = inventoryService;
-            _imageService = imageService;
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
-        public async Task<IActionResult> UploadImage(IFormFile file)
+        public async Task<IActionResult> Index(string? tag = null)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file provided.");
+            var isAuthenticated = User.Identity!.IsAuthenticated;
 
-            try
-            {
-                var url = await _imageService.UploadAsync(file);
-                return Ok(new { url });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+            var query = _context.Inventories.AsQueryable();
 
-        public async Task<IActionResult> Index()
-        {
-            var inventories = await _context.Inventories.ToListAsync();
+            if (!string.IsNullOrWhiteSpace(tag))
+                query = query.Where(i => i.InventoryTags.Any(it => it.Tag.Name == tag));
+
+            var inventories = await query
+                .OrderByDescending(i => i.CreatedAt)
+                .ToListAsync();
+
+            ViewBag.Tag = tag;
             return View(inventories);
         }
 
@@ -59,13 +50,13 @@ namespace Inventory_Managment.Controllers
             if (inventory == null)
                 return NotFound();
 
-            inventory.TagNames = inventory.InventoryTags
-                .Select(it => it.Tag.Name)
-                .ToList();
-
             var userId = _userManager.GetUserId(User);
             var isAdmin = User.IsInRole("Admin");
             var isActive = User.IsInRole("Active");
+
+            inventory.TagNames = inventory.InventoryTags
+                .Select(it => it.Tag.Name)
+                .ToList();
 
             var accessUsers = await _context.InventoryAccess
                 .Where(a => a.InventoryId == id)

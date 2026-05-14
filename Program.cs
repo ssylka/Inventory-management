@@ -75,7 +75,7 @@ namespace Inventory_Managment
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Inventory}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             using (var scope = app.Services.CreateScope())
             {   

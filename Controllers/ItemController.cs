@@ -17,18 +17,20 @@ namespace Inventory_Managment.Controllers
             _context = context;
             _itemService = itemService;
         }
-        [AllowAnonymous] // All items are viewable by everyone, regardless of authentication status.
+        [AllowAnonymous]
         public async Task<IActionResult> Index(int inventoryId)
         {
             var inventory = await _context.Inventories
                 .Include(i => i.Fields)
                 .FirstOrDefaultAsync(i => i.Id == inventoryId);
-                
+
+            if (inventory == null)
+                return NotFound();
+
             var items = await _context.Items
                 .Where(i => i.InventoryId == inventoryId)
+                .OrderBy(i => i.CustomId)
                 .ToListAsync();
-
-            items = items.OrderBy(i => i.CustomId).ToList();
 
             ViewBag.Inventory = inventory;
 

@@ -1,5 +1,114 @@
-﻿<h1>Inventory App</h1>
+@model Inventory_Managment.Models.Dto.HomeViewModel
 
-<a href="/Inventory" class="btn btn-primary">
-    Go to Inventories
-</a>
+@{
+    ViewData["Title"] = "Home";
+}
+
+@* ── Latest Inventories ─────────────────────────────────────────────────── *@
+<h4 class="mb-3">Latest Inventories</h4>
+
+@if (!Model.Latest.Any())
+{
+    <p class="text-muted">No inventories yet.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle mb-5">
+        <thead>
+            <tr>
+                <th style="width:80px"></th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Creator</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var inv in Model.Latest)
+            {
+                <tr onclick="window.location='/Inventory/Details/@inv.Id'" style="cursor:pointer">
+                    <td class="text-center p-1">
+                        @if (!string.IsNullOrEmpty(inv.ImageUrl))
+                        {
+                            <img src="@inv.ImageUrl" alt="@inv.Title"
+                                 style="width:64px;height:48px;object-fit:cover;border-radius:4px" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                 style="width:64px;height:48px;border-radius:4px;font-size:1.4rem">📦</div>
+                        }
+                    </td>
+                    <td><strong>@inv.Title</strong></td>
+                    <td class="text-muted small">@inv.Description</td>
+                    <td class="text-muted small">@(inv.CreatorName ?? "—")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h4 class="mb-3">Top 5 Most Popular</h4>
+
+@if (!Model.TopByItems.Any())
+{
+    <p class="text-muted">No inventories yet.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle mb-5">
+        <thead>
+            <tr>
+                <th style="width:40px">#</th>
+                <th style="width:80px"></th>
+                <th>Title</th>
+                <th>Creator</th>
+                <th style="width:100px" class="text-center">Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int rank = 1; }
+            @foreach (var inv in Model.TopByItems)
+            {
+                <tr onclick="window.location='/Inventory/Details/@inv.Id'" style="cursor:pointer">
+                    <td class="text-center fw-bold text-muted">@rank</td>
+                    <td class="text-center p-1">
+                        @if (!string.IsNullOrEmpty(inv.ImageUrl))
+                        {
+                            <img src="@inv.ImageUrl" alt="@inv.Title"
+                                 style="width:64px;height:48px;object-fit:cover;border-radius:4px" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                 style="width:64px;height:48px;border-radius:4px;font-size:1.4rem">📦</div>
+                        }
+                    </td>
+                    <td><strong>@inv.Title</strong></td>
+                    <td class="text-muted small">@(inv.CreatorName ?? "—")</td>
+                    <td class="text-center"><span class="badge bg-primary">@inv.ItemCount</span></td>
+                </tr>
+                rank++;
+            }
+        </tbody>
+    </table>
+}
+
+<h4 class="mb-3">Tags</h4>
+
+@if (!Model.Tags.Any())
+{
+    <p class="text-muted">No tags yet.</p>
+}
+else
+{
+    
+    <div class="d-flex flex-wrap gap-2 mb-5">
+        @foreach (var tag in Model.Tags)
+        {
+            <a href="/Inventory?tag=@Uri.EscapeDataString(tag.Name)"
+               class="btn btn-outline-primary text-decoration-none fs-6">
+                @tag.Name
+            </a>
+        }
+    </div>
+}

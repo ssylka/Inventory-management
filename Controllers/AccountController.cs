@@ -239,14 +239,13 @@ This email was sent automatically. Please do not reply.
             var isAuthenticated = User.Identity!.IsAuthenticated;
 
             var owned = await _context.Inventories
-                .Where(i => i.CreatorId == id && (i.IsPublic || isAuthenticated))
+                .Where(i => i.CreatorId == id)
                 .ToListAsync();
 
             var access = await _context.InventoryAccess
                 .Where(a => a.UserId == id)
                 .Include(a => a.Inventory)
                 .Select(a => a.Inventory!)
-                .Where(i => i.IsPublic || isAuthenticated)
                 .ToListAsync();
 
             var role = await _userManager.GetRolesAsync(user);

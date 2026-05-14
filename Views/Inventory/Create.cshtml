@@ -154,7 +154,7 @@
         formData.append("file", file);
 
         try {
-            const res = await fetch("/Inventory/UploadImage", {
+            const res = await fetch("/Image/Upload", {
                 method: "POST",
                 body: formData
             });

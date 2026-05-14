@@ -147,7 +147,7 @@
                     <th>Name</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>In table</th>
+                    <th>Show in table</th>
                 </tr>
             </thead>
             <tbody id="elements">
@@ -163,7 +163,7 @@
                         <td>@allFields[i].Name</td>
                         <td>@allFields[i].Description</td>
                         <td>@allFields[i].Type</td>
-                        <td>@(allFields[i].ShowInTable ? "✓" : "")</td>
+                        <td><input class="form-check-input" type="checkbox" @(allFields[i].ShowInTable ? "checked" : "") disabled /></td>
                     </tr>
                 }
             </tbody>

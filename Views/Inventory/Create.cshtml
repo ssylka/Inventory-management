@@ -50,7 +50,6 @@
     <div class="mb-3">
         <label class="form-label">Image</label>
 
-        @* Hidden field that carries the final Cloudinary URL to the server *@
         <input type="hidden" asp-for="ImageUrl" id="image-url-hidden" />
 
         <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -72,7 +71,6 @@
 </form>
 
 <script>
-    // ── Tag autocomplete (same pattern as Details page) ───────────────────────
     function addTag() {
         const container = document.getElementById("tags-container");
         const index = container.children.length;
@@ -129,7 +127,6 @@
         if (!e.target.closest(".tag-item")) removeTagSuggestions();
     });
 
-    // ── Image upload ──────────────────────────────────────────────────────────
     const fileInput      = document.getElementById("image-file-input");
     const hiddenUrl      = document.getElementById("image-url-hidden");
     const status         = document.getElementById("image-upload-status");
@@ -146,7 +143,7 @@
         previewImg.src = URL.createObjectURL(file);
         previewWrapper.classList.remove("d-none");
 
-        // Upload to server → Cloudinary
+        // Upload to server through Cloudinary
         status.textContent = "Uploading…";
         submitBtn.disabled = true;
 
@@ -164,7 +161,7 @@
             const data = await res.json();
             hiddenUrl.value = data.url;           // save Cloudinary URL to hidden field
             previewImg.src  = data.url;           // swap blob preview for real Cloudinary URL
-            status.textContent = "✓ Uploaded";
+            status.textContent = "Uploaded";
             status.className = "text-success small";
         } catch (err) {
             status.textContent = "Upload failed: " + err.message;

@@ -33,9 +33,10 @@ namespace Inventory_Managment
 
             builder.Services.Configure<SecurityStampValidatorOptions>(options =>
             {
-                // Re-validate the cookie against the DB security stamp on every request.
-                // This ensures role changes (block, remove admin, etc.) take effect immediately.
                 options.ValidationInterval = TimeSpan.Zero;
+                // Somtimes TimeSpan.Zero would query the DB on every request and exhaust the connection pool.
+                // If it happend uncomment a string below:
+                // options.ValidationInterval = TimeSpan.FromSeconds(30);
             });
 
             builder.Services.AddScoped<EmailService>();
@@ -54,7 +55,6 @@ namespace Inventory_Managment
 
             var app = builder.Build();
 
-            // ������������ ��������� �� ������ (Render)
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

@@ -29,10 +29,6 @@ else
     <table class="table table-bordered table-striped table-hover align-middle text-center">
         <thead>
             <tr>
-                <th style="width:5%">
-                    <input type="checkbox" class="btn-check" id="btn-check-outlined">
-                    <label class="btn btn-outline-secondary btn-sm" for="btn-check-outlined">All</label>
-                </th>
                 <th class="w-25">Title</th>
                 <th>Description</th>
             </tr>
@@ -41,7 +37,6 @@ else
             @foreach (var inv in Model)
             {
                 <tr>
-                    <td><input class="form-check-input" type="checkbox" value="@inv.Id" /></td>
                     <td class="inventory-row border" style="cursor:pointer;" data-id="@inv.Id">@inv.Title</td>
                     <td class="inventory-row markup" style="cursor:pointer;" data-id="@inv.Id">@inv.Description</td>
                 </tr>

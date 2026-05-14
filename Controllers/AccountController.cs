@@ -130,7 +130,7 @@ This email was sent automatically. Please do not reply.
             await _userManager.AddToRoleAsync(user, "Active");
             await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return RedirectToAction("Index", "Inventory");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Login() => View();
@@ -148,7 +148,7 @@ This email was sent automatically. Please do not reply.
             var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
 
             if (result.Succeeded)
-                return RedirectToAction("Index", "Inventory");
+                return RedirectToAction("Index", "Home");
 
             if (result.IsNotAllowed)
                 ModelState.AddModelError("", "Please confirm your email before logging in.");
@@ -163,7 +163,7 @@ This email was sent automatically. Please do not reply.
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Inventory");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult ExternalLogin(string provider)
@@ -248,12 +248,12 @@ This email was sent automatically. Please do not reply.
                 .Select(a => a.Inventory!)
                 .ToListAsync();
 
-            var role = await _userManager.GetRolesAsync(user);
+            var roles = (await _userManager.GetRolesAsync(user)).OrderDescending();
 
             var vm = new ProfileViewModel
             {
                 User = user,
-                Role = role.FirstOrDefault() ?? "User",
+                Role = string.Join(", ",roles) ?? "User",
                 OwnedInventories = owned,
                 AccessInventories = access,
                 IsOwnProfile = currentUserId == id

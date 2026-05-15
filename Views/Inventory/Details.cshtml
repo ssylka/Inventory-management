@@ -97,6 +97,20 @@
                                 {
                                     <td><input class="form-check-input" type="checkbox" @(val?.Equals(true) == true ? "checked" : "") disabled /></td>
                                 }
+                                else if (f.Type == FieldType.Link)
+                                {
+                                    <td>
+                                        @if (val != null)
+                                        {
+                                            <img src="@val" alt="@f.Name"
+                                                 style="max-height:60px;max-width:100px;object-fit:cover;border-radius:4px" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                }
                                 else
                                 {
                                     <td>@(val ?? "-")</td>
@@ -206,9 +220,24 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Image URL</label>
-            <input id="settings-imageurl" class="form-control" value="@inv.ImageUrl" />
+            <label class="form-label">Image</label>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <label class="btn btn-outline-secondary mb-0" style="cursor:pointer">
+                    Choose file
+                    <input type="file" id="image-file-input" accept="image/*" class="d-none" />
+                </label>
+                <span id="image-upload-status" class="text-muted small"></span>
+            </div>
+
+            <div id="image-preview-wrapper" class="mt-2 @(inv.ImageUrl != null ? "" : "d-none")">
+                <img id="image-preview" alt="Preview"
+                     class="rounded border" style="max-height:200px;max-width:100%;" src="@inv.ImageUrl" />
+                <button type="button" id="image-remove-btn" class="btn btn-sm btn-outline-danger ms-2">Remove</button>
+            </div>
         </div>
+
+
+
 
         <div class="mb-3">
             <label class="form-label">Tags</label>
@@ -297,8 +326,9 @@
 <script>
     let hasChanges = false;
     let currentXmin = @inv.xmin;
-    let currentFieldOrders = [];         
+    let currentFieldOrders = [];
     let lastPostId = 0;
+    let committedImageUrl = @Json.Serialize(inv.ImageUrl);
     const isAuth = @((User.IsInRole("Active") || User.IsInRole("Admin")) ? "true" : "false");
     const canEditItems = @(canEditItems.ToString().ToLower());
     const canEditSettings = @(canEditSettings.ToString().ToLower());
@@ -337,7 +367,7 @@
             Description: document.getElementById('settings-description').value,
             CategoryId: Number(document.getElementById('settings-category').value),
             IsPublic: document.getElementById('settings-public').checked,
-            ImageUrl: document.getElementById('settings-imageurl').value || null,
+            ImageUrl: committedImageUrl,
             TagNames: tagNames,
             CustomIdElements: cidElements,
             FieldOrders: currentFieldOrders,
@@ -369,33 +399,10 @@
         }
     }
 
-    // Tags management
-    function addTag() {
-        const container = document.getElementById("tags-container");
-        const index = container.children.length;
-        const div = document.createElement("div");
-        div.className = "tag-item position-relative d-flex mb-1";
-        div.innerHTML = `
-            <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
-        container.appendChild(div);
-        markChanged();
-    }
 
-    function removeTag(button) {
-        button.parentElement.remove();
-        reindexTags();
-        markChanged();
-    }
 
-    function reindexTags() {
-        document.querySelectorAll("#tags-container input").forEach((input, i) => {
-            input.name = `TagNames[${i}]`;
-        });
-    }
-
+//#region Events
     document.addEventListener("DOMContentLoaded", async () => {
-
     // Tooltips
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
@@ -451,11 +458,13 @@
 
         // Settings change listeners
         document.querySelectorAll('#tab-settings input, #tab-settings textarea, #tab-settings select').forEach(el => {
+            if (el.type === 'file') return; // file input is handled separately in the image region
             el.addEventListener('input', markChanged);
             el.addEventListener('change', markChanged);
         });
+//#endregion
 
-        // Access tab
+//#region Access 
         const accessList   = document.getElementById("access-list");
         const accessSearch = document.getElementById("access-search");
 
@@ -513,8 +522,34 @@
             document.querySelectorAll(".access-suggestions").forEach(x => x.remove());
         }
     }
+//#endregion
 
-    // Tags autocomplete
+//#region Tags
+    function addTag() {
+        const container = document.getElementById("tags-container");
+        const index = container.children.length;
+        const div = document.createElement("div");
+        div.className = "tag-item position-relative d-flex mb-1";
+        div.innerHTML = `
+            <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
+        container.appendChild(div);
+        markChanged();
+    }
+
+    function removeTag(button) {
+        button.parentElement.remove();
+        reindexTags();
+        markChanged();
+    }
+
+    function reindexTags() {
+        document.querySelectorAll("#tags-container input").forEach((input, i) => {
+            input.name = `TagNames[${i}]`;
+        });
+    }
+
+
     document.addEventListener("input", async (e) => {
         if (!e.target.matches("#tags-container .tag-input")) return;
         const input = e.target;
@@ -546,7 +581,61 @@
     }
 
     document.addEventListener("click", e => { if (!e.target.closest(".tag-item")) removeTagSuggestions(); });
+//#endregion
 
+//#region Image
+     const fileInput      = document.getElementById("image-file-input");
+     const status         = document.getElementById("image-upload-status");
+     const previewWrapper = document.getElementById("image-preview-wrapper");
+     const previewImg     = document.getElementById("image-preview");
+     const removeBtn      = document.getElementById("image-remove-btn");
+
+     fileInput.addEventListener("change", async () => {
+         const file = fileInput.files[0];
+         if (!file) return;
+
+         previewImg.src = URL.createObjectURL(file);
+         previewWrapper.classList.remove("d-none");
+
+         status.textContent = "Uploading…";
+         status.className = "text-muted small";
+
+         const formData = new FormData();
+         formData.append("file", file);
+
+         try {
+             const res = await fetch("/Image/Upload", {
+                 method: "POST",
+                 body: formData
+             });
+
+             if (!res.ok) throw new Error(await res.text());
+
+             const data = await res.json();
+             committedImageUrl = data.url;
+             previewImg.src = data.url;
+             status.textContent = "Uploaded";
+             status.className = "text-success small";
+             markChanged();
+         } catch (err) {
+             status.textContent = "Upload failed: " + err.message;
+             status.className = "text-danger small";
+             previewWrapper.classList.add("d-none");
+             previewImg.src = committedImageUrl ?? "";
+         }
+     });
+
+    removeBtn.addEventListener("click", () => {
+        committedImageUrl = null;  
+        previewWrapper.classList.add("d-none");
+        previewImg.src = "";
+        status.textContent = "";
+        status.className = "text-muted small";
+        markChanged();
+    });
+//#endregion
+
+//#region CustomID
     const cidContainer = document.getElementById("cid-elements");
 
     // format: [prefix][D|X][width][suffix], e.g. "-D3" → "-042", "X5_" → "1A3F0_"
@@ -735,8 +824,9 @@
     window.addEventListener("beforeunload", e => {
         if (hasChanges) { e.preventDefault(); e.returnValue = ""; }
     });
+//#endregion
 
-    // Discussion
+//#region Discussion
 
     function escHtml(s) {
         return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -830,4 +920,5 @@
         }
     });
 });
+//#endregion
 </script>

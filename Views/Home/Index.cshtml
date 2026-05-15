@@ -4,7 +4,6 @@
     ViewData["Title"] = "Home";
 }
 
-@* ── Latest Inventories ─────────────────────────────────────────────────── *@
 <h4 class="mb-3">Latest Inventories</h4>
 
 @if (!Model.Latest.Any())
@@ -92,7 +91,7 @@ else
 else
 {
     
-    <div class="d-flex flex-wrap gap-2 mb-5">
+    <div class="d-flex flex-wrap gap-2 mb-3">
         @foreach (var tag in Model.Tags)
         {
             <a href="/Inventory?tag=@Uri.EscapeDataString(tag.Name)"
@@ -101,4 +100,8 @@ else
             </a>
         }
     </div>
+}
+@if (User.IsInRole("Active") || User.IsInRole("Admin"))
+{
+    <a href="/Inventory/Create" class="btn btn-primary">+ new inventory</a>
 }

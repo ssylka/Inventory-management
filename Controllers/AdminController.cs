@@ -25,34 +25,32 @@ namespace Inventory_Managment.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.CurrentUserId = CurrentUserId;
-            var userRoles = await _context.Users
-                .GroupJoin(
-                    _context.UserRoles,
-                    u => u.Id,
-                    ur => ur.UserId,
-                    (u, urs) => new { u, urs })
-                .SelectMany(
-                    x => x.urs.DefaultIfEmpty(),
-                    (x, ur) => new { x.u, RoleId = ur == null ? null : ur.RoleId })
-                .Join(
-                    _context.Roles,
-                    x => x.RoleId,
-                    r => r.Id,
-                    (x, r) => new { x.u, RoleName = r.Name })
-                .ToListAsync();
 
-            var dtos = userRoles
-                .GroupBy(x => x.u)
-                .Select(g => new UserAdminDto
+            var users = await _context.Users.ToListAsync();
+
+            var userRolePairs = await (
+                from ur in _context.UserRoles
+                join r in _context.Roles on ur.RoleId equals r.Id
+                select new { ur.UserId, RoleName = r.Name }
+            ).ToListAsync();
+
+            var rolesByUser = userRolePairs
+                .GroupBy(x => x.UserId)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.RoleName).ToHashSet());
+
+            var dtos = users.Select(u =>
+            {
+                var roles = rolesByUser.TryGetValue(u.Id, out var r) ? r : new HashSet<string>();
+                return new UserAdminDto
                 {
-                    Id           = g.Key.Id,
-                    Name         = g.Key.Name,
-                    Email        = g.Key.Email ?? "",
-                    IsAdmin      = g.Any(x => x.RoleName == "Admin"),
-                    IsBlocked    = g.Any(x => x.RoleName == "Blocked"),
-                    IsUnverified = g.Any(x => x.RoleName == "Unverified")
-                })
-                .ToList();
+                    Id           = u.Id,
+                    Name         = u.Name,
+                    Email        = u.Email ?? "",
+                    IsAdmin      = roles.Contains("Admin"),
+                    IsBlocked    = roles.Contains("Blocked"),
+                    IsUnverified = roles.Contains("Unverified")
+                };
+            }).ToList();
 
             return View(dtos);
         }
@@ -64,16 +62,15 @@ namespace Inventory_Managment.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            var appUser = await _context.Users.FindAsync(id);
-            if (appUser != null) appUser.LockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
+            user.LockoutEnabled = true;
+            user.LockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
+            await _userManager.UpdateAsync(user);
 
             await _userManager.RemoveFromRolesAsync(user,
                 new[] { "Active", "Admin", "Unverified" });
 
             if (!await _userManager.IsInRoleAsync(user, "Blocked"))
-            {
                 await _userManager.AddToRoleAsync(user, "Blocked");
-            }
 
             await _userManager.UpdateSecurityStampAsync(user);
             return Ok();
@@ -84,10 +81,10 @@ namespace Inventory_Managment.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
-            
-            var appUser = await _context.Users.FindAsync(id);
-            if (appUser != null) user.LockoutEnd = null;
-            
+
+            user.LockoutEnd = null;
+            await _userManager.UpdateAsync(user);
+
             await _userManager.RemoveFromRoleAsync(user, "Blocked");
             await _userManager.AddToRoleAsync(user, "Active");
 

@@ -1,4 +1,12 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.dataset.bsTheme == 'dark' ? 'light' : 'dark';
+    html.dataset.bsTheme = next;
+    document.cookie = `theme=${next};path=/;max-age=31536000`;
+    document.getElementById('theme-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
 
-// Write your JavaScript code.
+const savedTheme = document.cookie.split(';').find(c => c.trim().startsWith('theme='));
+if (savedTheme?.includes('dark')) {
+    document.getElementById('theme-btn').textContent = '☀️';
+}

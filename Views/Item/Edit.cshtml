@@ -1,4 +1,4 @@
-﻿@using Inventory_Managment.Models.Directory
+@using Inventory_Managment.Models.Directory
 @model Item
 
 <div class="d-flex align-items-center mb-3">
@@ -10,27 +10,24 @@
             </svg>
         </a>
     </button>
-
     <h2>Edit Item</h2>
 </div>
 
-<form method="post">
+<form method="post" style="max-width:600px">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="InventoryId" />
     <input type="hidden" asp-for="xmin" />
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
+        <div class="alert alert-danger">@TempData["Error"]</div>
     }
 
     @{
         var inventory = ViewBag.Inventory as Inventory;
     }
 
-    @foreach (var field in inventory.Fields.Where(i => i.ShowInTable).OrderBy(f => f.Order))
+    @foreach (var field in inventory.Fields.OrderBy(f => f.Order))
     {
         var prop = Model.GetType().GetProperty(field.Slot);
         var value = prop?.GetValue(Model);
@@ -43,34 +40,128 @@
                 <label class="form-check-label">@field.Name</label>
             </div>
         }
+        else if (field.Type == FieldType.Link)
+        {
+            var urlValue = value?.ToString();
+            <div class="mb-3">
+                <label class="form-label">@field.Name</label>
+
+                <input type="hidden" name="@field.Slot" id="hidden-url-@field.Slot" />
+
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <label class="btn btn-outline-secondary mb-0" style="cursor:pointer">
+                        Choose file
+                        <input type="file" id="file-input-@field.Slot" accept="image/*" class="d-none" />
+                    </label>
+                    <span id="status-@field.Slot" class="text-muted small"></span>
+                </div>
+
+                <div id="preview-wrapper-@field.Slot" class="mt-2 d-none">
+                    <img id="preview-@field.Slot" src="" alt="Preview"
+                         class="rounded border" style="max-height:200px;max-width:100%;object-fit:contain;" />
+                    <button type="button" id="remove-btn-@field.Slot"
+                            class="btn btn-sm btn-outline-danger ms-2">Remove</button>
+                </div>
+            </div>
+        }
+        else if (field.Type == FieldType.Number)
+        {
+            <div class="mb-3">
+                <label class="form-label">@field.Name</label>
+                <input type="number" class="form-control" name="@field.Slot" value="@value" />
+            </div>
+        }
         else
         {
             <div class="mb-3">
-                <label>@field.Name</label>
-                @if (field.Type == FieldType.Number)
-                {
-                    <input type="number" class="form-control" name="@field.Slot" value="@value" />
-                }
-                else
-                {
-                    <input class="form-control" name="@field.Slot" value="@value" />
-                }
+                <label class="form-label">@field.Name</label>
+                <input class="form-control" name="@field.Slot" value="@value" />
             </div>
         }
     }
+
     <div class="mb-3">
-        <label>Custom ID</label>
-        <input class="form-control"
-               name="CustomId"
-               value="@Model.CustomId" />
+        <label class="form-label">Custom ID</label>
+        <input class="form-control" name="CustomId" value="@Model.CustomId" />
     </div>
 
-    <button class="btn btn-success">Save</button>
+    <button class="btn btn-success" id="submit-btn">Save</button>
 
-    <input type="hidden"
-           name="CreatedAt"
-           value="@Model.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
-    <input name="CustomId"
-           value="@Model.CustomId"
-           type="hidden"/>
+    <input type="hidden" name="CreatedAt" value="@Model.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
+    <input type="hidden" name="CustomId" value="@Model.CustomId" />
 </form>
+
+@section Scripts {
+<script>
+    function initLinkUpload(slot, existingUrl) {
+        let committedUrl = existingUrl;
+
+        const fileInput      = document.getElementById(`file-input-${slot}`);
+        const hiddenInput    = document.getElementById(`hidden-url-${slot}`);
+        const status         = document.getElementById(`status-${slot}`);
+        const previewWrapper = document.getElementById(`preview-wrapper-${slot}`);
+        const previewImg     = document.getElementById(`preview-${slot}`);
+        const removeBtn      = document.getElementById(`remove-btn-${slot}`);
+        const submitBtn      = document.getElementById('submit-btn');
+
+        if (committedUrl) {
+            hiddenInput.value = committedUrl;
+            previewImg.src = committedUrl;
+            previewWrapper.classList.remove('d-none');
+        }
+
+        fileInput.addEventListener('change', async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            previewImg.src = URL.createObjectURL(file);
+            previewWrapper.classList.remove('d-none');
+            status.textContent = 'Uploading…';
+            status.className = 'text-muted small';
+            submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/Image/Upload', { method: 'POST', body: formData });
+                if (!res.ok) throw new Error(await res.text());
+
+                const data = await res.json();
+                committedUrl = data.url;
+                hiddenInput.value = data.url;
+                previewImg.src = data.url;
+                status.textContent = 'Uploaded';
+                status.className = 'text-success small';
+            } catch (err) {
+                status.textContent = 'Upload failed: ' + err.message;
+                status.className = 'text-danger small';
+                previewWrapper.classList.add('d-none');
+                previewImg.src = committedUrl ?? '';
+                hiddenInput.value = committedUrl ?? '';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        removeBtn.addEventListener('click', () => {
+            committedUrl = null;
+            hiddenInput.value = '';
+            previewWrapper.classList.add('d-none');
+            previewImg.src = '';
+            status.textContent = '';
+            status.className = 'text-muted small';
+        });
+    }
+
+    @{
+        var inv = ViewBag.Inventory as Inventory;
+        foreach (var f in inv.Fields.OrderBy(f => f.Order).Where(f => f.Type == FieldType.Link))
+        {
+            var prop = Model.GetType().GetProperty(f.Slot);
+            var val = prop?.GetValue(Model)?.ToString();
+            <text>initLinkUpload('@f.Slot', @Json.Serialize(val));</text>
+        }
+    }
+</script>
+}

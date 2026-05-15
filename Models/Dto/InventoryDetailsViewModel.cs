@@ -11,5 +11,6 @@ namespace Inventory_Managment.Models.Dto
         public bool CanEditItems { get; set; }
         public bool CanEditSettings { get; set; }
         public List<AccessUserDto> AccessUsers { get; set; } = new();
+        public List<FieldStatDto> Stats { get; set; } = new();
     }
 }

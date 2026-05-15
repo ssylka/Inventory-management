@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 
 namespace Inventory_Managment.Controllers
 {
@@ -26,34 +27,37 @@ namespace Inventory_Managment.Controllers
         {
             ViewBag.CurrentUserId = CurrentUserId;
 
-            var users = await _context.Users.ToListAsync();
+            var userRoles = await _context.Users
+                .GroupJoin(
+                    _context.UserRoles,
+                    u => u.Id,
+                    ur => ur.UserId,
+                    (u, urs) => new { u, urs })
+                .SelectMany(
+                    x => x.urs.DefaultIfEmpty(),
+                    (x, ur) => new { x.u, RoleId = ur == null ? null : ur.RoleId })
+                .Join(
+                    _context.Roles,
+                    x => x.RoleId,
+                    r => r.Id,
+                    (x, r) => new { x.u, RoleName = r.Name })
+                .ToListAsync();
 
-            var userRolePairs = await (
-                from ur in _context.UserRoles
-                join r in _context.Roles on ur.RoleId equals r.Id
-                select new { ur.UserId, RoleName = r.Name }
-            ).ToListAsync();
-
-            var rolesByUser = userRolePairs
-                .GroupBy(x => x.UserId)
-                .ToDictionary(g => g.Key, g => g.Select(x => x.RoleName).ToHashSet());
-
-            var dtos = users.Select(u =>
-            {
-                var roles = rolesByUser.TryGetValue(u.Id, out var r) ? r : new HashSet<string>();
-                return new UserAdminDto
+            var dtos = userRoles
+                .GroupBy(x => x.u)
+                .Select(g => new UserAdminDto
                 {
-                    Id           = u.Id,
-                    Name         = u.Name,
-                    Email        = u.Email ?? "",
-                    IsAdmin      = roles.Contains("Admin"),
-                    IsBlocked    = roles.Contains("Blocked"),
-                    IsUnverified = roles.Contains("Unverified")
-                };
-            }).ToList();
+                    Id = g.Key.Id,
+                    Name = g.Key.Name,
+                    Email = g.Key.Email ?? "",
+                    IsAdmin = g.Any(x => x.RoleName == "Admin"),
+                    IsBlocked = g.Any(x => x.RoleName == "Blocked"),
+                    IsUnverified = g.Any(x => x.RoleName == "Unverified")
+                })
+                .ToList();
 
             return View(dtos);
-        }
+}
 
         [HttpPost]
         public async Task<IActionResult> Block(string id)
@@ -82,10 +86,13 @@ namespace Inventory_Managment.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
+            user.LockoutEnabled = false;
             user.LockoutEnd = null;
+
             await _userManager.UpdateAsync(user);
 
             await _userManager.RemoveFromRoleAsync(user, "Blocked");
+            await _userManager.RemoveFromRoleAsync(user, "Unverified");
             await _userManager.AddToRoleAsync(user, "Active");
 
             await _userManager.UpdateSecurityStampAsync(user);

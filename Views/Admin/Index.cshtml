@@ -43,7 +43,6 @@
     </tbody>
 </table>
 
-@* Action buttons — appear only when at least one user is selected *@
 <div id="action-bar" class="d-none d-flex gap-2 flex-wrap mt-1">
     <button id="btn-block"        class="btn btn-warning btn-sm">Block</button>
     <button id="btn-unblock"      class="btn btn-success btn-sm">Unblock</button>
@@ -54,7 +53,6 @@
 
 @section Scripts {
 <script>
-    // Filter
     document.getElementById("user-filter").addEventListener("input", function () {
         const term = this.value.toLowerCase();
         document.querySelectorAll("#users-tbody tr").forEach(row => {
@@ -62,7 +60,6 @@
         });
     });
 
-    // Select-all
     document.getElementById("select-all").addEventListener("change", function () {
         document.querySelectorAll(".user-checkbox").forEach(cb => cb.checked = this.checked);
         updateActionBar();
@@ -82,7 +79,6 @@
         document.getElementById("action-bar").classList.toggle("d-none", !any);
     }
 
-    // Bulk action helper
     async function bulkAction(action) {
         const ids = getSelectedIds();
         if (!ids.length) return;
@@ -99,7 +95,6 @@
         location.reload();
     }
 
-    // Delete with confirmation
     async function bulkDelete() {
         const ids = getSelectedIds();
         if (!ids.length) return;

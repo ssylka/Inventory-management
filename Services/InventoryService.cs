@@ -33,7 +33,6 @@ namespace Inventory_Managment.Services
             throw new Exception("You cannot add more than 3 fields of this type.");
         }
 
-        // Can add/edit/delete items: admin, creator, explicit access, or any active user if public
         public bool CanEdit(Inventory inv, string? userId, bool isAdmin, bool isActive)
         {
             if (isAdmin) return true;
@@ -44,7 +43,6 @@ namespace Inventory_Managment.Services
                 .Any(a => a.InventoryId == inv.Id && a.UserId == userId);
         }
 
-        // Can edit inventory settings/fields/custom-id: admin or creator only
         public bool CanEditSettings(Inventory inv, string? userId, bool isAdmin)
         {
             if (isAdmin) return true;
@@ -98,5 +96,6 @@ namespace Inventory_Managment.Services
             }
             await _context.SaveChangesAsync();
         }
+        
     }
 }

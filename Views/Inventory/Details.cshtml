@@ -30,6 +30,9 @@
     <li class="nav-item">
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-discussion">Discussion</button>
     </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-statistics">Statistics</button>
+    </li>
     @if (canEditSettings)
     {
         <li class="nav-item">
@@ -146,6 +149,61 @@
         else
         {
             <p class="text-muted">Log in to participate in the discussion.</p>
+        }
+    </div>
+ <!-- stats-->
+
+    <div class="tab-pane fade" id="tab-statistics">
+        <h5 class="mt-3">Total items: @Model.Items.Count</h5>
+
+        @if (!Model.Stats.Any())
+        {
+            <p>No fields configured.</p>
+        }
+        else
+        {
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Filled</th>
+                        <th>Empty</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                        <th>Average</th>
+                        <th>True</th>
+                        <th>False</th>
+                        <th>Most frequent values</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stat in Model.Stats)
+                    {
+                        <tr>
+                            <td>@stat.FieldName</td>
+                            <td>@stat.Type</td>
+                            <td>@stat.FilledCount</td>
+                            <td>@(stat.TotalItems - stat.FilledCount)</td>
+                            <td>@(stat.NumMin.HasValue? stat.NumMin.ToString() : "-")</td>
+                            <td>@(stat.NumMax.HasValue? stat.NumMax.ToString() : "-")</td>
+                            <td>@(stat.NumAvg.HasValue? stat.NumAvg.ToString() : "-")</td>
+                            <td>@(stat.Type == FieldType.Bool ? stat.BoolTrueCount.ToString() : "-")</td>
+                            <td>@(stat.Type == FieldType.Bool ? stat.BoolFalseCount.ToString() : "-")</td>
+                            <td>
+                                @if (stat.TopValues.Any())
+                                {
+                                    @string.Join(", ", stat.TopValues.Select(v => $"{v.Value} ({v.Count})"))
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
     </div>
 
@@ -398,8 +456,6 @@
             setStatus("Error", "bg-danger");
         }
     }
-
-
 
 //#region Events
     document.addEventListener("DOMContentLoaded", async () => {

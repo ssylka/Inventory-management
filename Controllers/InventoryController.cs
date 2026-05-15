@@ -14,13 +14,14 @@ namespace Inventory_Managment.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly InventoryService _inventoryService;
-
+        private readonly StatService _statService;
         public InventoryController(AppDbContext context, UserManager<AppUser> userManager,
-            InventoryService inventoryService)
+            InventoryService inventoryService, StatService statService)
         {
             _context = context;
             _userManager = userManager;
             _inventoryService = inventoryService;
+            _statService = statService;
         }
 
         public async Task<IActionResult> Index(string? tag = null)
@@ -78,7 +79,8 @@ namespace Inventory_Managment.Controllers
                     .ToListAsync(),
                 CanEditItems = _inventoryService.CanEdit(inventory, userId, isAdmin, isActive),
                 CanEditSettings = _inventoryService.CanEditSettings(inventory, userId, isAdmin),
-                AccessUsers = accessUsers
+                AccessUsers = accessUsers,
+                Stats = _statService.ComputeStats(inventory.Fields, inventory.Items)
             };
 
             return View(vm);
@@ -118,7 +120,6 @@ namespace Inventory_Managment.Controllers
                     Order = e.Order
                 }));
 
-                // Access list diff-update: same pattern as tags — remove gone, add new
                 var existingAccess = await _context.InventoryAccess
                     .Where(a => a.InventoryId == dto.Id)
                     .ToListAsync();

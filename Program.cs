@@ -41,6 +41,7 @@ namespace Inventory_Managment
 
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<StatService>();
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {

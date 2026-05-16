@@ -1,4 +1,4 @@
-﻿@using Inventory_Managment.Models.Directory
+@using Inventory_Managment.Models.Directory
 @model InventoryField
 <div class="d-flex align-items-center mb-3">
     <button type="button" class="btn btn-light me-3">
@@ -9,40 +9,37 @@
             </svg>
         </a>
     </button>
-
-    <h2>Add Field</h2>
-
+    <h2>@Localizer["AddField"]</h2>
 </div>
-
 
 <form method="post" class="mb-3">
     <input type="hidden" asp-for="InventoryId" value="@ViewBag.InventoryId" />
 
     <div class="mb-3">
-        <label>Name</label>
+        <label>@Localizer["Name"]</label>
         <input class="form-control" asp-for="Name" />
-		<span asp-validation-for="Name" class="text-danger"></span>
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label>Description</label>
+        <label>@Localizer["Description"]</label>
         <input class="form-control" asp-for="Description" />
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="form-check mb-3">
         <input class="form-check-input" asp-for="ShowInTable" />
-        <label class="form-check-label">Show in table</label>
+        <label class="form-check-label">@Localizer["ShowInTable"]</label>
         <span asp-validation-for="ShowInTable" class="text-danger d-block"></span>
     </div>
 
     <div class="mb-3">
-        <label>Type</label>
+        <label>@Localizer["Type"]</label>
         <select class="form-control" asp-for="Type" asp-items="Html.GetEnumSelectList<FieldType>()">
         </select>
     </div>
 
-    <button class="btn btn-success">Save</button>
+    <button class="btn btn-success">@Localizer["Save"]</button>
 </form>
 
 @if (TempData["Error"] != null)

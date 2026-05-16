@@ -4,11 +4,11 @@
     ViewData["Title"] = "Home";
 }
 
-<h4 class="mb-3">Latest Inventories</h4>
+<h4 class="mb-3">@Localizer["LatestInventories"]</h4>
 
 @if (!Model.Latest.Any())
 {
-    <p class="text-muted">No inventories yet.</p>
+    <p class="text-muted">@Localizer["NoInventoriesYet"]</p>
 }
 else
 {
@@ -16,9 +16,9 @@ else
         <thead>
             <tr>
                 <th style="width:80px"></th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Creator</th>
+                <th>@Localizer["Title"]</th>
+                <th>@Localizer["Description"]</th>
+                <th>@Localizer["Creator"]</th>
             </tr>
         </thead>
         <tbody>
@@ -41,11 +41,11 @@ else
     </table>
 }
 
-<h4 class="mb-3">Top 5 Most Popular</h4>
+<h4 class="mb-3">@Localizer["TopMostPopular"]</h4>
 
 @if (!Model.TopByItems.Any())
 {
-    <p class="text-muted">No inventories yet.</p>
+    <p class="text-muted">@Localizer["NoInventoriesYet"]</p>
 }
 else
 {
@@ -54,9 +54,9 @@ else
             <tr>
                 <th style="width:40px">#</th>
                 <th style="width:80px"></th>
-                <th>Title</th>
-                <th>Creator</th>
-                <th style="width:100px" class="text-center">Items</th>
+                <th>@Localizer["Title"]</th>
+                <th>@Localizer["Creator"]</th>
+                <th style="width:100px" class="text-center">@Localizer["Items"]</th>
             </tr>
         </thead>
         <tbody>
@@ -82,15 +82,14 @@ else
     </table>
 }
 
-<h4 class="mb-3">Tags</h4>
+<h4 class="mb-3">@Localizer["Tags"]</h4>
 
 @if (!Model.Tags.Any())
 {
-    <p class="text-muted">No tags yet.</p>
+    <p class="text-muted">@Localizer["NoTagsYet"]</p>
 }
 else
 {
-    
     <div class="d-flex flex-wrap gap-2 mb-3">
         @foreach (var tag in Model.Tags)
         {
@@ -103,5 +102,5 @@ else
 }
 @if (User.IsInRole("Active") || User.IsInRole("Admin"))
 {
-    <a href="/Inventory/Create" class="btn btn-primary">+ new inventory</a>
+    <a href="/Inventory/Create" class="btn btn-primary">@Localizer["NewInventory"]</a>
 }

@@ -1,5 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -12,8 +117,343 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-
   <data name="Inventories" xml:space="preserve">
     <value>Инвентари</value>
+  </data>
+  <data name="Privacy" xml:space="preserve">
+    <value>Конфиденциальность</value>
+  </data>
+  <data name="AdminPage" xml:space="preserve">
+    <value>Администратор</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Войти</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Зарегистрироваться</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Роль</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="Public" xml:space="preserve">
+    <value>Публичный</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Создано</value>
+  </data>
+  <data name="Creator" xml:space="preserve">
+    <value>Создатель</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Теги</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Изображение</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Категория</value>
+  </data>
+  <data name="CustomID" xml:space="preserve">
+    <value>Custom ID</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="NoInventoriesFound" xml:space="preserve">
+    <value>Инвентари не найдены.</value>
+  </data>
+  <data name="NoInventoriesYet" xml:space="preserve">
+    <value>Нет инвентарей.</value>
+  </data>
+  <data name="NoItemsYet" xml:space="preserve">
+    <value>Нет элементов</value>
+  </data>
+  <data name="NoFieldsConfigured" xml:space="preserve">
+    <value>Поля не настроены.</value>
+  </data>
+  <data name="NoTagsYet" xml:space="preserve">
+    <value>Нет тегов.</value>
+  </data>
+  <data name="NoInventoriesWithAccess" xml:space="preserve">
+    <value>Нет инвентарей с доступом на запись.</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Сохранено</value>
+  </data>
+  <data name="Unsaved" xml:space="preserve">
+    <value>Не сохранено</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Сохранение…</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Conflict" xml:space="preserve">
+    <value>Конфликт</value>
+  </data>
+  <data name="Uploading" xml:space="preserve">
+    <value>Загрузка…</value>
+  </data>
+  <data name="Uploaded" xml:space="preserve">
+    <value>Загружено</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Ошибка загрузки:</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Элементы</value>
+  </data>
+  <data name="Discussion" xml:space="preserve">
+    <value>Обсуждение</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Статистика</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>Поля</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Access" xml:space="preserve">
+    <value>Доступ</value>
+  </data>
+  <data name="NewInventory" xml:space="preserve">
+    <value>+ новый инвентарь</value>
+  </data>
+  <data name="AddItem" xml:space="preserve">
+    <value>Добавить элемент</value>
+  </data>
+  <data name="AddField" xml:space="preserve">
+    <value>Добавить поле</value>
+  </data>
+  <data name="AddTag" xml:space="preserve">
+    <value>+ Добавить тег</value>
+  </data>
+  <data name="AddElement" xml:space="preserve">
+    <value>Добавить элемент</value>
+  </data>
+  <data name="DeleteSelected" xml:space="preserve">
+    <value>Удалить выбранные</value>
+  </data>
+  <data name="NewPost" xml:space="preserve">
+    <value>Новый пост</value>
+  </data>
+  <data name="MarkdownSupported" xml:space="preserve">
+    <value>Поддерживается Markdown…</value>
+  </data>
+  <data name="Post" xml:space="preserve">
+    <value>Опубликовать</value>
+  </data>
+  <data name="LogInToParticipate" xml:space="preserve">
+    <value>Войдите, чтобы участвовать в обсуждении.</value>
+  </data>
+  <data name="TotalItems" xml:space="preserve">
+    <value>Всего элементов:</value>
+  </data>
+  <data name="Field" xml:space="preserve">
+    <value>Поле</value>
+  </data>
+  <data name="Filled" xml:space="preserve">
+    <value>Заполнено</value>
+  </data>
+  <data name="Empty" xml:space="preserve">
+    <value>Пусто</value>
+  </data>
+  <data name="Min" xml:space="preserve">
+    <value>Мин</value>
+  </data>
+  <data name="Max" xml:space="preserve">
+    <value>Макс</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>Среднее</value>
+  </data>
+  <data name="BoolTrue" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="BoolFalse" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="MostFrequentValues" xml:space="preserve">
+    <value>Частые значения</value>
+  </data>
+  <data name="IsPublicLabel" xml:space="preserve">
+    <value>Публичный (все авторизованные пользователи могут редактировать)</value>
+  </data>
+  <data name="IsPublicLabelItems" xml:space="preserve">
+    <value>Публичный (все авторизованные пользователи могут редактировать элементы)</value>
+  </data>
+  <data name="ChooseFile" xml:space="preserve">
+    <value>Выбрать файл</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Предпросмотр:</value>
+  </data>
+  <data name="DropHereToRemove" xml:space="preserve">
+    <value>🗑 Перетащите сюда для удаления</value>
+  </data>
+  <data name="SearchByNameOrEmail" xml:space="preserve">
+    <value>Поиск по имени или email…</value>
+  </data>
+  <data name="ShowInTable" xml:space="preserve">
+    <value>Показывать в таблице</value>
+  </data>
+  <data name="CreateInventory" xml:space="preserve">
+    <value>Создать инвентарь</value>
+  </data>
+  <data name="CreateItem" xml:space="preserve">
+    <value>Создать элемент</value>
+  </data>
+  <data name="EditItem" xml:space="preserve">
+    <value>Редактировать элемент</value>
+  </data>
+  <data name="EditField" xml:space="preserve">
+    <value>Редактировать поле</value>
+  </data>
+  <data name="InventoriesTagged" xml:space="preserve">
+    <value>Инвентари с тегом</value>
+  </data>
+  <data name="AutoGenerated" xml:space="preserve">
+    <value>Автогенерация</value>
+  </data>
+  <data name="LeaveEmptyToAutoGenerate" xml:space="preserve">
+    <value>Оставьте пустым для автогенерации.</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Введите email</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Введите пароль</value>
+  </data>
+  <data name="EnterName" xml:space="preserve">
+    <value>Введите ваше имя</value>
+  </data>
+  <data name="LoginWithGoogle" xml:space="preserve">
+    <value>Войти через Google</value>
+  </data>
+  <data name="LoginWithFacebook" xml:space="preserve">
+    <value>Войти через Facebook</value>
+  </data>
+  <data name="CheckYourEmail" xml:space="preserve">
+    <value>Проверьте email</value>
+  </data>
+  <data name="ConfirmationSent" xml:space="preserve">
+    <value>Мы отправили ссылку для подтверждения на ваш email. Нажмите её, чтобы активировать аккаунт.</value>
+  </data>
+  <data name="GoToLogin" xml:space="preserve">
+    <value>Перейти к входу</value>
+  </data>
+  <data name="NameIs" xml:space="preserve">
+    <value>Имя:</value>
+  </data>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>Email:</value>
+  </data>
+  <data name="EmailConfirmed" xml:space="preserve">
+    <value>Email подтверждён</value>
+  </data>
+  <data name="EmailNotConfirmed" xml:space="preserve">
+    <value>Email не подтверждён</value>
+  </data>
+  <data name="RoleIs" xml:space="preserve">
+    <value>Роль:</value>
+  </data>
+  <data name="MyInventories" xml:space="preserve">
+    <value>Мои инвентари</value>
+  </data>
+  <data name="FilterByTitle" xml:space="preserve">
+    <value>Фильтр по названию…</value>
+  </data>
+  <data name="TitleAZ" xml:space="preserve">
+    <value>Название А→Z</value>
+  </data>
+  <data name="TitleZA" xml:space="preserve">
+    <value>Название Z→А</value>
+  </data>
+  <data name="NewestFirst" xml:space="preserve">
+    <value>Сначала новые</value>
+  </data>
+  <data name="OldestFirst" xml:space="preserve">
+    <value>Сначала старые</value>
+  </data>
+  <data name="WriteAccess" xml:space="preserve">
+    <value>Доступ на запись</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Управление пользователями</value>
+  </data>
+  <data name="FilterByNameOrEmail" xml:space="preserve">
+    <value>Фильтр по имени или email…</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Администратор</value>
+  </data>
+  <data name="Blocked" xml:space="preserve">
+    <value>Заблокирован</value>
+  </data>
+  <data name="Unverified" xml:space="preserve">
+    <value>Не верифицирован</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Активный</value>
+  </data>
+  <data name="BlockUser" xml:space="preserve">
+    <value>Заблокировать</value>
+  </data>
+  <data name="UnblockUser" xml:space="preserve">
+    <value>Разблокировать</value>
+  </data>
+  <data name="MakeAdmin" xml:space="preserve">
+    <value>Сделать администратором</value>
+  </data>
+  <data name="RemoveAdmin" xml:space="preserve">
+    <value>Снять администратора</value>
+  </data>
+  <data name="YouLabel" xml:space="preserve">
+    <value>(вы)</value>
+  </data>
+  <data name="DeleteUsersConfirm" xml:space="preserve">
+    <value>Удалить {0} пользователей? Это действие нельзя отменить.</value>
+  </data>
+  <data name="LatestInventories" xml:space="preserve">
+    <value>Последние инвентари</value>
+  </data>
+  <data name="TopMostPopular" xml:space="preserve">
+    <value>Топ 5 популярных</value>
   </data>
 </root>

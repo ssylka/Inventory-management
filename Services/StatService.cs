@@ -103,7 +103,7 @@ namespace Inventory_Managment.Services
                 .ToList();
 
             stat.FilledCount = strings.Count;
-
+            
             stat.TopValues = strings
                 .GroupBy(s => s)
                 .OrderByDescending(g => g.Count())

@@ -9,30 +9,30 @@
             </svg>
         </a>
     </button>
-    <h2 class="mb-0">Create Inventory</h2>
+    <h2 class="mb-0">@Localizer["CreateInventory"]</h2>
 </div>
 
 <form method="post" style="max-width:600px">
 
     <div class="mb-3">
-        <label class="form-label">Title</label>
+        <label class="form-label">@Localizer["Title"]</label>
         <input class="form-control" asp-for="Title" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Description</label>
+        <label class="form-label">@Localizer["Description"]</label>
         <textarea class="form-control" asp-for="Description"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="form-check mb-3">
         <input class="form-check-input" asp-for="IsPublic" />
-        <label class="form-check-label">Public (all authenticated users can edit items)</label>
+        <label class="form-check-label">@Localizer["IsPublicLabelItems"]</label>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Category</label>
+        <label class="form-label">@Localizer["Category"]</label>
         <select asp-for="CategoryId" class="form-select">
             @foreach (var c in ViewBag.Categories)
             {
@@ -42,18 +42,18 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Tags</label>
+        <label class="form-label">@Localizer["Tags"]</label>
         <div id="tags-container"></div>
-        <button type="button" onclick="addTag()" class="btn btn-outline-secondary btn-sm mt-1">+ Add tag</button>
+        <button type="button" onclick="addTag()" class="btn btn-outline-secondary btn-sm mt-1">@Localizer["AddTag"]</button>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Image</label>
+        <label class="form-label">@Localizer["Image"]</label>
         <input type="hidden" asp-for="ImageUrl" id="image-url-hidden" />
 
         <div class="d-flex align-items-center gap-3 flex-wrap">
             <label class="btn btn-outline-secondary mb-0" style="cursor:pointer">
-                Choose file
+                @Localizer["ChooseFile"]
                 <input type="file" id="image-file-input" accept="image/*" class="d-none" />
             </label>
             <span id="image-upload-status" class="text-muted small"></span>
@@ -62,14 +62,18 @@
         <div id="image-preview-wrapper" class="mt-2 d-none">
             <img id="image-preview" src="" alt="Preview"
                  class="rounded border" style="max-height:200px;max-width:100%;" />
-            <button type="button" id="image-remove-btn" class="btn btn-sm btn-outline-danger ms-2">Remove</button>
+            <button type="button" id="image-remove-btn" class="btn btn-sm btn-outline-danger ms-2">@Localizer["Remove"]</button>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-success" id="submit-btn">Save</button>
+    <button type="submit" class="btn btn-success" id="submit-btn">@Localizer["Save"]</button>
 </form>
 
 <script>
+    const msgUploading   = "@Localizer["Uploading"]";
+    const msgUploaded    = "@Localizer["Uploaded"]";
+    const msgUploadFailed = "@Localizer["UploadFailed"]";
+
     function addTag() {
         const container = document.getElementById("tags-container");
         const index = container.children.length;
@@ -138,12 +142,10 @@
         const file = fileInput.files[0];
         if (!file) return;
 
-        // Show a local blob preview immediately so the user doesn't wait
         previewImg.src = URL.createObjectURL(file);
         previewWrapper.classList.remove("d-none");
 
-        // Upload to server through Cloudinary
-        status.textContent = "Uploading…";
+        status.textContent = msgUploading;
         submitBtn.disabled = true;
 
         const formData = new FormData();
@@ -158,12 +160,12 @@
             if (!res.ok) throw new Error(await res.text());
 
             const data = await res.json();
-            hiddenUrl.value = data.url;           // save Cloudinary URL to hidden field
-            previewImg.src  = data.url;           // swap blob preview for real Cloudinary URL
-            status.textContent = "Uploaded";
+            hiddenUrl.value = data.url;
+            previewImg.src  = data.url;
+            status.textContent = msgUploaded;
             status.className = "text-success small";
         } catch (err) {
-            status.textContent = "Upload failed: " + err.message;
+            status.textContent = msgUploadFailed + " " + err.message;
             status.className = "text-danger small";
             previewWrapper.classList.add("d-none");
             hiddenUrl.value = "";

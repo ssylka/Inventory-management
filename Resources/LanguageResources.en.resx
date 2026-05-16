@@ -1,19 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="Inventories" xml:space="preserve">
-    <value>Inventories</value>
-  </data>
+  <!-- Nav -->
+  <data name="Inventories" xml:space="preserve"><value>Inventories</value></data>
+  <data name="Privacy" xml:space="preserve"><value>Privacy</value></data>
+  <data name="AdminPage" xml:space="preserve"><value>Admin page</value></data>
+  <data name="Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="Login" xml:space="preserve"><value>Login</value></data>
+  <data name="LogIn" xml:space="preserve"><value>Log in</value></data>
+  <data name="Register" xml:space="preserve"><value>Register</value></data>
+
+  <!-- Common -->
+  <data name="Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Public" xml:space="preserve"><value>Public</value></data>
+  <data name="Created" xml:space="preserve"><value>Created</value></data>
+  <data name="Creator" xml:space="preserve"><value>Creator</value></data>
+  <data name="Tags" xml:space="preserve"><value>Tags</value></data>
+  <data name="Image" xml:space="preserve"><value>Image</value></data>
+  <data name="Category" xml:space="preserve"><value>Category</value></data>
+  <data name="CustomID" xml:space="preserve"><value>Custom ID</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="All" xml:space="preserve"><value>All</value></data>
+
+  <!-- Empty states -->
+  <data name="NoInventoriesFound" xml:space="preserve"><value>No inventories found.</value></data>
+  <data name="NoInventoriesYet" xml:space="preserve"><value>No inventories yet.</value></data>
+  <data name="NoItemsYet" xml:space="preserve"><value>No items yet</value></data>
+  <data name="NoFieldsConfigured" xml:space="preserve"><value>No fields configured.</value></data>
+  <data name="NoTagsYet" xml:space="preserve"><value>No tags yet.</value></data>
+  <data name="NoInventoriesWithAccess" xml:space="preserve"><value>No inventories with write access.</value></data>
+
+  <!-- Status messages (JS) -->
+  <data name="Saved" xml:space="preserve"><value>Saved</value></data>
+  <data name="Unsaved" xml:space="preserve"><value>Unsaved</value></data>
+  <data name="Saving" xml:space="preserve"><value>Saving…</value></data>
+  <data name="Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Conflict" xml:space="preserve"><value>Conflict</value></data>
+  <data name="Uploading" xml:space="preserve"><value>Uploading…</value></data>
+  <data name="Uploaded" xml:space="preserve"><value>Uploaded</value></data>
+  <data name="UploadFailed" xml:space="preserve"><value>Upload failed:</value></data>
+
+  <!-- Inventory Details tabs -->
+  <data name="Items" xml:space="preserve"><value>Items</value></data>
+  <data name="Discussion" xml:space="preserve"><value>Discussion</value></data>
+  <data name="Statistics" xml:space="preserve"><value>Statistics</value></data>
+  <data name="Fields" xml:space="preserve"><value>Fields</value></data>
+  <data name="Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Access" xml:space="preserve"><value>Access</value></data>
+
+  <!-- Actions -->
+  <data name="NewInventory" xml:space="preserve"><value>+ new inventory</value></data>
+  <data name="AddItem" xml:space="preserve"><value>Add Item</value></data>
+  <data name="AddField" xml:space="preserve"><value>Add Field</value></data>
+  <data name="AddTag" xml:space="preserve"><value>+ Add tag</value></data>
+  <data name="AddElement" xml:space="preserve"><value>Add element</value></data>
+  <data name="DeleteSelected" xml:space="preserve"><value>Delete selected</value></data>
+
+  <!-- Discussion -->
+  <data name="NewPost" xml:space="preserve"><value>New post</value></data>
+  <data name="MarkdownSupported" xml:space="preserve"><value>Markdown is supported…</value></data>
+  <data name="Post" xml:space="preserve"><value>Post</value></data>
+  <data name="LogInToParticipate" xml:space="preserve"><value>Log in to participate in the discussion.</value></data>
+
+  <!-- Statistics table -->
+  <data name="TotalItems" xml:space="preserve"><value>Total items:</value></data>
+  <data name="Field" xml:space="preserve"><value>Field</value></data>
+  <data name="Filled" xml:space="preserve"><value>Filled</value></data>
+  <data name="Empty" xml:space="preserve"><value>Empty</value></data>
+  <data name="Min" xml:space="preserve"><value>Min</value></data>
+  <data name="Max" xml:space="preserve"><value>Max</value></data>
+  <data name="Average" xml:space="preserve"><value>Average</value></data>
+  <data name="BoolTrue" xml:space="preserve"><value>True</value></data>
+  <data name="BoolFalse" xml:space="preserve"><value>False</value></data>
+  <data name="MostFrequentValues" xml:space="preserve"><value>Most frequent values</value></data>
+
+  <!-- Forms -->
+  <data name="IsPublicLabel" xml:space="preserve"><value>Public (all authenticated users can edit)</value></data>
+  <data name="IsPublicLabelItems" xml:space="preserve"><value>Public (all authenticated users can edit items)</value></data>
+  <data name="ChooseFile" xml:space="preserve"><value>Choose file</value></data>
+  <data name="Preview" xml:space="preserve"><value>Preview:</value></data>
+  <data name="DropHereToRemove" xml:space="preserve"><value>🗑 Drop here to remove</value></data>
+  <data name="SearchByNameOrEmail" xml:space="preserve"><value>Search by name or email…</value></data>
+  <data name="ShowInTable" xml:space="preserve"><value>Show in table</value></data>
+
+  <!-- Page titles -->
+  <data name="CreateInventory" xml:space="preserve"><value>Create Inventory</value></data>
+  <data name="CreateItem" xml:space="preserve"><value>Create Item</value></data>
+  <data name="EditItem" xml:space="preserve"><value>Edit Item</value></data>
+  <data name="EditField" xml:space="preserve"><value>Edit Field</value></data>
+  <data name="InventoriesTagged" xml:space="preserve"><value>Inventories tagged</value></data>
+
+  <!-- Item form -->
+  <data name="AutoGenerated" xml:space="preserve"><value>Auto-generated</value></data>
+  <data name="LeaveEmptyToAutoGenerate" xml:space="preserve"><value>Leave empty to auto-generate.</value></data>
+
+  <!-- Auth -->
+  <data name="EnterEmail" xml:space="preserve"><value>Enter email</value></data>
+  <data name="EnterPassword" xml:space="preserve"><value>Enter password</value></data>
+  <data name="EnterName" xml:space="preserve"><value>Enter your name</value></data>
+  <data name="LoginWithGoogle" xml:space="preserve"><value>Login with Google</value></data>
+  <data name="LoginWithFacebook" xml:space="preserve"><value>Login with Facebook</value></data>
+  <data name="CheckYourEmail" xml:space="preserve"><value>Check your email</value></data>
+  <data name="ConfirmationSent" xml:space="preserve"><value>We sent a confirmation link to your email address. Click it to activate your account.</value></data>
+  <data name="GoToLogin" xml:space="preserve"><value>Go to login</value></data>
+
+  <!-- Profile -->
+  <data name="NameIs" xml:space="preserve"><value>Name is</value></data>
+  <data name="EmailLabel" xml:space="preserve"><value>Email:</value></data>
+  <data name="EmailConfirmed" xml:space="preserve"><value>Email is confirmed</value></data>
+  <data name="EmailNotConfirmed" xml:space="preserve"><value>Email isn't confirmed</value></data>
+  <data name="RoleIs" xml:space="preserve"><value>Role is</value></data>
+  <data name="MyInventories" xml:space="preserve"><value>My Inventories</value></data>
+  <data name="FilterByTitle" xml:space="preserve"><value>Filter by title…</value></data>
+  <data name="TitleAZ" xml:space="preserve"><value>Title A→Z</value></data>
+  <data name="TitleZA" xml:space="preserve"><value>Title Z→A</value></data>
+  <data name="NewestFirst" xml:space="preserve"><value>Newest first</value></data>
+  <data name="OldestFirst" xml:space="preserve"><value>Oldest first</value></data>
+  <data name="WriteAccess" xml:space="preserve"><value>Write Access</value></data>
+
+  <!-- Admin -->
+  <data name="UserManagement" xml:space="preserve"><value>User Management</value></data>
+  <data name="FilterByNameOrEmail" xml:space="preserve"><value>Filter by name or email…</value></data>
+  <data name="Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="Blocked" xml:space="preserve"><value>Blocked</value></data>
+  <data name="Unverified" xml:space="preserve"><value>Unverified</value></data>
+  <data name="Active" xml:space="preserve"><value>Active</value></data>
+  <data name="BlockUser" xml:space="preserve"><value>Block</value></data>
+  <data name="UnblockUser" xml:space="preserve"><value>Unblock</value></data>
+  <data name="MakeAdmin" xml:space="preserve"><value>Make Admin</value></data>
+  <data name="RemoveAdmin" xml:space="preserve"><value>Remove Admin</value></data>
+  <data name="YouLabel" xml:space="preserve"><value>(you)</value></data>
+  <data name="DeleteUsersConfirm" xml:space="preserve"><value>Delete {0} user(s)? This cannot be undone.</value></data>
+
+  <!-- Home -->
+  <data name="LatestInventories" xml:space="preserve"><value>Latest Inventories</value></data>
+  <data name="TopMostPopular" xml:space="preserve"><value>Top 5 Most Popular</value></data>
 </root>

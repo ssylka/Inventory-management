@@ -2,7 +2,7 @@
 @model Item
 
 <div class="d-flex align-items-center mb-3">
-    <button type="button" class="btn btn-light me-5">
+    <button type="button" class="btn btn-light me-3">
         <a href="/Inventory/Details/@Model.InventoryId#tab-items" style="text-decoration: none; color: black">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace" viewBox="0 0 16 16">
                 <path d="M5.83 5.146a.5.5 0 0 0 0 .708L7.975 8l-2.147 2.146a.5.5 0 0 0 .707.708l2.147-2.147 2.146 2.147a.5.5 0 0 0 .707-.708L9.39 8l2.146-2.146a.5.5 0 0 0-.707-.708L8.683 7.293 6.536 5.146a.5.5 0 0 0-.707 0z" />
@@ -10,7 +10,7 @@
             </svg>
         </a>
     </button>
-    <h2>Edit Item</h2>
+    <h2>@Localizer["EditItem"]</h2>
 </div>
 
 <form method="post" style="max-width:600px">
@@ -50,7 +50,7 @@
 
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <label class="btn btn-outline-secondary mb-0" style="cursor:pointer">
-                        Choose file
+                        @Localizer["ChooseFile"]
                         <input type="file" id="file-input-@field.Slot" accept="image/*" class="d-none" />
                     </label>
                     <span id="status-@field.Slot" class="text-muted small"></span>
@@ -60,7 +60,7 @@
                     <img id="preview-@field.Slot" src="" alt="Preview"
                          class="rounded border" style="max-height:200px;max-width:100%;object-fit:contain;" />
                     <button type="button" id="remove-btn-@field.Slot"
-                            class="btn btn-sm btn-outline-danger ms-2">Remove</button>
+                            class="btn btn-sm btn-outline-danger ms-2">@Localizer["Remove"]</button>
                 </div>
             </div>
         }
@@ -81,11 +81,11 @@
     }
 
     <div class="mb-3">
-        <label class="form-label">Custom ID</label>
+        <label class="form-label">@Localizer["CustomID"]</label>
         <input class="form-control" name="CustomId" value="@Model.CustomId" />
     </div>
 
-    <button class="btn btn-success" id="submit-btn">Save</button>
+    <button class="btn btn-success" id="submit-btn">@Localizer["Save"]</button>
 
     <input type="hidden" name="CreatedAt" value="@Model.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
     <input type="hidden" name="CustomId" value="@Model.CustomId" />
@@ -93,6 +93,10 @@
 
 @section Scripts {
 <script>
+    const msgUploading    = "@Localizer["Uploading"]";
+    const msgUploaded     = "@Localizer["Uploaded"]";
+    const msgUploadFailed = "@Localizer["UploadFailed"]";
+
     function initLinkUpload(slot, existingUrl) {
         let committedUrl = existingUrl;
 
@@ -116,7 +120,7 @@
 
             previewImg.src = URL.createObjectURL(file);
             previewWrapper.classList.remove('d-none');
-            status.textContent = 'Uploading…';
+            status.textContent = msgUploading;
             status.className = 'text-muted small';
             submitBtn.disabled = true;
 
@@ -131,10 +135,10 @@
                 committedUrl = data.url;
                 hiddenInput.value = data.url;
                 previewImg.src = data.url;
-                status.textContent = 'Uploaded';
+                status.textContent = msgUploaded;
                 status.className = 'text-success small';
             } catch (err) {
-                status.textContent = 'Upload failed: ' + err.message;
+                status.textContent = msgUploadFailed + ' ' + err.message;
                 status.className = 'text-danger small';
                 previewWrapper.classList.add('d-none');
                 previewImg.src = committedUrl ?? '';

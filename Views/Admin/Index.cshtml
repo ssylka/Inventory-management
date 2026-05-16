@@ -1,15 +1,15 @@
 @model List<Inventory_Managment.Models.Dto.UserAdminDto>
 
 @{
-    ViewData["Title"] = "User Management";
+    ViewData["Title"] = Localizer["UserManagement"];
     var currentUserId = ViewBag.CurrentUserId as string;
 }
 
-<h2 class="mb-3">User Management</h2>
+<h2 class="mb-3">@Localizer["UserManagement"]</h2>
 
 <div class="mb-2 d-flex gap-2 align-items-center">
     <input id="user-filter" class="form-control form-control-sm" style="max-width:300px"
-           placeholder="Filter by name or email…" />
+           placeholder="@Localizer["FilterByNameOrEmail"]" />
 </div>
 
 <table class="table table-bordered table-striped table-hover align-middle">
@@ -17,11 +17,11 @@
         <tr>
             <th style="width:40px">
                 <input type="checkbox" class="btn-check" id="select-all">
-                <label class="btn btn-outline-secondary btn-sm" for="select-all">All</label>
+                <label class="btn btn-outline-secondary btn-sm" for="select-all">@Localizer["All"]</label>
             </th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
+            <th>@Localizer["Name"]</th>
+            <th>@Localizer["Email"]</th>
+            <th>@Localizer["Role"]</th>
         </tr>
     </thead>
     <tbody id="users-tbody">
@@ -30,13 +30,13 @@
             var isSelf = u.Id == currentUserId;
             <tr data-id="@u.Id" data-search="@(u.Name.ToLower()) @(u.Email.ToLower())">
                 <td><input class="form-check-input user-checkbox" type="checkbox" value="@u.Id" /></td>
-                <td>@u.Name @if (isSelf) { <span class="text-muted small">(you)</span> }</td>
+                <td>@u.Name @if (isSelf) { <span class="text-muted small">@Localizer["YouLabel"]</span> }</td>
                 <td class="text-muted">@u.Email</td>
                 <td>
-                    @if (u.IsAdmin)      { <span class="badge bg-success">Admin</span> }
-                    @if (u.IsBlocked)    { <span class="badge bg-danger">Blocked</span> }
-                    @if (u.IsUnverified) { <span class="badge bg-warning text-dark">Unverified</span> }
-                    @if (!u.IsAdmin && !u.IsBlocked && !u.IsUnverified) { <span class="badge bg-primary">Active</span> }
+                    @if (u.IsAdmin)      { <span class="badge bg-success">@Localizer["Admin"]</span> }
+                    @if (u.IsBlocked)    { <span class="badge bg-danger">@Localizer["Blocked"]</span> }
+                    @if (u.IsUnverified) { <span class="badge bg-warning text-dark">@Localizer["Unverified"]</span> }
+                    @if (!u.IsAdmin && !u.IsBlocked && !u.IsUnverified) { <span class="badge bg-primary">@Localizer["Active"]</span> }
                 </td>
             </tr>
         }
@@ -44,15 +44,17 @@
 </table>
 
 <div id="action-bar" class="d-none d-flex gap-2 flex-wrap mt-1">
-    <button id="btn-block"        class="btn btn-warning btn-sm">Block</button>
-    <button id="btn-unblock"      class="btn btn-success btn-sm">Unblock</button>
-    <button id="btn-make-admin"   class="btn btn-secondary btn-sm">Make Admin</button>
-    <button id="btn-remove-admin" class="btn btn-outline-secondary btn-sm">Remove Admin</button>
-    <button id="btn-delete"       class="btn btn-danger btn-sm">Delete</button>
+    <button id="btn-block"        class="btn btn-warning btn-sm">@Localizer["BlockUser"]</button>
+    <button id="btn-unblock"      class="btn btn-success btn-sm">@Localizer["UnblockUser"]</button>
+    <button id="btn-make-admin"   class="btn btn-secondary btn-sm">@Localizer["MakeAdmin"]</button>
+    <button id="btn-remove-admin" class="btn btn-outline-secondary btn-sm">@Localizer["RemoveAdmin"]</button>
+    <button id="btn-delete"       class="btn btn-danger btn-sm">@Localizer["Delete"]</button>
 </div>
 
 @section Scripts {
 <script>
+    const msgDeleteConfirm = "@Localizer["DeleteUsersConfirm"]";
+
     document.getElementById("user-filter").addEventListener("input", function () {
         const term = this.value.toLowerCase();
         document.querySelectorAll("#users-tbody tr").forEach(row => {
@@ -98,7 +100,7 @@
     async function bulkDelete() {
         const ids = getSelectedIds();
         if (!ids.length) return;
-        if (!confirm(`Delete ${ids.length} user(s)? This cannot be undone.`)) return;
+        if (!confirm(msgDeleteConfirm.replace('{0}', ids.length))) return;
 
         const results = await Promise.all(ids.map(id =>
             fetch(`/Admin/Delete/${id}`, { method: "POST" })

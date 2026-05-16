@@ -7,6 +7,8 @@
 
 @if (tag != null)
 {
+<div class="d-flex align-items-center me-3 text-center">
+
     <button type="button" class="btn btn-light me-3">
         <a asp-controller="Home" asp-action="Index" asp-append-version="true" style="text-decoration:none;color:black">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace" viewBox="0 0 16 16">
@@ -15,25 +17,25 @@
             </svg>
         </a>
     </button>
-    <li class="breadcrumb-item active">Tag: <strong>@tag</strong></li>
-    <h3 class="mb-3">Inventories tagged <span class="badge bg-secondary">@tag</span></h3>
+    <h2>@Localizer["InventoriesTagged"] <span class="badge bg-secondary">@tag</span></h2>
+</div>
 }
 else
 {
-    <h2 class="mb-3">Inventories</h2>
+    <h2 class="mb-3">@Localizer["Inventories"]</h2>
 }
 
 @if (!Model.Any())
 {
-    <p class="text-muted">No inventories found.</p>
+    <p class="text-muted">@Localizer["NoInventoriesFound"]</p>
 }
 else
 {
     <table class="table table-bordered table-striped table-hover align-middle text-center">
         <thead>
             <tr>
-                <th class="w-25">Title</th>
-                <th>Description</th>
+                <th class="w-25">@Localizer["Title"]</th>
+                <th>@Localizer["Description"]</th>
             </tr>
         </thead>
         <tbody>
@@ -50,12 +52,11 @@ else
 
 @if (User.IsInRole("Active") || User.IsInRole("Admin"))
 {
-    <a href="/Inventory/Create" class="btn btn-primary">+ new inventory</a>
-    <a class="btn btn-danger d-none" id="btnDelete">Delete</a>
+    <a href="/Inventory/Create" class="btn btn-primary">@Localizer["NewInventory"]</a>
+    <a class="btn btn-danger d-none" id="btnDelete">@Localizer["Delete"]</a>
 }
 
 @section Scripts {
-
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 <script>
@@ -64,7 +65,6 @@ else
             window.location.href = `/Inventory/Details/${this.dataset.id}#tab-items`;
         });
     });
-
 
     document.querySelectorAll(".markup").forEach(t => {
         t.innerHTML = DOMPurify.sanitize(marked.parse(t.textContent.trim()));

@@ -7,33 +7,33 @@
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h2 class="mb-0">Name is @Model.User.Name</h2>
-        <p class="text-muted mb-0">Email: @Model.User.Email</p>
+        <h2 class="mb-0">@Localizer["NameIs"] @Model.User.Name</h2>
+        <p class="text-muted mb-0">@Localizer["EmailLabel"] @Model.User.Email</p>
         @if (Model.User.EmailConfirmed)
         {
-            <p class="text-success">Email is confirmed</p>
+            <p class="text-success">@Localizer["EmailConfirmed"]</p>
         }
         else
         {
-            <p class="text-danger">Email isn't confirmed</p>
+            <p class="text-danger">@Localizer["EmailNotConfirmed"]</p>
         }
-        <p>Role is <b> @Model.Role </b></p>
+        <p>@Localizer["RoleIs"] <b>@Model.Role</b></p>
     </div>
 </div>
 
-<h5 class="mt-4">My Inventories</h5>
+<h5 class="mt-4">@Localizer["MyInventories"]</h5>
 
 <div class="mb-2 d-flex gap-2 align-items-center">
-    <input id="owned-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="Filter by title…" />
+    <input id="owned-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="@Localizer["FilterByTitle"]" />
     <select id="owned-sort" class="form-select form-select-sm" style="max-width:180px">
-        <option value="title-asc">Title A→Z</option>
-        <option value="title-desc">Title Z→A</option>
-        <option value="date-desc">Newest first</option>
-        <option value="date-asc">Oldest first</option>
+        <option value="title-asc">@Localizer["TitleAZ"]</option>
+        <option value="title-desc">@Localizer["TitleZA"]</option>
+        <option value="date-desc">@Localizer["NewestFirst"]</option>
+        <option value="date-asc">@Localizer["OldestFirst"]</option>
     </select>
     @if (Model.IsOwnProfile)
     {
-        <button id="owned-delete-btn" class="btn btn-danger btn-sm d-none">Delete selected</button>
+        <button id="owned-delete-btn" class="btn btn-danger btn-sm d-none">@Localizer["DeleteSelected"]</button>
     }
 </div>
 
@@ -44,13 +44,13 @@
             {
                 <th style="width:5%">
                     <input type="checkbox" class="btn-check" id="owned-select-all">
-                    <label class="btn btn-outline-secondary btn-sm" for="owned-select-all">All</label>
+                    <label class="btn btn-outline-secondary btn-sm" for="owned-select-all">@Localizer["All"]</label>
                 </th>
             }
-            <th>Title</th>
-            <th>Description</th>
-            <th>Public</th>
-            <th>Created</th>
+            <th>@Localizer["Title"]</th>
+            <th>@Localizer["Description"]</th>
+            <th>@Localizer["Public"]</th>
+            <th>@Localizer["Created"]</th>
         </tr>
     </thead>
     <tbody id="owned-tbody">
@@ -77,28 +77,28 @@
 </table>
 @if (!Model.OwnedInventories.Any())
 {
-    <p class="text-muted">No inventories yet.</p>
+    <p class="text-muted">@Localizer["NoInventoriesYet"]</p>
 }
 
-<h5 class="mt-5">Write Access</h5>
+<h5 class="mt-5">@Localizer["WriteAccess"]</h5>
 
 <div class="mb-2 d-flex gap-2 align-items-center">
-    <input id="access-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="Filter by title…" />
+    <input id="access-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="@Localizer["FilterByTitle"]" />
     <select id="access-sort" class="form-select form-select-sm" style="max-width:180px">
-        <option value="title-asc">Title A→Z</option>
-        <option value="title-desc">Title Z→A</option>
-        <option value="date-desc">Newest first</option>
-        <option value="date-asc">Oldest first</option>
+        <option value="title-asc">@Localizer["TitleAZ"]</option>
+        <option value="title-desc">@Localizer["TitleZA"]</option>
+        <option value="date-desc">@Localizer["NewestFirst"]</option>
+        <option value="date-asc">@Localizer["OldestFirst"]</option>
     </select>
 </div>
 
 <table class="table table-bordered table-striped align-middle text-center" id="access-table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Public</th>
-            <th>Created</th>
+            <th>@Localizer["Title"]</th>
+            <th>@Localizer["Description"]</th>
+            <th>@Localizer["Public"]</th>
+            <th>@Localizer["Created"]</th>
         </tr>
     </thead>
     <tbody id="access-tbody">
@@ -119,26 +119,23 @@
 </table>
 @if (!Model.AccessInventories.Any())
 {
-    <p class="text-muted">No inventories with write access.</p>
+    <p class="text-muted">@Localizer["NoInventoriesWithAccess"]</p>
 }
 @if (Model.IsOwnProfile)
 {
-    <a asp-controller="Inventory" asp-action="Create" class="btn btn-primary">>+ new inventory</a>
+    <a asp-controller="Inventory" asp-action="Create" class="btn btn-primary">@Localizer["NewInventory"]</a>
 }
 @section Scripts {
 <script>
-    // Generic filter + sort for a tbody
     function applyFilterSort(tbodyId, filterVal, sortVal) {
         const tbody = document.getElementById(tbodyId);
         const rows = Array.from(tbody.querySelectorAll("tr"));
 
-        // Filter
         const term = filterVal.toLowerCase();
         rows.forEach(r => {
             r.style.display = r.dataset.title.includes(term) ? "" : "none";
         });
 
-        // Sort only visible rows
         const visible = rows.filter(r => r.style.display !== "none");
         visible.sort((a, b) => {
             switch (sortVal) {
@@ -151,21 +148,18 @@
         visible.forEach(r => tbody.appendChild(r));
     }
 
-    // Owned table
     const ownedFilter = document.getElementById("owned-filter");
     const ownedSort   = document.getElementById("owned-sort");
     function refreshOwned() { applyFilterSort("owned-tbody", ownedFilter.value, ownedSort.value); }
     ownedFilter?.addEventListener("input", refreshOwned);
     ownedSort?.addEventListener("change", refreshOwned);
 
-    // Access table
     const accessFilter = document.getElementById("access-filter");
     const accessSort   = document.getElementById("access-sort");
     function refreshAccess() { applyFilterSort("access-tbody", accessFilter.value, accessSort.value); }
     accessFilter?.addEventListener("input", refreshAccess);
     accessSort?.addEventListener("change", refreshAccess);
 
-    // Delete owned inventories
     const deleteBtn = document.getElementById("owned-delete-btn");
     const selectAll = document.getElementById("owned-select-all");
 
@@ -176,7 +170,6 @@
     });
 
     selectAll?.addEventListener("change", function () {
-        // Select only .owned-checkbox, not the disabled Public checkboxes (.form-check-input)
         document.querySelectorAll(".owned-checkbox").forEach(cb => cb.checked = this.checked);
         const anyChecked = document.querySelectorAll(".owned-checkbox:checked").length > 0;
         deleteBtn?.classList.toggle("d-none", !anyChecked);

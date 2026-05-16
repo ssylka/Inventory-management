@@ -30,7 +30,7 @@ namespace Inventory_Managment.Services
 
             return string.Join("", parts);
         }
-        // Formats a number using pattern [prefix][D|X][width][suffix], e.g. "-D3" → "-042", "X5_" → "1A3F0_"
+        // Formats a number using pattern [prefix][D|X][width][suffix], e.g. "-D3" to "-042", "X5_" to "1A3F0_"
         private static string FormatNumber(long num, string? format)
         {
             if (string.IsNullOrEmpty(format))

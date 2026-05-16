@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System;
 using static System.Formats.Asn1.AsnWriter;
@@ -16,13 +17,18 @@ namespace Inventory_Managment
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
             builder.Services.AddScoped<ItemService>();
             builder.Services.AddScoped<InventoryService>();
+            builder.Services.AddScoped<EmailService>();
+            builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<StatService>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -34,14 +40,11 @@ namespace Inventory_Managment
             builder.Services.Configure<SecurityStampValidatorOptions>(options =>
             {
                 options.ValidationInterval = TimeSpan.Zero;
-                // Somtimes TimeSpan.Zero would query the DB on every request and exhaust the connection pool.
-                // If it happend uncomment a string below:
+                // Sometimes TimeSpan.Zero would query the DB on every request and exhaust the connection pool.
+                // If it happen, uncomment a string below:
                 // options.ValidationInterval = TimeSpan.FromSeconds(30);
             });
 
-            builder.Services.AddScoped<EmailService>();
-            builder.Services.AddScoped<ImageService>();
-            builder.Services.AddScoped<StatService>();
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {
@@ -54,7 +57,17 @@ namespace Inventory_Managment
                     options.AppSecret = builder.Configuration["Auth:Facebook:AppSecret"];
                 });
 
+            builder.Services.AddLocalization(o => o.ResourcesPath = "");
+
             var app = builder.Build();
+
+            var supportedCultures = new[] { "en", "ru" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture("en")
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

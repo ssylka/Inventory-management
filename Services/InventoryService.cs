@@ -33,20 +33,70 @@ namespace Inventory_Managment.Services
             throw new Exception("You cannot add more than 3 fields of this type.");
         }
 
-        public bool CanEdit(Inventory inv, string? userId, bool isAdmin, bool isActive)
+        public async Task<bool> CanEditAsync(Inventory inv, string? userId, bool isAdmin, bool isActive)
         {
             if (isAdmin) return true;
             if (!isActive || string.IsNullOrEmpty(userId)) return false;
             if (inv.CreatorId == userId) return true;
             if (inv.IsPublic) return true;
-            return _context.InventoryAccess
-                .Any(a => a.InventoryId == inv.Id && a.UserId == userId);
+            return await _context.InventoryAccess
+                .AnyAsync(a => a.InventoryId == inv.Id && a.UserId == userId);
         }
 
         public bool CanEditSettings(Inventory inv, string? userId, bool isAdmin)
         {
             if (isAdmin) return true;
             return !string.IsNullOrEmpty(userId) && inv.CreatorId == userId;
+        }
+
+        public async Task ReplaceCustomIdElementsAsync(int inventoryId, IList<CustomIdElementDto> elements)
+        {
+            var old = await _context.CustomIdElements
+                .Where(e => e.InventoryId == inventoryId)
+                .ToListAsync();
+            _context.CustomIdElements.RemoveRange(old);
+            _context.CustomIdElements.AddRange(elements.Select(e => new CustomIdElement
+            {
+                InventoryId = inventoryId,
+                Type        = Enum.Parse<CustomIdElementType>(e.Type),
+                Value       = string.IsNullOrEmpty(e.Value) ? null : e.Value,
+                Order       = e.Order
+            }));
+        }
+
+        public async Task UpdateAccessAsync(int inventoryId, IList<string> userIds)
+        {
+            var existing = await _context.InventoryAccess
+                .Where(a => a.InventoryId == inventoryId)
+                .ToListAsync();
+
+            var existingIds = existing.Select(a => a.UserId).ToHashSet();
+
+            var toRemove = existing.Where(a => !userIds.Contains(a.UserId)).ToList();
+            var toAdd    = userIds
+                .Where(uid => !existingIds.Contains(uid))
+                .Select(uid => new InventoryAccess { InventoryId = inventoryId, UserId = uid });
+
+            _context.InventoryAccess.RemoveRange(toRemove);
+            _context.InventoryAccess.AddRange(toAdd);
+        }
+
+        public async Task ApplyFieldOrdersAsync(IList<FieldOrderDto> orders)
+        {
+            if (!orders.Any()) return;
+
+            var ids    = orders.Select(f => f.Id).ToList();
+            var fields = await _context.InventoryFields
+                .Where(f => ids.Contains(f.Id))
+                .ToListAsync();
+
+            foreach (var fo in orders)
+            {
+                var field = fields.FirstOrDefault(f => f.Id == fo.Id);
+                if (field != null) field.Order = fo.Order;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateTagsForInventoryAsync(Inventory inventory)

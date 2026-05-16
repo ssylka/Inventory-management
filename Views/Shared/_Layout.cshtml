@@ -1,4 +1,6 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
+@using Inventory_Managment.Resources
 @inject UserManager<AppUser> UserManager
 @{
     var currentUser = await UserManager.GetUserAsync(User);
@@ -7,16 +9,17 @@
 @{
     var theme = Context.Request.Cookies["theme"] ?? "light";
 }
+@inject IStringLocalizer<LanguageResources> Localizer
+
 <html lang="en" data-bs-theme="@theme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Inventory_Managment</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body >
+<body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-body border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -28,8 +31,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Inventory" asp-action="Index">Inventories</a>
-
+                            <a class="nav-link" asp-area="" asp-controller="Inventory" asp-action="Index">@Localizer["Inventories"]</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -41,30 +43,28 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                                    <a class="dropdown-item d-flex align-items-center gap-2"
+                                        asp-controller="Language"
+                                        asp-action="Set"
+                                        asp-route-culture="ru"
+                                        asp-route-returnUrl="@Context.Request.Path">
                                         <img src="https://flagcdn.com/w40/ru.png" width="20"> RU
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                                    <a class="dropdown-item d-flex align-items-center gap-2"
+                                        asp-controller="Language"
+                                        asp-action="Set"
+                                        asp-route-culture="en"
+                                        asp-route-returnUrl="@Context.Request.Path">
                                         <img src="https://flagcdn.com/w40/gb.png" width="20"> EN
                                     </a>
                                 </li>
                             </ul>
                         </li>
 
-                        <li class="nav-item ms-auto me-2">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><img class="dropdown-item" src="https://flagcdn.com/w40/ru.png"></li>
-                            <li><img class="dropdown-item" src="https://flagcdn.com/w40/gb.png"></li>
-                        </ul>
-                        </li>
-
                         <li class="nav-item me-2">
-                            <button class="btn btn-secondary btn" onclick="toggleTheme()" id="theme-btn">
+                            <button class="btn btn-secondary" onclick="toggleTheme()" id="theme-btn">
                                 🌙
                             </button>
                         </li>
@@ -115,9 +115,8 @@
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="~/js/switch_theme.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

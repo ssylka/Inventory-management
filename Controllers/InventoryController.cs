@@ -77,7 +77,7 @@ namespace Inventory_Managment.Controllers
                     .Where(e => e.InventoryId == id)
                     .OrderBy(e => e.Order)
                     .ToListAsync(),
-                CanEditItems = _inventoryService.CanEdit(inventory, userId, isAdmin, isActive),
+                CanEditItems = await _inventoryService.CanEditAsync(inventory, userId, isAdmin, isActive),
                 CanEditSettings = _inventoryService.CanEditSettings(inventory, userId, isAdmin),
                 AccessUsers = accessUsers,
                 Stats = _statService.ComputeStats(inventory.Fields, inventory.Items)
@@ -97,59 +97,16 @@ namespace Inventory_Managment.Controllers
                 return NotFound();
 
             _context.Entry(inventory).Property(x => x.xmin).OriginalValue = dto.xmin;
-
-            inventory.Title = dto.Title;
-            inventory.Description = dto.Description;
-            inventory.CategoryId = dto.CategoryId;
-            inventory.ImageUrl = dto.ImageUrl;
-            inventory.IsPublic = dto.IsPublic;
-            inventory.TagNames = dto.TagNames;
+            ApplyScalarFields(inventory, dto);
 
             try
             {
                 await _inventoryService.UpdateTagsForInventoryAsync(inventory);
-
-                var oldElements = _context.CustomIdElements
-                    .Where(e => e.InventoryId == dto.Id);
-                _context.CustomIdElements.RemoveRange(oldElements);
-                _context.CustomIdElements.AddRange(dto.CustomIdElements.Select(e => new CustomIdElement
-                {
-                    InventoryId = dto.Id,
-                    Type = Enum.Parse<CustomIdElementType>(e.Type),
-                    Value = string.IsNullOrEmpty(e.Value) ? null : e.Value,
-                    Order = e.Order
-                }));
-
-                var existingAccess = await _context.InventoryAccess
-                    .Where(a => a.InventoryId == dto.Id)
-                    .ToListAsync();
-                var toRemove = existingAccess
-                    .Where(a => !dto.AccessUserIds.Contains(a.UserId))
-                    .ToList();
-                var existingIds = existingAccess.Select(a => a.UserId).ToHashSet();
-                var toAdd = dto.AccessUserIds
-                    .Where(uid => !existingIds.Contains(uid))
-                    .Select(uid => new InventoryAccess { InventoryId = dto.Id, UserId = uid });
-                _context.InventoryAccess.RemoveRange(toRemove);
-                _context.InventoryAccess.AddRange(toAdd);
-
+                await _inventoryService.ReplaceCustomIdElementsAsync(dto.Id, dto.CustomIdElements);
+                await _inventoryService.UpdateAccessAsync(dto.Id, dto.AccessUserIds);
                 await _context.SaveChangesAsync();
 
-                // Field's order
-                if (dto.FieldOrders.Count > 0)
-                {
-                    var fieldIds = dto.FieldOrders.Select(f => f.Id).ToList();
-                    var dbFields = await _context.InventoryFields
-                        .Where(f => fieldIds.Contains(f.Id))
-                        .ToListAsync();
-
-                    foreach (var fo in dto.FieldOrders)
-                    {
-                        var dbField = dbFields.FirstOrDefault(f => f.Id == fo.Id);
-                        if (dbField != null) dbField.Order = fo.Order;
-                    }
-                    await _context.SaveChangesAsync();
-                }
+                await _inventoryService.ApplyFieldOrdersAsync(dto.FieldOrders);
 
                 await _context.Entry(inventory).ReloadAsync();
                 return Ok(new { xmin = inventory.xmin });
@@ -162,6 +119,16 @@ namespace Inventory_Managment.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private static void ApplyScalarFields(Inventory inventory, InventoryEditDto dto)
+        {
+            inventory.Title       = dto.Title;
+            inventory.Description = dto.Description;
+            inventory.CategoryId  = dto.CategoryId;
+            inventory.ImageUrl    = dto.ImageUrl;
+            inventory.IsPublic    = dto.IsPublic;
+            inventory.TagNames    = dto.TagNames;
         }
 
         [Authorize(Roles = "Active,Admin")]

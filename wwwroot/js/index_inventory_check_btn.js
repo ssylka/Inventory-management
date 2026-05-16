@@ -22,9 +22,3 @@ document.getElementById("btnDelete")?.addEventListener("click", async () => {
         location.reload();
     }
 });
-
-document.querySelectorAll(".inventory-row").forEach(row => {
-    row.addEventListener("click", function () {
-        window.location.href = `/Inventory/Details/${this.dataset.id}#tab-items`;
-    });
-});

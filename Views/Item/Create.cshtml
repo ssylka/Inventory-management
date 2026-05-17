@@ -27,7 +27,9 @@
         @if (field.Type == FieldType.Bool)
         {
             <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" name="@field.Slot" value="true" checked />
+                <input type="hidden" id="bool-value-@field.Slot" name="@field.Slot" value="true" />
+                <input type="checkbox" class="form-check-input" checked
+                       onchange="document.getElementById('bool-value-@field.Slot').value = this.checked ? 'true' : 'false'" />
                 <label class="form-check-label">@field.Name</label>
             </div>
         }

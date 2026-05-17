@@ -1,6 +1,7 @@
 using Inventory_Managment.Models;
 using Inventory_Managment.Models.Directory;
 using Inventory_Managment.Models.Dto;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory_Managment.Services
@@ -63,6 +64,32 @@ namespace Inventory_Managment.Services
                 Order       = e.Order
             }));
         }
+
+        public IQueryable<Inventory> GetSearchedInventoris(string searchText, bool isAuthenticated, bool isAdmin, string? userId)
+        {
+            var inventory = _context.Inventories.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                inventory = inventory.Include(i => i.Fields).Include(i => i.Items).Include(i => i.AccessList)
+                                                       // inventory's fields' name and description
+                                                       .Where(i => i.Fields.Any(f => (f.Name.ToLower().Contains(searchText)) ||
+                                                            string.IsNullOrWhiteSpace(i.Description) ? i.Description.ToLower().Contains(searchText) : false)
+                                                       // inventory's items' string and text fields
+                                                       || ((i.Items.Any(it => (it.String1 != null && it.String1.ToLower().Contains(searchText)) ||
+                                                            (it.String2 != null && it.String2.ToLower().Contains(searchText)) ||
+                                                            (it.String3 != null && it.String3.ToLower().Contains(searchText)) ||
+                                                            (it.Text1 != null && it.Text1.ToLower().Contains(searchText)) ||
+                                                            (it.Text2 != null && it.Text2.ToLower().Contains(searchText)) ||
+                                                            (it.Text3 != null && it.Text3.ToLower().Contains(searchText)))))
+                                                       // inventory's title and description
+                                                       || (i.Title.ToLower().Contains(searchText) || i.Description.ToLower().Contains(searchText)))
+                                                       .OrderByDescending(i => i.Title);
+                return inventory;
+            }
+            else 
+                throw new Exception("Search text cannot be empty.");
+        }
+
 
         public async Task UpdateAccessAsync(int inventoryId, IList<string> userIds)
         {

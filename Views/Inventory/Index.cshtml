@@ -4,7 +4,12 @@
     var tag = ViewBag.Tag as string;
     ViewData["Title"] = tag != null ? $"Tag: {tag}" : "Inventories";
 }
-
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 @if (tag != null)
 {
 <div class="d-flex align-items-center me-3 text-center">

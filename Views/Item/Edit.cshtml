@@ -34,9 +34,12 @@
 
         @if (field.Type == FieldType.Bool)
         {
+            var isChecked = value?.ToString() == "True";
             <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" name="@field.Slot" value="true"
-                       @(value?.ToString() == "True" ? "checked" : "") />
+                <input type="hidden" id="bool-value-@field.Slot" name="@field.Slot" value="@(isChecked ? "true" : "false")" />
+                <input type="checkbox" class="form-check-input"
+                       @(isChecked ? "checked" : "")
+                       onchange="document.getElementById('bool-value-@field.Slot').value = this.checked ? 'true' : 'false'" />
                 <label class="form-check-label">@field.Name</label>
             </div>
         }

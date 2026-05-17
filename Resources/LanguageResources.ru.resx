@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Inventories" xml:space="preserve">
-    <value>Инвентари</value>
+    <value>Инвентари списком</value>
   </data>
   <data name="Privacy" xml:space="preserve">
     <value>Конфиденциальность</value>
@@ -304,10 +304,10 @@
     <value>Среднее</value>
   </data>
   <data name="BoolTrue" xml:space="preserve">
-    <value>Да</value>
+    <value>Истина</value>
   </data>
   <data name="BoolFalse" xml:space="preserve">
-    <value>Нет</value>
+    <value>Ложь</value>
   </data>
   <data name="MostFrequentValues" xml:space="preserve">
     <value>Частые значения</value>
@@ -455,5 +455,8 @@
   </data>
   <data name="TopMostPopular" xml:space="preserve">
     <value>Топ 5 популярных</value>
+  </data>
+  <data name="Searching..." xml:space="preserve">
+    <value>Поиск...</value>
   </data>
 </root>

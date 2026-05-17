@@ -31,14 +31,35 @@ namespace Inventory_Managment.Controllers
             var query = _context.Inventories.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(tag))
-                query = query.Where(i => i.InventoryTags.Any(it => it.Tag.Name == tag));
+                query = _context.Inventories.Where(i => i.InventoryTags.Any(it => it.Tag.Name == tag));
 
             var inventories = await query
-                .OrderByDescending(i => i.CreatedAt)
+                .OrderByDescending(i => i.Title)
                 .ToListAsync();
 
             ViewBag.Tag = tag;
             return View(inventories);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Searching(string searchText)
+        {
+            IQueryable<Inventory> inventories = _context.Inventories;
+            try
+            {
+                inventories = _inventoryService.GetSearchedInventoris(searchText.ToLower(),
+                    User.Identity!.IsAuthenticated,
+                    User.IsInRole("Admin"),
+                    _userManager.GetUserId(User)
+                );
+            }
+            catch
+            {
+                return RedirectToAction("index");
+            }
+            ViewBag.SearchText = searchText;
+
+            return View("Index", await inventories.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int id)
@@ -105,9 +126,7 @@ namespace Inventory_Managment.Controllers
                 await _inventoryService.ReplaceCustomIdElementsAsync(dto.Id, dto.CustomIdElements);
                 await _inventoryService.UpdateAccessAsync(dto.Id, dto.AccessUserIds);
                 await _context.SaveChangesAsync();
-
                 await _inventoryService.ApplyFieldOrdersAsync(dto.FieldOrders);
-
                 await _context.Entry(inventory).ReloadAsync();
                 return Ok(new { xmin = inventory.xmin });
             }

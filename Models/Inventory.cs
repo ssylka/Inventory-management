@@ -27,5 +27,6 @@ namespace Inventory_Managment.Models
         public List<InventoryTag> InventoryTags { get; set; } = new();
         [NotMapped]
         public List<string> TagNames { get; set; } = new();
+        public List<InventoryAccess> AccessList { get; set; } = new();
     }
 }

@@ -44,22 +44,13 @@ namespace Inventory_Managment.Controllers
         [HttpGet]
         public async Task<IActionResult> Searching(string searchText)
         {
-            IQueryable<Inventory> inventories = _context.Inventories;
-            try
-            {
-                inventories = _inventoryService.GetSearchedInventoris(searchText.ToLower(),
-                    User.Identity!.IsAuthenticated,
-                    User.IsInRole("Admin"),
-                    _userManager.GetUserId(User)
-                );
-            }
-            catch
-            {
-                return RedirectToAction("index");
-            }
+            if (string.IsNullOrWhiteSpace(searchText))
+                return RedirectToAction("Index");
+
+            var result = await _inventoryService.SearchAsync(searchText);
             ViewBag.SearchText = searchText;
 
-            return View("Index", await inventories.ToListAsync());
+            return View("Search", result);
         }
 
         public async Task<IActionResult> Details(int id)

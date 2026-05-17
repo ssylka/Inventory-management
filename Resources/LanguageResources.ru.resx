@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,345 +118,348 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Inventories" xml:space="preserve">
-    <value>Инвентари списком</value>
+    <value>РРЅРІРµРЅС‚Р°СЂРё СЃРїРёСЃРєРѕРј</value>
   </data>
   <data name="Privacy" xml:space="preserve">
-    <value>Конфиденциальность</value>
+    <value>РљРѕРЅС„РёРґРµРЅС†РёР°Р»СЊРЅРѕСЃС‚СЊ</value>
   </data>
   <data name="AdminPage" xml:space="preserve">
-    <value>Администратор</value>
+    <value>РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ</value>
   </data>
   <data name="Logout" xml:space="preserve">
-    <value>Выйти</value>
+    <value>Р’С‹Р№С‚Рё</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Войти</value>
+    <value>Р’РѕР№С‚Рё</value>
   </data>
   <data name="Register" xml:space="preserve">
-    <value>Зарегистрироваться</value>
+    <value>Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Название</value>
+    <value>РќР°Р·РІР°РЅРёРµ</value>
   </data>
   <data name="Description" xml:space="preserve">
-    <value>Описание</value>
+    <value>РћРїРёСЃР°РЅРёРµ</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>Имя</value>
+    <value>РРјСЏ</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
   <data name="Password" xml:space="preserve">
-    <value>Пароль</value>
+    <value>РџР°СЂРѕР»СЊ</value>
   </data>
   <data name="Role" xml:space="preserve">
-    <value>Роль</value>
+    <value>Р РѕР»СЊ</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>Тип</value>
+    <value>РўРёРї</value>
   </data>
   <data name="Public" xml:space="preserve">
-    <value>Публичный</value>
+    <value>РџСѓР±Р»РёС‡РЅС‹Р№</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Создано</value>
+    <value>РЎРѕР·РґР°РЅРѕ</value>
   </data>
   <data name="Creator" xml:space="preserve">
-    <value>Создатель</value>
+    <value>РЎРѕР·РґР°С‚РµР»СЊ</value>
   </data>
   <data name="Tags" xml:space="preserve">
-    <value>Теги</value>
+    <value>РўРµРіРё</value>
   </data>
   <data name="Image" xml:space="preserve">
-    <value>Изображение</value>
+    <value>РР·РѕР±СЂР°Р¶РµРЅРёРµ</value>
   </data>
   <data name="Category" xml:space="preserve">
-    <value>Категория</value>
+    <value>РљР°С‚РµРіРѕСЂРёСЏ</value>
   </data>
   <data name="CustomID" xml:space="preserve">
     <value>Custom ID</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>Сохранить</value>
+    <value>РЎРѕС…СЂР°РЅРёС‚СЊ</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Отмена</value>
+    <value>РћС‚РјРµРЅР°</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Удалить</value>
+    <value>РЈРґР°Р»РёС‚СЊ</value>
   </data>
   <data name="Remove" xml:space="preserve">
-    <value>Удалить</value>
+    <value>РЈРґР°Р»РёС‚СЊ</value>
   </data>
   <data name="All" xml:space="preserve">
-    <value>Все</value>
+    <value>Р’СЃРµ</value>
   </data>
   <data name="NoInventoriesFound" xml:space="preserve">
-    <value>Инвентари не найдены.</value>
+    <value>РРЅРІРµРЅС‚Р°СЂРё РЅРµ РЅР°Р№РґРµРЅС‹.</value>
   </data>
   <data name="NoInventoriesYet" xml:space="preserve">
-    <value>Нет инвентарей.</value>
+    <value>РќРµС‚ РёРЅРІРµРЅС‚Р°СЂРµР№.</value>
   </data>
   <data name="NoItemsYet" xml:space="preserve">
-    <value>Нет элементов</value>
+    <value>РќРµС‚ СЌР»РµРјРµРЅС‚РѕРІ</value>
   </data>
   <data name="NoFieldsConfigured" xml:space="preserve">
-    <value>Поля не настроены.</value>
+    <value>РџРѕР»СЏ РЅРµ РЅР°СЃС‚СЂРѕРµРЅС‹.</value>
   </data>
   <data name="NoTagsYet" xml:space="preserve">
-    <value>Нет тегов.</value>
+    <value>РќРµС‚ С‚РµРіРѕРІ.</value>
   </data>
   <data name="NoInventoriesWithAccess" xml:space="preserve">
-    <value>Нет инвентарей с доступом на запись.</value>
+    <value>РќРµС‚ РёРЅРІРµРЅС‚Р°СЂРµР№ СЃ РґРѕСЃС‚СѓРїРѕРј РЅР° Р·Р°РїРёСЃСЊ.</value>
   </data>
   <data name="Saved" xml:space="preserve">
-    <value>Сохранено</value>
+    <value>РЎРѕС…СЂР°РЅРµРЅРѕ</value>
   </data>
   <data name="Unsaved" xml:space="preserve">
-    <value>Не сохранено</value>
+    <value>РќРµ СЃРѕС…СЂР°РЅРµРЅРѕ</value>
   </data>
   <data name="Saving" xml:space="preserve">
-    <value>Сохранение…</value>
+    <value>РЎРѕС…СЂР°РЅРµРЅРёРµвЂ¦</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Ошибка</value>
+    <value>РћС€РёР±РєР°</value>
   </data>
   <data name="Conflict" xml:space="preserve">
-    <value>Конфликт</value>
+    <value>РљРѕРЅС„Р»РёРєС‚</value>
   </data>
   <data name="Uploading" xml:space="preserve">
-    <value>Загрузка…</value>
+    <value>Р—Р°РіСЂСѓР·РєР°вЂ¦</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
-    <value>Загружено</value>
+    <value>Р—Р°РіСЂСѓР¶РµРЅРѕ</value>
   </data>
   <data name="UploadFailed" xml:space="preserve">
-    <value>Ошибка загрузки:</value>
+    <value>РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё:</value>
   </data>
   <data name="Items" xml:space="preserve">
-    <value>Элементы</value>
+    <value>Р­Р»РµРјРµРЅС‚С‹</value>
   </data>
   <data name="Discussion" xml:space="preserve">
-    <value>Обсуждение</value>
+    <value>РћР±СЃСѓР¶РґРµРЅРёРµ</value>
   </data>
   <data name="Statistics" xml:space="preserve">
-    <value>Статистика</value>
+    <value>РЎС‚Р°С‚РёСЃС‚РёРєР°</value>
   </data>
   <data name="Fields" xml:space="preserve">
-    <value>Поля</value>
+    <value>РџРѕР»СЏ</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Настройки</value>
+    <value>РќР°СЃС‚СЂРѕР№РєРё</value>
   </data>
   <data name="Access" xml:space="preserve">
-    <value>Доступ</value>
+    <value>Р”РѕСЃС‚СѓРї</value>
   </data>
   <data name="NewInventory" xml:space="preserve">
-    <value>+ новый инвентарь</value>
+    <value>+ РЅРѕРІС‹Р№ РёРЅРІРµРЅС‚Р°СЂСЊ</value>
   </data>
   <data name="AddItem" xml:space="preserve">
-    <value>Добавить элемент</value>
+    <value>Р”РѕР±Р°РІРёС‚СЊ СЌР»РµРјРµРЅС‚</value>
   </data>
   <data name="AddField" xml:space="preserve">
-    <value>Добавить поле</value>
+    <value>Р”РѕР±Р°РІРёС‚СЊ РїРѕР»Рµ</value>
   </data>
   <data name="AddTag" xml:space="preserve">
-    <value>+ Добавить тег</value>
+    <value>+ Р”РѕР±Р°РІРёС‚СЊ С‚РµРі</value>
   </data>
   <data name="AddElement" xml:space="preserve">
-    <value>Добавить элемент</value>
+    <value>Р”РѕР±Р°РІРёС‚СЊ СЌР»РµРјРµРЅС‚</value>
   </data>
   <data name="DeleteSelected" xml:space="preserve">
-    <value>Удалить выбранные</value>
+    <value>РЈРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Рµ</value>
   </data>
   <data name="NewPost" xml:space="preserve">
-    <value>Новый пост</value>
+    <value>РќРѕРІС‹Р№ РїРѕСЃС‚</value>
   </data>
   <data name="MarkdownSupported" xml:space="preserve">
-    <value>Поддерживается Markdown…</value>
+    <value>РџРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ MarkdownвЂ¦</value>
   </data>
   <data name="Post" xml:space="preserve">
-    <value>Опубликовать</value>
+    <value>РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ</value>
   </data>
   <data name="LogInToParticipate" xml:space="preserve">
-    <value>Войдите, чтобы участвовать в обсуждении.</value>
+    <value>Р’РѕР№РґРёС‚Рµ, С‡С‚РѕР±С‹ СѓС‡Р°СЃС‚РІРѕРІР°С‚СЊ РІ РѕР±СЃСѓР¶РґРµРЅРёРё.</value>
   </data>
   <data name="TotalItems" xml:space="preserve">
-    <value>Всего элементов:</value>
+    <value>Р’СЃРµРіРѕ СЌР»РµРјРµРЅС‚РѕРІ:</value>
   </data>
   <data name="Field" xml:space="preserve">
-    <value>Поле</value>
+    <value>РџРѕР»Рµ</value>
   </data>
   <data name="Filled" xml:space="preserve">
-    <value>Заполнено</value>
+    <value>Р—Р°РїРѕР»РЅРµРЅРѕ</value>
   </data>
   <data name="Empty" xml:space="preserve">
-    <value>Пусто</value>
+    <value>РџСѓСЃС‚Рѕ</value>
   </data>
   <data name="Min" xml:space="preserve">
-    <value>Мин</value>
+    <value>РњРёРЅ</value>
   </data>
   <data name="Max" xml:space="preserve">
-    <value>Макс</value>
+    <value>РњР°РєСЃ</value>
   </data>
   <data name="Average" xml:space="preserve">
-    <value>Среднее</value>
+    <value>РЎСЂРµРґРЅРµРµ</value>
   </data>
   <data name="BoolTrue" xml:space="preserve">
-    <value>Истина</value>
+    <value>РСЃС‚РёРЅР°</value>
   </data>
   <data name="BoolFalse" xml:space="preserve">
-    <value>Ложь</value>
+    <value>Р›РѕР¶СЊ</value>
   </data>
   <data name="MostFrequentValues" xml:space="preserve">
-    <value>Частые значения</value>
+    <value>Р§Р°СЃС‚С‹Рµ Р·РЅР°С‡РµРЅРёСЏ</value>
   </data>
   <data name="IsPublicLabel" xml:space="preserve">
-    <value>Публичный (все авторизованные пользователи могут редактировать)</value>
+    <value>РџСѓР±Р»РёС‡РЅС‹Р№ (РІСЃРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»Рё РјРѕРіСѓС‚ СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ)</value>
   </data>
   <data name="IsPublicLabelItems" xml:space="preserve">
-    <value>Публичный (все авторизованные пользователи могут редактировать элементы)</value>
+    <value>РџСѓР±Р»РёС‡РЅС‹Р№ (РІСЃРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»Рё РјРѕРіСѓС‚ СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ СЌР»РµРјРµРЅС‚С‹)</value>
   </data>
   <data name="ChooseFile" xml:space="preserve">
-    <value>Выбрать файл</value>
+    <value>Р’С‹Р±СЂР°С‚СЊ С„Р°Р№Р»</value>
   </data>
   <data name="Preview" xml:space="preserve">
-    <value>Предпросмотр:</value>
+    <value>РџСЂРµРґРїСЂРѕСЃРјРѕС‚СЂ:</value>
   </data>
   <data name="DropHereToRemove" xml:space="preserve">
-    <value>🗑 Перетащите сюда для удаления</value>
+    <value>рџ—‘ РџРµСЂРµС‚Р°С‰РёС‚Рµ СЃСЋРґР° РґР»СЏ СѓРґР°Р»РµРЅРёСЏ</value>
   </data>
   <data name="SearchByNameOrEmail" xml:space="preserve">
-    <value>Поиск по имени или email…</value>
+    <value>РџРѕРёСЃРє РїРѕ РёРјРµРЅРё РёР»Рё emailвЂ¦</value>
   </data>
   <data name="ShowInTable" xml:space="preserve">
-    <value>Показывать в таблице</value>
+    <value>РџРѕРєР°Р·С‹РІР°С‚СЊ РІ С‚Р°Р±Р»РёС†Рµ</value>
   </data>
   <data name="CreateInventory" xml:space="preserve">
-    <value>Создать инвентарь</value>
+    <value>РЎРѕР·РґР°С‚СЊ РёРЅРІРµРЅС‚Р°СЂСЊ</value>
   </data>
   <data name="CreateItem" xml:space="preserve">
-    <value>Создать элемент</value>
+    <value>РЎРѕР·РґР°С‚СЊ СЌР»РµРјРµРЅС‚</value>
   </data>
   <data name="EditItem" xml:space="preserve">
-    <value>Редактировать элемент</value>
+    <value>Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ СЌР»РµРјРµРЅС‚</value>
   </data>
   <data name="EditField" xml:space="preserve">
-    <value>Редактировать поле</value>
+    <value>Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РїРѕР»Рµ</value>
   </data>
   <data name="InventoriesTagged" xml:space="preserve">
-    <value>Инвентари с тегом</value>
+    <value>РРЅРІРµРЅС‚Р°СЂРё СЃ С‚РµРіРѕРј</value>
   </data>
   <data name="AutoGenerated" xml:space="preserve">
-    <value>Автогенерация</value>
+    <value>РђРІС‚РѕРіРµРЅРµСЂР°С†РёСЏ</value>
   </data>
   <data name="LeaveEmptyToAutoGenerate" xml:space="preserve">
-    <value>Оставьте пустым для автогенерации.</value>
+    <value>РћСЃС‚Р°РІСЊС‚Рµ РїСѓСЃС‚С‹Рј РґР»СЏ Р°РІС‚РѕРіРµРЅРµСЂР°С†РёРё.</value>
   </data>
   <data name="EnterEmail" xml:space="preserve">
-    <value>Введите email</value>
+    <value>Р’РІРµРґРёС‚Рµ email</value>
   </data>
   <data name="EnterPassword" xml:space="preserve">
-    <value>Введите пароль</value>
+    <value>Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ</value>
   </data>
   <data name="EnterName" xml:space="preserve">
-    <value>Введите ваше имя</value>
+    <value>Р’РІРµРґРёС‚Рµ РІР°С€Рµ РёРјСЏ</value>
   </data>
   <data name="LoginWithGoogle" xml:space="preserve">
-    <value>Войти через Google</value>
+    <value>Р’РѕР№С‚Рё С‡РµСЂРµР· Google</value>
   </data>
   <data name="LoginWithFacebook" xml:space="preserve">
-    <value>Войти через Facebook</value>
+    <value>Р’РѕР№С‚Рё С‡РµСЂРµР· Facebook</value>
   </data>
   <data name="CheckYourEmail" xml:space="preserve">
-    <value>Проверьте email</value>
+    <value>РџСЂРѕРІРµСЂСЊС‚Рµ email</value>
   </data>
   <data name="ConfirmationSent" xml:space="preserve">
-    <value>Мы отправили ссылку для подтверждения на ваш email. Нажмите её, чтобы активировать аккаунт.</value>
+    <value>РњС‹ РѕС‚РїСЂР°РІРёР»Рё СЃСЃС‹Р»РєСѓ РґР»СЏ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ РЅР° РІР°С€ email. РќР°Р¶РјРёС‚Рµ РµС‘, С‡С‚РѕР±С‹ Р°РєС‚РёРІРёСЂРѕРІР°С‚СЊ Р°РєРєР°СѓРЅС‚.</value>
   </data>
   <data name="GoToLogin" xml:space="preserve">
-    <value>Перейти к входу</value>
+    <value>РџРµСЂРµР№С‚Рё Рє РІС…РѕРґСѓ</value>
   </data>
   <data name="NameIs" xml:space="preserve">
-    <value>Имя:</value>
+    <value>РРјСЏ:</value>
   </data>
   <data name="EmailLabel" xml:space="preserve">
     <value>Email:</value>
   </data>
   <data name="EmailConfirmed" xml:space="preserve">
-    <value>Email подтверждён</value>
+    <value>Email РїРѕРґС‚РІРµСЂР¶РґС‘РЅ</value>
   </data>
   <data name="EmailNotConfirmed" xml:space="preserve">
-    <value>Email не подтверждён</value>
+    <value>Email РЅРµ РїРѕРґС‚РІРµСЂР¶РґС‘РЅ</value>
   </data>
   <data name="RoleIs" xml:space="preserve">
-    <value>Роль:</value>
+    <value>Р РѕР»СЊ:</value>
   </data>
   <data name="MyInventories" xml:space="preserve">
-    <value>Мои инвентари</value>
+    <value>РњРѕРё РёРЅРІРµРЅС‚Р°СЂРё</value>
   </data>
   <data name="FilterByTitle" xml:space="preserve">
-    <value>Фильтр по названию…</value>
+    <value>Р¤РёР»СЊС‚СЂ РїРѕ РЅР°Р·РІР°РЅРёСЋвЂ¦</value>
   </data>
   <data name="TitleAZ" xml:space="preserve">
-    <value>Название А→Z</value>
+    <value>РќР°Р·РІР°РЅРёРµ Рђв†’Z</value>
   </data>
   <data name="TitleZA" xml:space="preserve">
-    <value>Название Z→А</value>
+    <value>РќР°Р·РІР°РЅРёРµ Zв†’Рђ</value>
   </data>
   <data name="NewestFirst" xml:space="preserve">
-    <value>Сначала новые</value>
+    <value>РЎРЅР°С‡Р°Р»Р° РЅРѕРІС‹Рµ</value>
   </data>
   <data name="OldestFirst" xml:space="preserve">
-    <value>Сначала старые</value>
+    <value>РЎРЅР°С‡Р°Р»Р° СЃС‚Р°СЂС‹Рµ</value>
   </data>
   <data name="WriteAccess" xml:space="preserve">
-    <value>Доступ на запись</value>
+    <value>Р”РѕСЃС‚СѓРї РЅР° Р·Р°РїРёСЃСЊ</value>
   </data>
   <data name="UserManagement" xml:space="preserve">
-    <value>Управление пользователями</value>
+    <value>РЈРїСЂР°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРјРё</value>
   </data>
   <data name="FilterByNameOrEmail" xml:space="preserve">
-    <value>Фильтр по имени или email…</value>
+    <value>Р¤РёР»СЊС‚СЂ РїРѕ РёРјРµРЅРё РёР»Рё emailвЂ¦</value>
   </data>
   <data name="Admin" xml:space="preserve">
-    <value>Администратор</value>
+    <value>РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ</value>
   </data>
   <data name="Blocked" xml:space="preserve">
-    <value>Заблокирован</value>
+    <value>Р—Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ</value>
   </data>
   <data name="Unverified" xml:space="preserve">
-    <value>Не верифицирован</value>
+    <value>РќРµ РІРµСЂРёС„РёС†РёСЂРѕРІР°РЅ</value>
   </data>
   <data name="Active" xml:space="preserve">
-    <value>Активный</value>
+    <value>РђРєС‚РёРІРЅС‹Р№</value>
   </data>
   <data name="BlockUser" xml:space="preserve">
-    <value>Заблокировать</value>
+    <value>Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ</value>
   </data>
   <data name="UnblockUser" xml:space="preserve">
-    <value>Разблокировать</value>
+    <value>Р Р°Р·Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ</value>
   </data>
   <data name="MakeAdmin" xml:space="preserve">
-    <value>Сделать администратором</value>
+    <value>РЎРґРµР»Р°С‚СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј</value>
   </data>
   <data name="RemoveAdmin" xml:space="preserve">
-    <value>Снять администратора</value>
+    <value>РЎРЅСЏС‚СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°</value>
   </data>
   <data name="YouLabel" xml:space="preserve">
-    <value>(вы)</value>
+    <value>(РІС‹)</value>
   </data>
   <data name="DeleteUsersConfirm" xml:space="preserve">
-    <value>Удалить {0} пользователей? Это действие нельзя отменить.</value>
+    <value>РЈРґР°Р»РёС‚СЊ {0} РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№? Р­С‚Рѕ РґРµР№СЃС‚РІРёРµ РЅРµР»СЊР·СЏ РѕС‚РјРµРЅРёС‚СЊ.</value>
   </data>
   <data name="LatestInventories" xml:space="preserve">
-    <value>Последние инвентари</value>
+    <value>РџРѕСЃР»РµРґРЅРёРµ РёРЅРІРµРЅС‚Р°СЂРё</value>
   </data>
   <data name="TopMostPopular" xml:space="preserve">
-    <value>Топ 5 популярных</value>
+    <value>РўРѕРї 5 РїРѕРїСѓР»СЏСЂРЅС‹С…</value>
   </data>
   <data name="Searching..." xml:space="preserve">
-    <value>Поиск...</value>
+    <value>РџРѕРёСЃРє...</value>
   </data>
+  <data name="SearchResults" xml:space="preserve"><value>Результаты поиска</value></data>
+  <data name="NoItemsFound" xml:space="preserve"><value>Элементы не найдены.</value></data>
+  <data name="InventoryLabel" xml:space="preserve"><value>Инвентарь</value></data>
 </root>

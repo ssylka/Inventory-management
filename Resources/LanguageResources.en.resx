@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -217,7 +217,7 @@
     <value>Unsaved</value>
   </data>
   <data name="Saving" xml:space="preserve">
-    <value>Saving…</value>
+    <value>SavingвЂ¦</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
@@ -226,7 +226,7 @@
     <value>Conflict</value>
   </data>
   <data name="Uploading" xml:space="preserve">
-    <value>Uploading…</value>
+    <value>UploadingвЂ¦</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
     <value>Uploaded</value>
@@ -274,7 +274,7 @@
     <value>New post</value>
   </data>
   <data name="MarkdownSupported" xml:space="preserve">
-    <value>Markdown is supported…</value>
+    <value>Markdown is supportedвЂ¦</value>
   </data>
   <data name="Post" xml:space="preserve">
     <value>Post</value>
@@ -325,10 +325,10 @@
     <value>Preview:</value>
   </data>
   <data name="DropHereToRemove" xml:space="preserve">
-    <value>🗑 Drop here to remove</value>
+    <value>рџ—‘ Drop here to remove</value>
   </data>
   <data name="SearchByNameOrEmail" xml:space="preserve">
-    <value>Search by name or email…</value>
+    <value>Search by name or emailвЂ¦</value>
   </data>
   <data name="ShowInTable" xml:space="preserve">
     <value>Show in table</value>
@@ -397,13 +397,13 @@
     <value>My Inventories</value>
   </data>
   <data name="FilterByTitle" xml:space="preserve">
-    <value>Filter by title…</value>
+    <value>Filter by titleвЂ¦</value>
   </data>
   <data name="TitleAZ" xml:space="preserve">
-    <value>Title A→Z</value>
+    <value>Title Aв†’Z</value>
   </data>
   <data name="TitleZA" xml:space="preserve">
-    <value>Title Z→A</value>
+    <value>Title Zв†’A</value>
   </data>
   <data name="NewestFirst" xml:space="preserve">
     <value>Newest first</value>
@@ -418,7 +418,7 @@
     <value>User Management</value>
   </data>
   <data name="FilterByNameOrEmail" xml:space="preserve">
-    <value>Filter by name or email…</value>
+    <value>Filter by name or emailвЂ¦</value>
   </data>
   <data name="Admin" xml:space="preserve">
     <value>Admin</value>
@@ -459,4 +459,7 @@
   <data name="Searching..." xml:space="preserve">
     <value />
   </data>
+  <data name="SearchResults" xml:space="preserve"><value>Search Results</value></data>
+  <data name="NoItemsFound" xml:space="preserve"><value>No items found.</value></data>
+  <data name="InventoryLabel" xml:space="preserve"><value>Inventory</value></data>
 </root>

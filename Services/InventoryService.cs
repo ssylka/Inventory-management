@@ -65,29 +65,31 @@ namespace Inventory_Managment.Services
             }));
         }
 
-        public IQueryable<Inventory> GetSearchedInventoris(string searchText, bool isAuthenticated, bool isAdmin, string? userId)
+        public async Task<SearchResultViewModel> SearchAsync(string searchText)
         {
-            var inventory = _context.Inventories.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(searchText))
+            var inventories = await _context.Inventories
+                .Where(i =>
+                    EF.Functions.ToTsVector("russian", i.Title).Matches(EF.Functions.PlainToTsQuery("russian", searchText)) ||
+                    EF.Functions.ToTsVector("russian", i.Description).Matches(EF.Functions.PlainToTsQuery("russian", searchText)))
+                .OrderByDescending(i => i.CreatedAt)
+                .ToListAsync();
+
+            var items = await _context.Items
+                .Include(i => i.Inventory)
+                .Where(i => EF.Functions.ToTsVector("russian",
+                    (i.String1 ?? "") + " " + (i.String2 ?? "") + " " +
+                    (i.String3 ?? "") + " " + (i.Text1 ?? "") + " " +
+                    (i.Text2 ?? "") + " " + (i.Text3 ?? "") + " " +
+                    (i.CustomId ?? "")).Matches(EF.Functions.PlainToTsQuery("russian", searchText)))
+                .OrderByDescending(i => i.CreatedAt)
+                .ToListAsync();
+
+            return new SearchResultViewModel
             {
-                inventory = inventory.Include(i => i.Fields).Include(i => i.Items).Include(i => i.AccessList)
-                                                       // inventory's fields' name and description
-                                                       .Where(i => i.Fields.Any(f => (f.Name.ToLower().Contains(searchText)) ||
-                                                            string.IsNullOrWhiteSpace(i.Description) ? i.Description.ToLower().Contains(searchText) : false)
-                                                       // inventory's items' string and text fields
-                                                       || ((i.Items.Any(it => (it.String1 != null && it.String1.ToLower().Contains(searchText)) ||
-                                                            (it.String2 != null && it.String2.ToLower().Contains(searchText)) ||
-                                                            (it.String3 != null && it.String3.ToLower().Contains(searchText)) ||
-                                                            (it.Text1 != null && it.Text1.ToLower().Contains(searchText)) ||
-                                                            (it.Text2 != null && it.Text2.ToLower().Contains(searchText)) ||
-                                                            (it.Text3 != null && it.Text3.ToLower().Contains(searchText)))))
-                                                       // inventory's title and description
-                                                       || (i.Title.ToLower().Contains(searchText) || i.Description.ToLower().Contains(searchText)))
-                                                       .OrderByDescending(i => i.Title);
-                return inventory;
-            }
-            else 
-                throw new Exception("Search text cannot be empty.");
+                Query = searchText,
+                Inventories = inventories,
+                Items = items
+            };
         }
 
 

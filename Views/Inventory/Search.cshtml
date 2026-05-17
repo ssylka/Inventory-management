@@ -1,0 +1,61 @@
+@model Inventory_Managment.Models.Dto.SearchResultViewModel
+
+@{
+    ViewData["Title"] = Localizer["SearchResults"].Value + ": " + Model.Query;
+}
+
+<h2 class="mb-4">@Localizer["SearchResults"]: <em>@Model.Query</em></h2>
+
+<h5>@Localizer["Inventories"]</h5>
+
+<table class="table table-bordered table-striped align-middle text-center mb-5">
+    <thead>
+        <tr>
+            <th>@Localizer["Title"]</th>
+            <th>@Localizer["Description"]</th>
+            <th>@Localizer["Public"]</th>
+            <th>@Localizer["Created"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Inventories.Any())
+        {
+            <tr><td colspan="4" class="text-muted">@Localizer["NoInventoriesFound"]</td></tr>
+        }
+        @foreach (var inv in Model.Inventories)
+        {
+            <tr onclick="window.location='/Inventory/Details/@inv.Id'" style="cursor:pointer">
+                <td>@inv.Title</td>
+                <td class="text-muted">@inv.Description</td>
+                <td><input class="form-check-input" type="checkbox" @(inv.IsPublic ? "checked" : "") disabled /></td>
+                <td>@inv.CreatedAt.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h5>@Localizer["Items"]</h5>
+
+<table class="table table-bordered table-striped align-middle text-center mb-4">
+    <thead>
+        <tr>
+            <th>@Localizer["CustomID"]</th>
+            <th>@Localizer["InventoryLabel"]</th>
+            <th>@Localizer["Created"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Items.Any())
+        {
+            <tr><td colspan="3" class="text-muted">@Localizer["NoItemsFound"]</td></tr>
+        }
+        @foreach (var item in Model.Items)
+        {
+            <tr onclick="window.location='/Inventory/Details/@item.InventoryId#tab-items'" style="cursor:pointer">
+                <td>@item.Inventory.Title</td>
+                <td>@item.CustomId</td>
+                <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    </tbody>
+</table>

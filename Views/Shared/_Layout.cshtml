@@ -18,25 +18,28 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-body border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg bg-body border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">Inventory_Managment</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Inventory" asp-action="Index">@Localizer["Inventories"]</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
                         </li>
-                        <li class="nav-item  ms-auto me-2">
-                            <input class="form-control" type="text" id="searchInput" value="@ViewBag.SearchText" placeholder="@Localizer["Searching..."]"/>
-                        </li>
-                        <li class="nav-item dropdown me-2">
+                    </ul>
+
+                    <input class="form-control me-lg-2 my-2 my-lg-0" type="text" id="searchInput"
+                           value="@ViewBag.SearchText" placeholder="@Localizer["Searching..."]" style="max-width:260px"/>
+
+                    <div class="d-flex align-items-center gap-2 my-2 my-lg-0 ms-lg-2">
+                        <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 🌐
                             </button>
@@ -60,49 +63,35 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </div>
 
-                        <li class="nav-item me-2">
-                            <button class="btn btn-secondary" onclick="toggleTheme()" id="theme-btn">
-                                🌙
-                            </button>
-                        </li>
+                        <button class="btn btn-secondary" onclick="toggleTheme()" id="theme-btn">🌙</button>
 
                         @if (User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item me-2">
-                                    <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Index">
-                                        @Localizer["AdminPage"]
-                                    </a>
-                                </li>
+                                <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Index">
+                                    @Localizer["AdminPage"]
+                                </a>
                             }
-                            <li class="nav-item me-2">
-                                <a class="btn btn-outline-info" asp-controller="Account" asp-action="Profile" asp-route-id="@currentUser?.Id">
-                                    Hi, @currentUser?.Name
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-danger" asp-controller="Account" asp-action="Logout">
-                                    @Localizer["Logout"]
-                                </a>
-                            </li>
+                            <a class="btn btn-outline-info" asp-controller="Account" asp-action="Profile" asp-route-id="@currentUser?.Id">
+                                @currentUser?.Name
+                            </a>
+                            <a class="btn btn-outline-danger" asp-controller="Account" asp-action="Logout">
+                                @Localizer["Logout"]
+                            </a>
                         }
                         else
                         {
-                            <li class="nav-item me-2">
-                                <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Login">
-                                    @Localizer["Login"]
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary" asp-controller="Account" asp-action="Register">
-                                    @Localizer["Register"]
-                                </a>
-                            </li>
+                            <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Login">
+                                @Localizer["Login"]
+                            </a>
+                            <a class="btn btn-primary" asp-controller="Account" asp-action="Register">
+                                @Localizer["Register"]
+                            </a>
                         }
-                    </ul>
+                    </div>
                 </div>
             </div>
         </nav>

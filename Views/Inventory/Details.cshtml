@@ -58,6 +58,7 @@
             <div class="alert alert-danger">@TempData["Error"]</div>
         }
 
+        <div class="table-responsive">
         <table class="table table-bordered text-center table-striped">
             <thead>
                 <tr>
@@ -125,6 +126,7 @@
                 }
             </tbody>
         </table>
+        </div>
 
         @if (canEditItems)
         {
@@ -161,6 +163,7 @@
         }
         else
         {
+            <div class="table-responsive">
             <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
@@ -203,10 +206,12 @@
                     }
                 </tbody>
             </table>
+            </div>
         }
     </div>
 
     <div class="tab-pane fade" id="tab-fields">
+        <div class="table-responsive">
         <table class="table mt-2">
             <thead>
                 <tr>
@@ -239,6 +244,7 @@
                 }
             </tbody>
         </table>
+        </div>
 
         <a href="/Inventory/AddField/@inv.Id" class="btn btn-primary">@Localizer["AddField"]</a>
         <button class="btn btn-danger" id="fields-delete-btn">@Localizer["Delete"]</button>
@@ -299,12 +305,12 @@
         <div class="mb-3">
             <label class="form-label">@Localizer["Tags"]</label>
             <div id="tags-container">
-                @for (int i = 0; i < inv.TagNames.Count; i++)
+                @for (int i = 0; i < Model.TagNames.Count; i++)
                 {
                     <div class="tag-item position-relative d-flex mb-1">
                         <input id="@inv.InventoryTags[i].TagId"
                                name="TagNames[@i]"
-                               value="@inv.TagNames[i]"
+                               value="@Model.TagNames[i]"
                                class="form-control me-2 tag-input" />
                         <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>
                     </div>
@@ -382,14 +388,14 @@
 
 <script>
     const msg = {
-        saved:        "@Localizer["Saved"]",
-        unsaved:      "@Localizer["Unsaved"]",
-        saving:       "@Localizer["Saving"]",
-        error:        "@Localizer["Error"]",
-        conflict:     "@Localizer["Conflict"]",
-        uploading:    "@Localizer["Uploading"]",
-        uploaded:     "@Localizer["Uploaded"]",
-        uploadFailed: "@Localizer["UploadFailed"]",
+        saved:        @Json.Serialize(Localizer["Saved"].Value),
+        unsaved:      @Json.Serialize(Localizer["Unsaved"].Value),
+        saving:       @Json.Serialize(Localizer["Saving"].Value),
+        error:        @Json.Serialize(Localizer["Error"].Value),
+        conflict:     @Json.Serialize(Localizer["Conflict"].Value),
+        uploading:    @Json.Serialize(Localizer["Uploading"].Value),
+        uploaded:     @Json.Serialize(Localizer["Uploaded"].Value),
+        uploadFailed: @Json.Serialize(Localizer["UploadFailed"].Value),
     };
 
     let hasChanges = false;

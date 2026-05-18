@@ -15,11 +15,13 @@ Users can create custom inventory templates with flexible fields and manage item
 ## 🧩 Tech Stack
 
 - **Backend:** C# / ASP.NET (.NET 8.0)
-- **Database:** SQL Server / MySQL / PostgreSQL
+- **Database:** PostgreSQL
 - **ORM:** Entity Framework
-- **Frontend:** Bootstrap (or any CSS framework)
-- **Other:** Third-party libraries allowed
-
+- **Frontend:** Bootstrap
+- **Email:** SendGrid
+- **Image Storage:** Cloudinary
+- **Authentication:** Google and Facebook OAuth
+- **Drag & Drop:** Sortable JS
 ---
 
 ## ✨ Features
@@ -34,7 +36,7 @@ Users can create custom inventory templates with flexible fields and manage item
 
 - Access control:
   - Public (all authenticated users can edit)
-  - Private (specific users only)
+  - Private (specific users only for write access)
 
 ---
 
@@ -74,21 +76,13 @@ Each inventory can define custom fields:
 | Single-line text | 3    |
 | Multi-line text  | 3    |
 | Numeric          | 3    |
-| Image/Doc (URL)  | 3    |
+| Image (URL)      | 3    |
 | Boolean          | 3    |
 
 Each field includes:
 - Name
 - Description (tooltip)
 - Visibility in table
-
----
-
-### 📊 Table-based UI (Required)
-
-- All data displayed in tables
-- No buttons inside rows ❌
-- Use toolbar / contextual actions ✔
 
 ---
 
@@ -204,31 +198,3 @@ Tabs:
 - JSON storage for items
 - Dynamic DB tables
 - Buttons inside table rows
-
----
-
-## ⭐ Optional Features
-
-- Document previews (PDF/JPG)
-- Email authentication
-- Field validation (regex, ranges)
-- Dropdown fields
-- Unlimited fields
-- Export to CSV/Excel
-
----
-
-## ⚠️ Important
-
-- Do NOT copy code
-- Understand everything you write
-- Use libraries instead of reinventing
-
----
-
-## 🟢 Development Strategy
-
-Start with:
-
-```bash
-Hello World → Deploy → Incremental development

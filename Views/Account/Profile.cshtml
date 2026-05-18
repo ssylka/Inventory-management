@@ -23,9 +23,9 @@
 
 <h5 class="mt-4">@Localizer["MyInventories"]</h5>
 
-<div class="mb-2 d-flex gap-2 align-items-center">
-    <input id="owned-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="@Localizer["FilterByTitle"]" />
-    <select id="owned-sort" class="form-select form-select-sm" style="max-width:180px">
+<div class="mb-2 d-flex gap-2 align-items-center flex-wrap">
+    <input id="owned-filter" class="form-control form-control-sm" style="max-width:260px;min-width:160px" placeholder="@Localizer["FilterByTitle"]" />
+    <select id="owned-sort" class="form-select form-select-sm" style="max-width:180px;min-width:130px">
         <option value="title-asc">@Localizer["TitleAZ"]</option>
         <option value="title-desc">@Localizer["TitleZA"]</option>
         <option value="date-desc">@Localizer["NewestFirst"]</option>
@@ -37,6 +37,7 @@
     }
 </div>
 
+<div class="table-responsive">
 <table class="table table-bordered table-striped align-middle text-center" id="owned-table">
     <thead>
         <tr>
@@ -75,6 +76,7 @@
         }
     </tbody>
 </table>
+</div>
 @if (!Model.OwnedInventories.Any())
 {
     <p class="text-muted">@Localizer["NoInventoriesYet"]</p>
@@ -82,9 +84,9 @@
 
 <h5 class="mt-5">@Localizer["WriteAccess"]</h5>
 
-<div class="mb-2 d-flex gap-2 align-items-center">
-    <input id="access-filter" class="form-control form-control-sm" style="max-width:260px" placeholder="@Localizer["FilterByTitle"]" />
-    <select id="access-sort" class="form-select form-select-sm" style="max-width:180px">
+<div class="mb-2 d-flex gap-2 align-items-center flex-wrap">
+    <input id="access-filter" class="form-control form-control-sm" style="max-width:260px;min-width:160px" placeholder="@Localizer["FilterByTitle"]" />
+    <select id="access-sort" class="form-select form-select-sm" style="max-width:180px;min-width:130px">
         <option value="title-asc">@Localizer["TitleAZ"]</option>
         <option value="title-desc">@Localizer["TitleZA"]</option>
         <option value="date-desc">@Localizer["NewestFirst"]</option>
@@ -92,6 +94,7 @@
     </select>
 </div>
 
+<div class="table-responsive">
 <table class="table table-bordered table-striped align-middle text-center" id="access-table">
     <thead>
         <tr>
@@ -117,6 +120,7 @@
         }
     </tbody>
 </table>
+</div>
 @if (!Model.AccessInventories.Any())
 {
     <p class="text-muted">@Localizer["NoInventoriesWithAccess"]</p>

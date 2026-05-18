@@ -53,7 +53,7 @@
 
 @section Scripts {
 <script>
-    const msgDeleteConfirm = "@Localizer["DeleteUsersConfirm"]";
+    const msgDeleteConfirm = @Json.Serialize(Localizer["DeleteUsersConfirm"].Value);
 
     document.getElementById("user-filter").addEventListener("input", function () {
         const term = this.value.toLowerCase();

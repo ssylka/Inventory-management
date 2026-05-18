@@ -96,9 +96,9 @@
 
 @section Scripts {
 <script>
-    const msgUploading    = "@Localizer["Uploading"]";
-    const msgUploaded     = "@Localizer["Uploaded"]";
-    const msgUploadFailed = "@Localizer["UploadFailed"]";
+    const msgUploading    = @Json.Serialize(Localizer["Uploading"].Value);
+    const msgUploaded     = @Json.Serialize(Localizer["Uploaded"].Value);
+    const msgUploadFailed = @Json.Serialize(Localizer["UploadFailed"].Value);
 
     function initLinkUpload(slot, existingUrl) {
         let committedUrl = existingUrl;

@@ -1,6 +1,5 @@
 ﻿using Inventory_Managment.Models.Directory;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inventory_Managment.Models
 {
@@ -25,8 +24,6 @@ namespace Inventory_Managment.Models
         public Category? Category { get; set; }
         public string? ImageUrl { get; set; }
         public List<InventoryTag> InventoryTags { get; set; } = new();
-        [NotMapped]
-        public List<string> TagNames { get; set; } = new();
         public List<InventoryAccess> AccessList { get; set; } = new();
     }
 }

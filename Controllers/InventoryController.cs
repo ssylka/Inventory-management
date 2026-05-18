@@ -67,10 +67,6 @@ namespace Inventory_Managment.Controllers
             var isAdmin = User.IsInRole("Admin");
             var isActive = User.IsInRole("Active");
 
-            inventory.TagNames = inventory.InventoryTags
-                .Select(it => it.Tag.Name)
-                .ToList();
-
             var accessUsers = await _context.InventoryAccess
                 .Where(a => a.InventoryId == id)
                 .Include(a => a.User)
@@ -92,7 +88,8 @@ namespace Inventory_Managment.Controllers
                 CanEditItems = await _inventoryService.CanEditAsync(inventory, userId, isAdmin, isActive),
                 CanEditSettings = _inventoryService.CanEditSettings(inventory, userId, isAdmin),
                 AccessUsers = accessUsers,
-                Stats = _statService.ComputeStats(inventory.Fields, inventory.Items)
+                Stats = _statService.ComputeStats(inventory.Fields, inventory.Items),
+                TagNames = inventory.InventoryTags.Select(it => it.Tag.Name).ToList()
             };
 
             return View(vm);
@@ -113,7 +110,7 @@ namespace Inventory_Managment.Controllers
 
             try
             {
-                await _inventoryService.UpdateTagsForInventoryAsync(inventory);
+                await _inventoryService.UpdateTagsForInventoryAsync(dto.Id, dto.TagNames);
                 await _inventoryService.ReplaceCustomIdElementsAsync(dto.Id, dto.CustomIdElements);
                 await _inventoryService.UpdateAccessAsync(dto.Id, dto.AccessUserIds);
                 await _context.SaveChangesAsync();
@@ -138,7 +135,6 @@ namespace Inventory_Managment.Controllers
             inventory.CategoryId  = dto.CategoryId;
             inventory.ImageUrl    = dto.ImageUrl;
             inventory.IsPublic    = dto.IsPublic;
-            inventory.TagNames    = dto.TagNames;
         }
 
         [Authorize(Roles = "Active,Admin")]

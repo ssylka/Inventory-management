@@ -128,18 +128,18 @@ namespace Inventory_Managment.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateTagsForInventoryAsync(Inventory inventory)
+        public async Task UpdateTagsForInventoryAsync(int inventoryId, List<string> tagNames)
         {
             var existing = await _context.InventoryTags
                 .Include(x => x.Tag)
-                .Where(x => x.InventoryId == inventory.Id && x.Tag != null)
+                .Where(x => x.InventoryId == inventoryId && x.Tag != null)
                 .ToListAsync();
 
             var existingNames = existing
                 .Select(x => x.Tag.Name)
                 .ToHashSet();
 
-            var newNames = inventory.TagNames
+            var newNames = tagNames
                 .Where(t => !string.IsNullOrWhiteSpace(t))
                 .Select(t => t.Trim())
                 .ToHashSet();
@@ -156,12 +156,14 @@ namespace Inventory_Managment.Services
                 .Distinct()
                 .ToList();
 
+            var existingTags = await _context.Tags
+                .Where(t => toAdd.Contains(t.Name))
+                .ToListAsync();
+            var tagMap = existingTags.ToDictionary(t => t.Name);
+
             foreach (var tagName in toAdd)
             {
-                var tag = await _context.Tags
-                    .FirstOrDefaultAsync(t => t.Name == tagName);
-
-                if (tag == null)
+                if (!tagMap.TryGetValue(tagName, out var tag))
                 {
                     tag = new Tag { Name = tagName };
                     _context.Tags.Add(tag);
@@ -169,7 +171,7 @@ namespace Inventory_Managment.Services
 
                 _context.InventoryTags.Add(new InventoryTag
                 {
-                    InventoryId = inventory.Id,
+                    InventoryId = inventoryId,
                     Tag = tag
                 });
             }

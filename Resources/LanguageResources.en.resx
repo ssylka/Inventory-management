@@ -457,9 +457,15 @@
     <value>Top 5 Most Popular</value>
   </data>
   <data name="Searching..." xml:space="preserve">
-    <value />
+    <value>Searching...</value>
   </data>
-  <data name="SearchResults" xml:space="preserve"><value>Search Results</value></data>
-  <data name="NoItemsFound" xml:space="preserve"><value>No items found.</value></data>
-  <data name="InventoryLabel" xml:space="preserve"><value>Inventory</value></data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Search Results</value>
+  </data>
+  <data name="NoItemsFound" xml:space="preserve">
+    <value>No items found.</value>
+  </data>
+  <data name="InventoryLabel" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
 </root>

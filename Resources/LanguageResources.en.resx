@@ -217,7 +217,7 @@
     <value>Unsaved</value>
   </data>
   <data name="Saving" xml:space="preserve">
-    <value>SavingвЂ¦</value>
+    <value>Saving…</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
@@ -226,7 +226,7 @@
     <value>Conflict</value>
   </data>
   <data name="Uploading" xml:space="preserve">
-    <value>UploadingвЂ¦</value>
+    <value>Uploading…</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
     <value>Uploaded</value>
@@ -274,7 +274,7 @@
     <value>New post</value>
   </data>
   <data name="MarkdownSupported" xml:space="preserve">
-    <value>Markdown is supportedвЂ¦</value>
+    <value>Markdown is supported…</value>
   </data>
   <data name="Post" xml:space="preserve">
     <value>Post</value>
@@ -325,10 +325,10 @@
     <value>Preview:</value>
   </data>
   <data name="DropHereToRemove" xml:space="preserve">
-    <value>рџ—‘ Drop here to remove</value>
+    <value>🗑 Drop here to remove</value>
   </data>
   <data name="SearchByNameOrEmail" xml:space="preserve">
-    <value>Search by name or emailвЂ¦</value>
+    <value>Search by name or email…</value>
   </data>
   <data name="ShowInTable" xml:space="preserve">
     <value>Show in table</value>
@@ -397,13 +397,13 @@
     <value>My Inventories</value>
   </data>
   <data name="FilterByTitle" xml:space="preserve">
-    <value>Filter by titleвЂ¦</value>
+    <value>Filter by title…</value>
   </data>
   <data name="TitleAZ" xml:space="preserve">
-    <value>Title Aв†’Z</value>
+    <value>Title A→Z</value>
   </data>
   <data name="TitleZA" xml:space="preserve">
-    <value>Title Zв†’A</value>
+    <value>Title Z→A</value>
   </data>
   <data name="NewestFirst" xml:space="preserve">
     <value>Newest first</value>
@@ -418,7 +418,7 @@
     <value>User Management</value>
   </data>
   <data name="FilterByNameOrEmail" xml:space="preserve">
-    <value>Filter by name or emailвЂ¦</value>
+    <value>Filter by name or email…</value>
   </data>
   <data name="Admin" xml:space="preserve">
     <value>Admin</value>

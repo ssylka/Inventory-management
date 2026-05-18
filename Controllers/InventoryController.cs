@@ -146,7 +146,7 @@ namespace Inventory_Managment.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Active,Admin")]
-        public async Task<IActionResult> Create(Inventory inventory)
+        public async Task<IActionResult> Create(Inventory inventory, List<string>? TagNames)
         {
             ViewBag.Categories = await _context.Set<Category>().ToListAsync();
             inventory.CreatorId = _userManager.GetUserId(User);
@@ -156,6 +156,9 @@ namespace Inventory_Managment.Controllers
 
             _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
+
+            if (TagNames != null && TagNames.Any())
+                await _inventoryService.UpdateTagsForInventoryAsync(inventory.Id, TagNames);
 
             return Redirect($"/Inventory/Details/{inventory.Id}#fields");
         }

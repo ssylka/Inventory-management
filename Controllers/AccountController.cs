@@ -182,7 +182,7 @@ This email was sent automatically. Please do not reply.
                 info.LoginProvider, info.ProviderKey, isPersistent: true);
 
             if (signInResult.Succeeded)
-                return RedirectToAction("Index", "Inventory");
+                return RedirectToAction("Index", "Home");
 
             var email = info.Principal.FindFirstValue(ClaimTypes.Email)
                      ?? info.Principal.FindFirstValue("email");
@@ -227,7 +227,7 @@ This email was sent automatically. Please do not reply.
             await _userManager.AddLoginAsync(user, info); 
             await _signInManager.SignInAsync(user, isPersistent: true);
 
-            return RedirectToAction("Index", "Inventory");
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> Profile(string id)

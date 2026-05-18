@@ -468,4 +468,10 @@
   <data name="InventoryLabel" xml:space="preserve">
     <value>Inventory</value>
   </data>
+  <data name="SortByName" xml:space="preserve">
+    <value>Sort by name</value>
+  </data>
+  <data name="SortByEmail" xml:space="preserve">
+    <value>Sort by email</value>
+  </data>
 </root>

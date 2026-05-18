@@ -468,4 +468,10 @@
   <data name="InventoryLabel" xml:space="preserve">
     <value>Инвентарь</value>
   </data>
+  <data name="SortByName" xml:space="preserve">
+    <value>По имени</value>
+  </data>
+  <data name="SortByEmail" xml:space="preserve">
+    <value>По email</value>
+  </data>
 </root>

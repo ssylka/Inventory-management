@@ -23,7 +23,7 @@
     <span id="save-status" class="ms-3"><span class="badge bg-success">@Localizer["Saved"]</span></span>
 </div>
 
-<ul class="nav nav-tabs mb-3" id="inventoryTabs">
+<ul class="nav nav-tabs mb-3 pb-1" id="inventoryTabs">
     <li class="nav-item">
         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-items">@Localizer["Items"]</button>
     </li>
@@ -361,11 +361,18 @@
 
     <div class="tab-pane fade" id="tab-access">
 
+        <div class="mb-2 d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-secondary btn-sm access-sort" data-sort="name">@Localizer["SortByName"]</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm access-sort" data-sort="email">@Localizer["SortByEmail"]</button>
+        </div>
+
         <div id="access-list" class="list-group mb-3">
             @foreach (var u in Model.AccessUsers)
             {
                 <div class="access-item list-group-item d-flex align-items-center justify-content-between"
-                     data-user-id="@u.Id">
+                     data-user-id="@u.Id"
+                     data-name="@u.Name.ToLower()"
+                     data-email="@u.Email.ToLower()">
                     <div>
                         <strong>@u.Name</strong>
                         <span class="text-muted ms-2">@u.Email</span>
@@ -534,9 +541,32 @@
         });
 //#endregion
 
-//#region Access 
+//#region Access
         const accessList   = document.getElementById("access-list");
         const accessSearch = document.getElementById("access-search");
+
+        let currentAccessSort = "name";
+
+        function sortAccessList() {
+            const items = Array.from(accessList.querySelectorAll(".access-item"));
+            items.sort((a, b) => (a.dataset[currentAccessSort] ?? "").localeCompare(b.dataset[currentAccessSort] ?? ""));
+            items.forEach(item => accessList.appendChild(item));
+        }
+
+        document.querySelectorAll(".access-sort").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentAccessSort = btn.dataset.sort;
+                document.querySelectorAll(".access-sort").forEach(b => {
+                    b.classList.remove("btn-secondary");
+                    b.classList.add("btn-outline-secondary");
+                });
+                btn.classList.remove("btn-outline-secondary");
+                btn.classList.add("btn-secondary");
+                sortAccessList();
+            });
+        });
+
+        sortAccessList(); // apply default sort on page load
 
         accessList.addEventListener("click", e => {
             if (!e.target.classList.contains("access-remove")) return;
@@ -575,10 +605,13 @@
                     const div = document.createElement("div");
                     div.className = "access-item list-group-item d-flex align-items-center justify-content-between";
                     div.dataset.userId = u.id;
+                    div.dataset.name  = u.name.toLowerCase();
+                    div.dataset.email = u.email.toLowerCase();
                     div.innerHTML = `
                         <div><strong>${u.name}</strong><span class="text-muted ms-2">${u.email}</span></div>
                         <button type="button" class="btn btn-outline-danger btn-sm access-remove">@Localizer["Remove"]</button>`;
                     accessList.appendChild(div);
+                    sortAccessList();
                     accessSearch.value = "";
                     list.remove();
                     markChanged();
@@ -595,34 +628,10 @@
 //#endregion
 
 //#region Tags
-    function addTag() {
-        const container = document.getElementById("tags-container");
-        const index = container.children.length;
-        const div = document.createElement("div");
-        div.className = "tag-item position-relative d-flex mb-1";
-        div.innerHTML = `
-            <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
-        container.appendChild(div);
-        markChanged();
-    }
-
-    function removeTag(button) {
-        button.parentElement.remove();
-        reindexTags();
-        markChanged();
-    }
-
-    function reindexTags() {
-        document.querySelectorAll("#tags-container input").forEach((input, i) => {
-            input.name = `TagNames[${i}]`;
-        });
-    }
-
-
     document.addEventListener("input", async (e) => {
         if (!e.target.matches("#tags-container .tag-input")) return;
         const input = e.target;
+        markChanged();
         const value = input.value;
         if (!value) return;
         const ids = Array.from(document.querySelectorAll("#tags-container .tag-input")).map(x => x.id).filter(x => x);
@@ -991,4 +1000,30 @@
     });
 });
 //#endregion
+
+//#region TagsGlobalFunctions
+function addTag() {
+    const container = document.getElementById("tags-container");
+    const index = container.children.length;
+    const div = document.createElement("div");
+    div.className = "tag-item position-relative d-flex mb-1";
+    div.innerHTML = `
+        <input name="TagNames[${index}]" class="form-control me-2 tag-input" />
+        <button type="button" class="btn btn-danger btn-sm" onclick="removeTag(this)">×</button>`;
+    container.appendChild(div);
+    markChanged();
+}
+
+function removeTag(button) {
+    button.parentElement.remove();
+    reindexTags();
+    markChanged();
+}
+
+function reindexTags() {
+    document.querySelectorAll("#tags-container input").forEach((input, i) => {
+        input.name = `TagNames[${i}]`;
+    });
+}
+	//#endregion
 </script>

@@ -474,4 +474,7 @@
   <data name="SortByEmail" xml:space="preserve">
     <value>Sort by email</value>
   </data>
+  <data name="LoginWithGitHub" xml:space="preserve">
+    <value>Login with GitHub</value>
+  </data>
 </root>

@@ -50,6 +50,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AspNet.Security.OAuth.GitHub": {
+              "target": "Package",
+              "version": "[8.1.0, )"
+            },
             "CloudinaryDotNet": {
               "target": "Package",
               "version": "[1.29.1, )"

@@ -1,5 +1,6 @@
 using Inventory_Managment.Models;
 using Inventory_Managment.Services;
+using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -55,6 +56,12 @@ namespace Inventory_Managment
                 {
                     options.AppId = builder.Configuration["Auth:Facebook:AppId"];
                     options.AppSecret = builder.Configuration["Auth:Facebook:AppSecret"];
+                })
+                .AddGitHub(options =>
+                {
+                    options.ClientId = builder.Configuration["GitHub:ClientId"]!;
+                    options.ClientSecret = builder.Configuration["GitHub:ClientSecret"]!;
+                    options.Scope.Add("user:email");
                 });
 
             builder.Services.AddLocalization(o => o.ResourcesPath = "");

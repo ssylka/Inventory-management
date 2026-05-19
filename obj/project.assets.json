@@ -2,6 +2,22 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "AspNet.Security.OAuth.GitHub/8.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/AspNet.Security.OAuth.GitHub.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AspNet.Security.OAuth.GitHub.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "CloudinaryDotNet/1.29.1": {
         "type": "package",
         "dependencies": {
@@ -1858,6 +1874,21 @@
     }
   },
   "libraries": {
+    "AspNet.Security.OAuth.GitHub/8.1.0": {
+      "sha512": "Gk0FlIFrUxl4btxUEllCkHyAUPYehYkwIm2rMoHlYUzJGnYt5pGzIM2THzxjEIkMhT4UuC3ne2pWxLXcofiPeQ==",
+      "type": "package",
+      "path": "aspnet.security.oauth.github/8.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "README.md",
+        "aspnet.security.oauth.github.8.1.0.nupkg.sha512",
+        "aspnet.security.oauth.github.nuspec",
+        "lib/net8.0/AspNet.Security.OAuth.GitHub.dll",
+        "lib/net8.0/AspNet.Security.OAuth.GitHub.xml"
+      ]
+    },
     "CloudinaryDotNet/1.29.1": {
       "sha512": "JaV1JhjsvArTu1n7dzawflTGLqyNMGCEmGSNAiIlHOObqoIAh0cKIZOu5stG1CaPFgF3S1jv1Jn+vTmTqUvCNg==",
       "type": "package",
@@ -5599,6 +5630,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "AspNet.Security.OAuth.GitHub >= 8.1.0",
       "CloudinaryDotNet >= 1.29.1",
       "Microsoft.AspNetCore.Authentication.Facebook >= 8.0.0",
       "Microsoft.AspNetCore.Authentication.Google >= 8.0.0",
@@ -5658,6 +5690,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "AspNet.Security.OAuth.GitHub": {
+            "target": "Package",
+            "version": "[8.1.0, )"
+          },
           "CloudinaryDotNet": {
             "target": "Package",
             "version": "[1.29.1, )"

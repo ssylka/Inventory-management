@@ -185,10 +185,21 @@ This email was sent automatically. Please do not reply.
                 return RedirectToAction("Index", "Home");
 
             var email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                     ?? info.Principal.FindFirstValue("urn:github:email")
                      ?? info.Principal.FindFirstValue("email");
 
+            // GitHub может не вернуть email (приватный аккаунт без публичного адреса)
             if (string.IsNullOrEmpty(email))
-                return RedirectToAction("Login");
+            {
+                var login = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier)
+                         ?? info.Principal.FindFirstValue("urn:github:login");
+                if (string.IsNullOrEmpty(login))
+                {
+                    TempData["Error"] = "Could not retrieve email from your GitHub account. Please make your email public in GitHub settings and try again.";
+                    return RedirectToAction("Login");
+                }
+                email = $"{login}@github.invalid";
+            }
 
             var name = info.Principal.FindFirstValue(ClaimTypes.Name)
                     ?? info.Principal.FindFirstValue("name");

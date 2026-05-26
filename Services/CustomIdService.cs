@@ -5,11 +5,11 @@ using System.Text.RegularExpressions;
 
 namespace Inventory_Managment.Services
 {
-    public class ItemService
+    public class CustomIdService
     {
         AppDbContext _context;
 
-        public ItemService(AppDbContext appDbContext) => _context = appDbContext;
+        public CustomIdService(AppDbContext appDbContext) => _context = appDbContext;
 
         public async Task<string> GenerateCustomIdAsync(int inventoryId)
         {

@@ -899,10 +899,6 @@
 
     updateCidPreview();
 
-    setInterval(doSave, 8000);
-    window.addEventListener("beforeunload", e => {
-        if (hasChanges) { e.preventDefault(); e.returnValue = ""; }
-    });
 //#endregion
 
 //#region Discussion
@@ -1026,4 +1022,10 @@ function reindexTags() {
     });
 }
 	//#endregion
+
+setInterval(doSave, 8000);
+window.addEventListener("beforeunload", e => {
+    if (hasChanges) { e.preventDefault(); e.returnValue = ""; }
+});
+
 </script>

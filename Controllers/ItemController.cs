@@ -10,9 +10,9 @@ namespace Inventory_Managment.Controllers
     public class ItemController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly ItemService _itemService;
+        private readonly CustomIdService _itemService;
 
-        public ItemController(AppDbContext context, ItemService itemService)
+        public ItemController(AppDbContext context, CustomIdService itemService)
         {
             _context = context;
             _itemService = itemService;

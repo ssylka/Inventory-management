@@ -25,7 +25,7 @@ namespace Inventory_Managment
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
-            builder.Services.AddScoped<ItemService>();
+            builder.Services.AddScoped<CustomIdService>();
             builder.Services.AddScoped<InventoryService>();
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService>();
@@ -76,7 +76,7 @@ namespace Inventory_Managment
 
             app.UseRequestLocalization(localizationOptions);
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            app.UseForwardedHeaders(new ForwardedHeadersOptions //Nginx
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });

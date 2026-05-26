@@ -33,7 +33,7 @@ else
                         }
                     </td>
                     <td><strong>@inv.Title</strong></td>
-                    <td class="text-muted small">@inv.Description</td>
+                    <td class="text-muted small markup">@inv.Description</td>
                     <td class="text-muted small">@(inv.CreatorName ?? "—")</td>
                 </tr>
             }
@@ -104,3 +104,4 @@ else
 {
     <a href="/Inventory/Create" class="btn btn-primary">@Localizer["NewInventory"]</a>
 }
+<script type="module" src="~/js/murkup.js"></script>

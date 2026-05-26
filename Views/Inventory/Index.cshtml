@@ -64,17 +64,12 @@ else
 }
 
 @section Scripts {
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 <script>
     document.querySelectorAll(".inventory-row").forEach(row => {
         row.addEventListener("click", function () {
             window.location.href = `/Inventory/Details/${this.dataset.id}#tab-items`;
         });
     });
-
-    document.querySelectorAll(".markup").forEach(t => {
-        t.innerHTML = DOMPurify.sanitize(marked.parse(t.textContent.trim()));
-    });
 </script>
 }
+<script src="~/js/murkup.js"></script>

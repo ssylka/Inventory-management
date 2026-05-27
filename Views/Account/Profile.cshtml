@@ -18,6 +18,18 @@
             <p class="text-danger">@Localizer["EmailNotConfirmed"]</p>
         }
         <p>@Localizer["RoleIs"] <b>@Model.Role</b></p>
+        @if (Model.IsOwnProfile || User.IsInRole("Admin"))
+        {
+            <a asp-action="SalesforceForm"
+               asp-route-id="@Model.User.Id"
+               class="btn btn-outline-primary mt-2">
+                Add to Salesforce CRM
+            </a>
+        }
+        @if (TempData["SalesforceSuccess"] != null)
+        {
+            <div class="alert alert-success mt-2">@TempData["SalesforceSuccess"]</div>
+        }
     </div>
 </div>
 

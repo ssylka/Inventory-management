@@ -96,7 +96,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> AutoSave([FromBody] InventoryEditDto dto)
         {
             var inventory = await _context.Inventories
@@ -137,7 +137,7 @@ namespace Inventory_Managment.Controllers
             inventory.IsPublic    = dto.IsPublic;
         }
 
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await _context.Set<Category>().ToListAsync();
@@ -145,7 +145,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> Create(Inventory inventory, List<string>? TagNames)
         {
             ViewBag.Categories = await _context.Set<Category>().ToListAsync();
@@ -193,14 +193,14 @@ namespace Inventory_Managment.Controllers
 
             return Ok(tags);
         }
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public IActionResult AddField(int id)
         {
             ViewBag.InventoryId = id;
             return View(new InventoryField { InventoryId = id, ShowInTable = true });
         }
         [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> AddField(InventoryField field)
         {
             if (!ModelState.IsValid)
@@ -227,7 +227,7 @@ namespace Inventory_Managment.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> Delete([FromBody] List<int> ids)
         {
             var inventories = await _context.Inventories
@@ -243,7 +243,7 @@ namespace Inventory_Managment.Controllers
 
             return Ok();
         }
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> EditField(int id)
         {
             var field = await _context.InventoryFields
@@ -255,7 +255,7 @@ namespace Inventory_Managment.Controllers
             return View(field);
         }
         [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> EditField(InventoryField model)
         {
             if (!ModelState.IsValid)
@@ -279,7 +279,7 @@ namespace Inventory_Managment.Controllers
             return Redirect($"/Inventory/Details/{model.InventoryId}#fields");
         }
         [HttpPost]
-        [Authorize(Roles = "Active,Admin")]
+        [Authorize]
         public async Task<IActionResult> DeleteFields([FromBody] List<int> ids)
         {
             var inventoryFields = await _context.InventoryFields

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System;
 using static System.Formats.Asn1.AsnWriter;
+// import SalesforceService
+//using SalesforceCore;
 
 namespace Inventory_Managment
 {
@@ -30,6 +32,10 @@ namespace Inventory_Managment
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<StatService>();
+
+            builder.Services.AddHttpClient();
+            //SalesforceService
+            builder.Services.AddScoped<SalesforceService>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {

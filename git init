@@ -1,0 +1,50 @@
+* [33m0279c68[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmainPage[m[33m, [m[1;31morigin/mainPage[m[33m)[m fix mainPage Description markup
+* [33md61abd3[m ready for extention
+* [33m8101b2e[m del facebook icon
+* [33ma12a066[m replace the facebook to githhub
+* [33mc3605fd[m replace the facebook to githhub
+* [33m77ebc43[m added facebook metadata2
+* [33m14f3c6a[m added facebook metadata
+* [33m9c2bbf2[m fix
+* [33m0a33f36[m added buttons for search by email\names and fixes
+* [33md5b685b[m Added responsive layout and fixes
+* [33m7e02acc[m fix2 Cyrillic
+* [33mba0ad18[m fix Cyrillic
+* [33mc254bb5[m fix search-line
+* [33mcccfaae[m add search-line
+* [33m07f558f[m add 2 languages
+* [33m941604a[m fix async mathods and preapare a language change
+* [33m873c3ae[m add stats
+* [33m7fe34d7[m add dark theme
+* [33m2c7f25a[m fix
+* [33mc58ad0a[m add proper home page
+* [33mf64e53a[m fix registrastion tips
+* [33m88d2417[m add admin page
+* [33m6e1835e[m fix profile
+* [33m5ffeb6d[m fix CustomID and Profile
+* [33m69f79db[m fix for deploy
+* [33m05715a0[m fix CustomID
+* [33maf4bda9[m add write-access
+* [33mfcd5931[m add discution
+* [33m2d866f0[m first commit
+* [33md5b2bf6[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m fix
+* [33m493b3a2[m remove dubplicate tag suggetions
+* [33md06076d[m bed commit
+* [33m3d8bb77[m add Tag
+* [33m6b47caa[m Optimictic lock is DONE
+* [33m2806115[m fix UI
+* [33m75ad943[m finish CustomId
+* [33m610b2ed[m impruve CustomID
+* [33m4a3e7f1[m eddit CustomID
+* [33mb9d5feb[m FB oAuth
+* [33m40dadc0[m fix GoogleAuth
+* [33m7d013f7[m add GoogleAuth
+* [33m3d34eac[m Add AppUser
+* [33m855fe98[m AddAuthintification
+* [33m16490d2[m add custom id
+* [33md86bbed[m opimistic locking on items
+* [33m40d4b8c[m Add item
+* [33me00f751[m add docker
+* [33m969523e[m configure postgres and EF Core
+* [33mc7ec336[m Add README
+* [33me4ee977[m git init

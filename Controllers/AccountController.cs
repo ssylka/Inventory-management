@@ -17,17 +17,21 @@ namespace Inventory_Managment.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly AppDbContext _context;
         private readonly EmailService _emailService;
+        private readonly SalesforceService _salesforceService;
+
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             AppDbContext context,
-            EmailService emailService)
+            EmailService emailService,
+            SalesforceService salesforceService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
             _emailService = emailService;
+            _salesforceService = salesforceService;
         }
 
         public IActionResult Register() => View();
@@ -271,6 +275,55 @@ This email was sent automatically. Please do not reply.
             };
 
             return View(vm);
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> SalesforceForm(string id)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (currentUserId != id && !isAdmin)
+                return Forbid();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var vm = new SalesforceFormViewModel
+            {
+                UserId = id,
+                Name = user.Name ?? "",
+                Email = user.Email ?? ""
+            };
+
+            return View(vm);
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> SalesforceForm(SalesforceFormViewModel vm)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (currentUserId != vm.UserId && !isAdmin)
+                return Forbid();
+
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            try
+            {
+                await _salesforceService.CreateAccountAndContactAsync(
+                    vm.Name, vm.Email, vm.Phone, vm.Title);
+
+                TempData["SalesforceSuccess"] = "Successfully added to Salesforce!";
+                return RedirectToAction("Profile", new { id = vm.UserId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Salesforce error: {ex.Message}");
+                return View(vm);
+            }
         }
     }
 }

@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System;
 using static System.Formats.Asn1.AsnWriter;
-// import SalesforceService
-//using SalesforceCore;
 
 namespace Inventory_Managment
 {
@@ -34,7 +32,7 @@ namespace Inventory_Managment
             builder.Services.AddScoped<StatService>();
 
             builder.Services.AddHttpClient();
-            //SalesforceService
+            builder.Services.AddScoped<DropboxService>();
             builder.Services.AddScoped<SalesforceService>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -99,6 +97,8 @@ namespace Inventory_Managment
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapControllers(); // attribute-routed API controllers (ApiController)
 
             app.MapControllerRoute(
                 name: "default",

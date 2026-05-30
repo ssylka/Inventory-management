@@ -1,0 +1,56 @@
+﻿@model Inventory_Managment.Models.Dto.SupportTicketViewModel
+
+<div class="container" style="max-width:540px; margin:2rem auto;">
+    <h2>🆘 Create Support Ticket</h2>
+    <p class="text-muted">Describe your issue and we'll notify the administrators.</p>
+
+    <form asp-action="CreateTicket" method="post">
+        <input type="hidden" asp-for="ReportedBy" />
+        <input type="hidden" asp-for="PageLink" />
+        <input type="hidden" asp-for="InventoryTitle" />
+
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label class="form-label">Reported by</label>
+            <input value="@Model.ReportedBy" class="form-control" disabled />
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.InventoryTitle))
+        {
+            <div class="mb-3">
+                <label class="form-label">Inventory</label>
+                <input value="@Model.InventoryTitle" class="form-control" disabled />
+            </div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label">Page</label>
+            <input value="@Model.PageLink" class="form-control" disabled />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Summary" class="form-label">Summary</label>
+            <textarea asp-for="Summary" class="form-control" rows="3"
+                      placeholder="Describe your issue..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Priority" class="form-label">Priority</label>
+            <select asp-for="Priority" class="form-select">
+                <option value="High">🔴 High</option>
+                <option value="Average" selected>🟡 Average</option>
+                <option value="Low">🟢 Low</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="AdminEmails" class="form-label">Admin emails (comma separated)</label>
+            <input asp-for="AdminEmails" class="form-control"
+                   placeholder="admin@example.com, admin2@example.com" />
+        </div>
+
+        <button type="submit" class="btn btn-danger">Send Ticket</button>
+        <a href="javascript:history.back()" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,47 @@
+﻿@if (User.Identity!.IsAuthenticated)
+{
+    <a asp-controller="Support"
+       asp-action="CreateTicket"
+       asp-route-pageLink="@Context.Request.Path"
+       class="support-fab"
+       title="Help">
+        🆘
+    </a>
+}
+
+<style>
+    .support-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #dc3545;
+        color: white;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.5);
+        z-index: 9999;
+        animation: bounce 10s infinite;
+    }
+
+        .support-fab:hover {
+            background: #bb2d3b;
+            color: white;
+            transform: scale(1.1);
+            animation: none;
+        }
+
+    @@keyframes bounce {
+        0%, 40%, 60%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+</style>

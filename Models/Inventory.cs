@@ -1,4 +1,4 @@
-﻿using Inventory_Managment.Models.Directory;
+using Inventory_Managment.Models.Directory;
 using System.ComponentModel.DataAnnotations;
 
 namespace Inventory_Managment.Models
@@ -25,5 +25,8 @@ namespace Inventory_Managment.Models
         public string? ImageUrl { get; set; }
         public List<InventoryTag> InventoryTags { get; set; } = new();
         public List<InventoryAccess> AccessList { get; set; } = new();
+
+        /// <summary>Per-inventory API token for external read-only access.</summary>
+        public string? ApiToken { get; set; }
     }
 }

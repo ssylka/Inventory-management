@@ -208,6 +208,9 @@ namespace Inventory_Managment.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ApiToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 

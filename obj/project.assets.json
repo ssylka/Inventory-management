@@ -934,31 +934,6 @@
           }
         }
       },
-      "SalesforceCore/1.0.2": {
-        "type": "package",
-        "dependencies": {
-          "Newtonsoft.Json": "10.0.3"
-        },
-        "compile": {
-          "lib/netcoreapp2.0/SalesforceCore.dll": {}
-        },
-        "runtime": {
-          "lib/netcoreapp2.0/SalesforceCore.dll": {}
-        }
-      },
-      "SalesforceCore.Authentication/1.0.2": {
-        "type": "package",
-        "dependencies": {
-          "Newtonsoft.Json": "10.0.3",
-          "SalesforceCore": "1.0.2"
-        },
-        "compile": {
-          "lib/netcoreapp2.0/SalesforceCore.Authentication.dll": {}
-        },
-        "runtime": {
-          "lib/netcoreapp2.0/SalesforceCore.Authentication.dll": {}
-        }
-      },
       "SendGrid/9.29.3": {
         "type": "package",
         "dependencies": {
@@ -3285,30 +3260,6 @@
         "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512",
         "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.nuspec",
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
-      ]
-    },
-    "SalesforceCore/1.0.2": {
-      "sha512": "wfD82PxohP9FoagbnDhu+zcML0DoBTqLaC/XZMWC60xjTdTR6RkPveAnnYVKZFbMHSq38+DXPv0i/iirkjWyGg==",
-      "type": "package",
-      "path": "salesforcecore/1.0.2",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/netcoreapp2.0/SalesforceCore.dll",
-        "salesforcecore.1.0.2.nupkg.sha512",
-        "salesforcecore.nuspec"
-      ]
-    },
-    "SalesforceCore.Authentication/1.0.2": {
-      "sha512": "xiNGvMz5nKkv7i8+w0IV5H2ZOwyTw2lVx7CgvDZbT2NEvysvkrhFZ6ulviV7p/9D6GRvxshgMHCOyWFMrpPrdA==",
-      "type": "package",
-      "path": "salesforcecore.authentication/1.0.2",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/netcoreapp2.0/SalesforceCore.Authentication.dll",
-        "salesforcecore.authentication.1.0.2.nupkg.sha512",
-        "salesforcecore.authentication.nuspec"
       ]
     },
     "SendGrid/9.29.3": {
@@ -5686,7 +5637,6 @@
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.0",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.4",
-      "SalesforceCore.Authentication >= 1.0.2",
       "SendGrid >= 9.29.3"
     ]
   },
@@ -5769,10 +5719,6 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
             "version": "[8.0.4, )"
-          },
-          "SalesforceCore.Authentication": {
-            "target": "Package",
-            "version": "[1.0.2, )"
           },
           "SendGrid": {
             "target": "Package",

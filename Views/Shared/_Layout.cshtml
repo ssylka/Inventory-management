@@ -108,5 +108,6 @@
     <script src="~/js/switch_theme.js" asp-append-version="true"></script>
     <script src="~/js/searching.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @await Html.PartialAsync("_SupportButton")
 </body>
 </html>

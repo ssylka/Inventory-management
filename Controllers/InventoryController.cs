@@ -300,5 +300,60 @@ namespace Inventory_Managment.Controllers
             }
             return Ok();
         }
+
+        // ── API Token management ───────────────────────────────────────────────
+
+        /// <summary>
+        /// Generates (or regenerates) an API token for the given inventory.
+        /// Only the inventory creator or an Admin can do this.
+        /// POST /Inventory/GenerateApiToken/5
+        /// </summary>
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateApiToken(int id)
+        {
+            var inventory = await _context.Inventories.FindAsync(id);
+            if (inventory == null)
+                return NotFound();
+
+            var userId  = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!_inventoryService.CanEditSettings(inventory, userId, isAdmin))
+                return Forbid();
+
+            inventory.ApiToken = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+            await _context.SaveChangesAsync();
+
+            TempData["ApiTokenGenerated"] = true;
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        /// <summary>
+        /// Revokes (clears) the API token for the given inventory.
+        /// POST /Inventory/RevokeApiToken/5
+        /// </summary>
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RevokeApiToken(int id)
+        {
+            var inventory = await _context.Inventories.FindAsync(id);
+            if (inventory == null)
+                return NotFound();
+
+            var userId  = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!_inventoryService.CanEditSettings(inventory, userId, isAdmin))
+                return Forbid();
+
+            inventory.ApiToken = null;
+            await _context.SaveChangesAsync();
+
+            TempData["ApiTokenRevoked"] = true;
+            return RedirectToAction(nameof(Details), new { id });
+        }
     }
 }

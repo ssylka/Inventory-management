@@ -56,11 +56,6 @@ namespace Inventory_Managment
                     options.ClientId = builder.Configuration["Auth:Google:ClientId"];
                     options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
                 })
-                .AddFacebook(options =>
-                {
-                    options.AppId = builder.Configuration["Auth:Facebook:AppId"];
-                    options.AppSecret = builder.Configuration["Auth:Facebook:AppSecret"];
-                })
                 .AddGitHub(options =>
                 {
                     options.ClientId = builder.Configuration["GitHub:ClientId"]!;

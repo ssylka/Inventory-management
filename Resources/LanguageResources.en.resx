@@ -366,9 +366,6 @@
   <data name="LoginWithGoogle" xml:space="preserve">
     <value>Login with Google</value>
   </data>
-  <data name="LoginWithFacebook" xml:space="preserve">
-    <value>Login with Facebook</value>
-  </data>
   <data name="CheckYourEmail" xml:space="preserve">
     <value>Check your email</value>
   </data>

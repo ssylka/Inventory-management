@@ -20,7 +20,7 @@ Users can create custom inventory templates with flexible fields and manage item
 - **Frontend:** Bootstrap
 - **Email:** SendGrid
 - **Image Storage:** Cloudinary
-- **Authentication:** Google and Facebook OAuth
+- **Authentication:** Google and GitHub OAuth
 - **Drag & Drop:** Sortable JS
 ---
 
@@ -97,7 +97,7 @@ Each field includes:
 
 - OAuth login:
   - Google
-  - Facebook
+  - GitHub
 
 ---
 
